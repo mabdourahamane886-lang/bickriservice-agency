@@ -1,1 +1,1 @@
-// keep existing Bickri AI script
+placeholder
