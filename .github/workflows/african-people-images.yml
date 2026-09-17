@@ -1,0 +1,53 @@
+name: Set African people imagery
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  update-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Replace people imagery
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          replacements = {
+            'https://images.unsplash.com/photo-1680878790148-18c83f270499?auto=format&fit=crop&q=88&w=1600': 'https://images.unsplash.com/photo-1680879275304-bbe20f7e28fb?auto=format&fit=crop&q=88&w=1600',
+            'https://images.unsplash.com/photo-1655720357761-f18ea9e5e7e6?auto=format&fit=crop&q=86&w=1200': 'https://images.unsplash.com/photo-1655720357872-ce227e4164ba?auto=format&fit=crop&q=86&w=1200',
+            'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=86&w=1200': 'https://images.unsplash.com/photo-1655720357872-ce227e4164ba?auto=format&fit=crop&q=86&w=1200',
+            'https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&q=86&w=1200': 'https://images.unsplash.com/photo-1655720357872-ce227e4164ba?auto=format&fit=crop&q=86&w=1200',
+            'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&q=88&w=1200': 'https://images.unsplash.com/photo-1655720357872-ce227e4164ba?auto=format&fit=crop&q=88&w=1200',
+          }
+          for old, new in replacements.items():
+              s = s.replace(old, new)
+          s = s.replace('alt="Femme africaine utilisant un smartphone"', 'alt="Femme africaine utilisant un smartphone"')
+          s = s.replace('alt="Projet de communication digitale"', 'alt="Équipe africaine en collaboration sur un projet digital"')
+          s = s.replace('alt="Environnement professionnel africain"', 'alt="Équipe africaine dans un environnement professionnel"')
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Commit and remove temporary workflow
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git rm .github/workflows/african-people-images.yml
+          if git diff --cached --quiet; then
+            echo "No image changes were necessary."
+            exit 0
+          fi
+          git commit -m "Update website imagery to African people"
+          git push
