@@ -38,7 +38,8 @@ export default {
     if(url.pathname==='/'||url.pathname==='/index.html'){
       if(type.includes('text/html')){
         let html=await response.text();
-        if(!html.includes('/site-head.js')) html=html.replace('</head>','<script src="/site-head.js" defer></script></head>');
+        if(!html.includes('/site-head.js')) html=html.replace('</head>','<script src="/site-head.js" defer></script>');
+        if(!html.includes('/site-fix.js')) html=html.replace('</head>','<script src="/site-fix.js" defer></script></head>');
         return new Response(html,{status:response.status,headers:response.headers});
       }
     }
