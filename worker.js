@@ -1,3 +1,5 @@
+const SITE_VERSION = '2026-09-17-ai-whatsapp-final';
+
 const SERVICES = [
   'Création web', 'E-commerce', 'Réseaux sociaux', 'Intelligence artificielle',
   'Branding & design', 'Publicité digitale', 'Formation & coaching'
@@ -30,7 +32,7 @@ export default {
         const upstream=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`},body:JSON.stringify({model,temperature:.2,messages:[{role:'system',content:SYSTEM_PROMPT},...safeHistory,{role:'user',content:message}]})});
         const data=await upstream.json().catch(()=>({}));if(!upstream.ok)return json({error:'AI provider error'},502);
         const answer=data?.choices?.[0]?.message?.content||data?.output_text||data?.response;if(typeof answer!=='string'||!answer.trim())return json({error:'Empty AI response'},502);
-        return json({answer:answer.trim()},200);
+        return json({answer:answer.trim(),version:SITE_VERSION},200);
       }catch{return json({error:'AI request failed'},502)}
     }
     const response = await env.ASSETS.fetch(request);
@@ -38,8 +40,9 @@ export default {
     if(url.pathname==='/'||url.pathname==='/index.html'){
       if(type.includes('text/html')){
         let html=await response.text();
-        if(!html.includes('/site-head.js')) html=html.replace('</head>','<script src="/site-head.js" defer></script>');
+        if(!html.includes('/site-head.js')) html=html.replace('</head>','<script src="/site-head.js" defer></script></head>');
         if(!html.includes('/site-fix.js')) html=html.replace('</head>','<script src="/site-fix.js" defer></script></head>');
+        html=html.replace('</head>',`<meta name="bickri-site-version" content="${SITE_VERSION}"></head>`);
         return new Response(html,{status:response.status,headers:response.headers});
       }
     }
