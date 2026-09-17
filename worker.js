@@ -1,4 +1,5 @@
-const SITE_VERSION = '2026-09-17-ai-whatsapp-final';
+const SITE_VERSION = '2026-09-17-cloudflare-final-2';
+const ASSET_VERSION = '2026-09-17-2';
 
 const SERVICES = [
   'Création web', 'E-commerce', 'Réseaux sociaux', 'Intelligence artificielle',
@@ -35,15 +36,30 @@ export default {
         return json({answer:answer.trim(),version:SITE_VERSION},200);
       }catch{return json({error:'AI request failed'},502)}
     }
+    if (url.pathname === '/api/site-version') return json({version:SITE_VERSION,assets:ASSET_VERSION,platform:'Cloudflare Workers'});
     const response = await env.ASSETS.fetch(request);
     const type=response.headers.get('content-type')||'';
     if(url.pathname==='/'||url.pathname==='/index.html'){
       if(type.includes('text/html')){
         let html=await response.text();
-        if(!html.includes('/site-head.js')) html=html.replace('</head>','<script src="/site-head.js" defer></script></head>');
-        if(!html.includes('/site-fix.js')) html=html.replace('</head>','<script src="/site-fix.js" defer></script></head>');
-        html=html.replace('</head>',`<meta name="bickri-site-version" content="${SITE_VERSION}"></head>`);
-        return new Response(html,{status:response.status,headers:response.headers});
+        const aiTag=`<script src="/bickri-ai.js?v=${ASSET_VERSION}" defer></script>`;
+        const headTag=`<script src="/site-head.js?v=${ASSET_VERSION}" defer></script>`;
+        const fixTag=`<script src="/site-fix.js?v=${ASSET_VERSION}" defer></script>`;
+        html=html.replace(/<script\s+src=["']\/bickri-ai\.js(?:\?[^"']*)?["']\s+defer><\/script>/i,aiTag);
+        if(!html.includes('/bickri-ai.js')) html=html.replace('</head>',aiTag+'</head>');
+        html=html.replace(/<script\s+src=["']\/site-head\.js(?:\?[^"']*)?["']\s+defer><\/script>/i,headTag);
+        if(!html.includes('/site-head.js')) html=html.replace('</head>',headTag+'</head>');
+        html=html.replace(/<script\s+src=["']\/site-fix\.js(?:\?[^"']*)?["']\s+defer><\/script>/i,fixTag);
+        if(!html.includes('/site-fix.js')) html=html.replace('</head>',fixTag+'</head>');
+        const versionMeta=`<meta name="bickri-site-version" content="${SITE_VERSION}">`;
+        html=html.replace(/<meta\s+name=["']bickri-site-version["'][^>]*>/i,versionMeta);
+        if(!html.includes('name="bickri-site-version"')) html=html.replace('</head>',versionMeta+'</head>');
+        const headers = new Headers(response.headers);
+        headers.set('Content-Type','text/html; charset=utf-8');
+        headers.set('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+        headers.set('Pragma','no-cache');
+        headers.set('Expires','0');
+        return new Response(html,{status:response.status,headers});
       }
     }
     return response;
