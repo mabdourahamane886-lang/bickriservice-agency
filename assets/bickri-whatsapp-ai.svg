@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="WhatsApp Bickri IA">
+  <defs>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#000" flood-opacity=".22"/>
+    </filter>
+  </defs>
+  <circle cx="256" cy="256" r="216" fill="#25D366" filter="url(#shadow)"/>
+  <circle cx="256" cy="248" r="126" fill="none" stroke="#fff" stroke-width="24"/>
+  <path d="M174 337 151 410l72-24" fill="#25D366" stroke="#fff" stroke-width="22" stroke-linejoin="round"/>
+  <path d="M211 182c10-8 24-7 34 3l24 25c7 7 8 18 2 26l-15 18c20 24 43 44 70 59l18-14c8-6 19-5 26 2l24 23c10 10 10 26 0 36l-8 8c-15 15-38 19-58 11-49-20-91-48-127-84-35-36-64-78-83-127-8-19-4-41 11-56z" fill="#fff"/>
+  <circle cx="401" cy="400" r="45" fill="#08101f" stroke="#d9a441" stroke-width="6"/>
+  <text x="401" y="413" text-anchor="middle" fill="#f3cf78" font-family="Arial,Helvetica,sans-serif" font-size="34" font-weight="800">IA</text>
+</svg>
