@@ -1,0 +1,12 @@
+{
+  "$schema": "https://www.schemastore.org/wrangler.json",
+  "name": "bickriservice-agency",
+  "main": "./worker.js",
+  "compatibility_date": "2026-09-17",
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  }
+}
