@@ -1,5 +1,5 @@
-const SITE_VERSION = '2026-09-17-cloudflare-final-2';
-const ASSET_VERSION = '2026-09-17-2';
+const SITE_VERSION = '2026-09-17-cloudflare-final-3';
+const ASSET_VERSION = '2026-09-17-3';
 
 const SERVICES = [
   'Création web', 'E-commerce', 'Réseaux sociaux', 'Intelligence artificielle',
