@@ -1,0 +1,9 @@
+api/
+supabase/
+.env.example
+worker.js
+wrangler.jsonc
+.assetsignore
+.git/
+.gitignore
+README.md
