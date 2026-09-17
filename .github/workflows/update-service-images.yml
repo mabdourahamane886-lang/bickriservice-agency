@@ -1,0 +1,77 @@
+name: Update service images
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  update-images:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace service and portfolio images with unique African Unsplash photos
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          replacements = {
+            'https://images.unsplash.com/photo-1655720357761-f18ea9e5e7e6?auto=format&fit=crop&q=86&w=1200': [
+              'https://unsplash.com/photos/a-woman-standing-in-front-of-a-laptop-computer-D8Xxi_I77w4/download?force=true&w=1200',
+              'https://unsplash.com/photos/man-working-at-a-desk-with-laptop-and-notebook-eFsTIHD79yY/download?force=true&w=1200',
+            ],
+            'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&q=86&w=1200': [
+              'https://unsplash.com/photos/man-in-shirt-and-tie-using-laptop-and-credit-card-Vkh7GC3lN8w/download?force=true&w=1200',
+              'https://unsplash.com/photos/a-woman-standing-in-front-of-a-store-holding-a-cell-phone-H1KbBGUs4bM/download?force=true&w=1200',
+            ],
+            'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=86&w=1200': [
+              'https://unsplash.com/photos/a-group-of-women-standing-next-to-each-other-8iTsduRuA5Y/download?force=true&w=1200',
+            ],
+            'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=86&w=1200': [
+              'https://unsplash.com/photos/young-woman-using-smartphone-at-desk-with-laptop-KoPq2yXjhAs/download?force=true&w=1200',
+            ],
+            'https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&q=86&w=1200': [
+              'https://unsplash.com/photos/a-woman-sitting-at-a-counter-in-a-store-EOkN2pRjFsg/download?force=true&w=1200',
+            ],
+            'https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&q=86&w=1200': [
+              'https://unsplash.com/photos/man-in-a-light-blue-shirt-and-tie-talking-2aXDbXcNySg/download?force=true&w=1200',
+              'https://unsplash.com/photos/man-on-phone-taking-notes-at-desk-P08ADyMEr18/download?force=true&w=1200',
+            ],
+            'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&q=86&w=1200': [
+              'https://unsplash.com/photos/two-businessmen-smiling-and-talking-at-a-cafe-table-BEah16tcU-I/download?force=true&w=1200',
+              'https://unsplash.com/photos/man-in-office-celebrating-success-with-laptop-Ayoppgw5eFU/download?force=true&w=1200',
+            ],
+            'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=86&w=1200': [
+              'https://unsplash.com/photos/man-wearing-headphones-working-on-laptop-with-coffee-WNy6w1goBqo/download?force=true&w=1200',
+            ],
+          }
+          for old, news in replacements.items():
+              for new in news:
+                  if old in s:
+                      s = s.replace(old, new, 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit updated images
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No image changes needed"
+          else
+            git commit -m "Use unique African Unsplash images across services"
+            git push
+          fi
+      - name: Remove this one-time workflow
+        if: always()
+        run: |
+          rm -f .github/workflows/update-service-images.yml
+          git add .github/workflows/update-service-images.yml
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "Remove one-time image update workflow"
+          git push
