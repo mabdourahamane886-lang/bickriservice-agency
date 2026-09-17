@@ -3,6 +3,13 @@
   "name": "bickriservice-agency",
   "main": "./worker.js",
   "compatibility_date": "2026-09-17",
+  "workers_dev": true,
+  "routes": [
+    {
+      "pattern": "bickriservice-agency.bickriserviceagency.dev",
+      "custom_domain": true
+    }
+  ],
   "assets": {
     "directory": ".",
     "binding": "ASSETS",
