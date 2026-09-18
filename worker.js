@@ -1,4 +1,4 @@
-const SITE_VERSION = '2026-09-18-github-rebuild-1';
+const SITE_VERSION = '2026-09-18-github-rebuild-2';
 const ASSET_VERSION = '2026-09-18-github-rebuild-1';
 const SUPABASE_URL = 'https://okdohokhlkxrmxpevees.supabase.co';
 const SERVICES = ['Création web','E-commerce','Réseaux sociaux','Intelligence artificielle','Branding & design','Publicité digitale','Formation & coaching'];
@@ -17,6 +17,21 @@ async function ensureConversation(sessionId,key){if(!key||!sessionId)return null
 async function loadConversationHistory(id,key){if(!key||!id)return[];const r=await supabaseRequest(`agency_ai_messages?conversation_id=eq.${encodeURIComponent(id)}&select=role,content&order=created_at.desc&limit=8`,key,{method:'GET'});const rows=await r.json().catch(()=>[]);return Array.isArray(rows)?rows.reverse().filter(x=>(x?.role==='user'||x?.role==='assistant')&&typeof x?.content==='string').map(x=>({role:x.role,content:x.content.slice(0,2000)})):[]}
 async function saveConversationExchange(id,key,user,assistant){if(!key||!id)return;await supabaseRequest('agency_ai_messages',key,{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify([{conversation_id:id,role:'user',content:user.slice(0,4000)},{conversation_id:id,role:'assistant',content:assistant.slice(0,4000)}])});await supabaseRequest(`agency_ai_conversations?id=eq.${encodeURIComponent(id)}`,key,{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({updated_at:new Date().toISOString()})})}
 function secureCookie(id){return `bickri_ai_session=${id}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`}
+function fallbackAnswer(message){
+  const q=message.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'');
+  if(/^(bonjour|salut|salam|assalam|hello|bonsoir|coucou)/.test(q)) return 'Bonjour 👋 Je suis Bickri IA. Je peux vous renseigner sur nos services, les sites web, l’e-commerce, les réseaux sociaux, l’IA, le design, la publicité, les formations et le coaching.';
+  if(/prix|tarif|cout|combien|devis|budget/.test(q)) return 'Nos tarifs dépendent du projet et de ses fonctionnalités. Bickri Service Agency prépare un devis personnalisé après analyse de votre besoin. Décrivez votre projet et nous vous orienterons.';
+  if(/site|web|plateforme|application/.test(q)) return 'Nous créons des sites web professionnels, des plateformes et des expériences responsive. Nous pouvons aussi intégrer des fonctionnalités comme formulaires, espace client, paiements, IA et connexion à Supabase.';
+  if(/e.?commerce|boutique|vente en ligne/.test(q)) return 'Nous concevons des boutiques en ligne avec catalogue, présentation des produits, parcours d’achat et fonctionnalités adaptées à votre activité.';
+  if(/reseaux sociaux|facebook|instagram|tiktok|whatsapp/.test(q)) return 'Nous accompagnons les marques et créateurs sur la stratégie de contenu, l’optimisation des profils, la création de contenus et le développement de leur présence digitale.';
+  if(/intelligence artificielle|\bia\b|automatisation|chatbot/.test(q)) return 'Nous utilisons l’IA pour automatiser certaines tâches, créer des assistants, améliorer la productivité et intégrer des fonctionnalités intelligentes dans les projets digitaux.';
+  if(/logo|branding|identite visuelle|design/.test(q)) return 'Nous créons des logos, identités visuelles et supports de communication avec une direction artistique professionnelle et cohérente.';
+  if(/publicite|facebook ads|meta ads|campagne/.test(q)) return 'Nous pouvons structurer des campagnes de publicité digitale, définir les messages, cibler l’audience et suivre les performances.';
+  if(/formation|apprendre|cours|coaching/.test(q)) return 'Nous proposons des formations et du coaching en entrepreneuriat, marketing digital, réseaux sociaux, IA et outils numériques.';
+  if(/contact|joindre|adresse|email|numero|telephone/.test(q)) return 'Vous pouvez nous contacter via le bouton WhatsApp du site ou par e-mail à bickriserviceagency@gmail.com. Nous sommes basés à Niamey, Niger.';
+  if(/niger|niamey/.test(q)) return 'Bickri Service Agency est basée à Niamey, au Niger, et peut accompagner des clients sur place ou à distance.';
+  return 'Je suis Bickri IA, l’assistant de Bickri Service Agency. Je peux vous aider à choisir un service, préparer une demande de devis ou vous expliquer nos solutions. Quel est votre projet ?';
+}
 
 export default {async fetch(request,env,ctx){
   const url=new URL(request.url);
@@ -24,7 +39,7 @@ export default {async fetch(request,env,ctx){
     if(request.method==='OPTIONS')return json({},204);
     if(request.method!=='POST')return json({error:'Method not allowed'},405);
     const apiKey=env.AI_API_KEY, endpoint=env.AI_API_URL, model=env.AI_MODEL;
-    if(!apiKey||!endpoint||!model)return json({error:'AI provider not configured'},503);
+    if(!apiKey||!endpoint||!model)return json({answer:fallbackAnswer(message),version:SITE_VERSION,mode:'local'});
     let body;try{body=await request.json()}catch{return json({error:'Invalid JSON body'},400)}
     const message=typeof body?.message==='string'?body.message.trim():'';
     if(!message)return json({error:'Message required'},400);
@@ -38,14 +53,14 @@ export default {async fetch(request,env,ctx){
     try{
       const upstream=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`},body:JSON.stringify({model,temperature:.2,messages:[{role:'system',content:SYSTEM_PROMPT},...history,{role:'user',content:message}]})});
       const data=await upstream.json().catch(()=>({}));
-      if(!upstream.ok)return json({error:'AI provider error'},502);
+      if(!upstream.ok)return json({answer:fallbackAnswer(message),version:SITE_VERSION,mode:'fallback'});
       const answer=data?.choices?.[0]?.message?.content||data?.output_text||data?.response;
-      if(typeof answer!=='string'||!answer.trim())return json({error:'Empty AI response'},502);
+      if(typeof answer!=='string'||!answer.trim())return json({answer:fallbackAnswer(message),version:SITE_VERSION,mode:'fallback'});
       const finalAnswer=answer.trim();
       if(ctx?.waitUntil&&supabaseKey&&conversationId)ctx.waitUntil(saveConversationExchange(conversationId,supabaseKey,message,finalAnswer).catch(e=>console.error('Supabase persistence write failed',e)));
       const headers={};if(sessionId&&!getSessionId(request))headers['Set-Cookie']=secureCookie(sessionId);
       return json({answer:finalAnswer,version:SITE_VERSION,persistence:Boolean(supabaseKey&&conversationId)},200,headers);
-    }catch{return json({error:'AI request failed'},502)}
+    }catch{return json({answer:fallbackAnswer(message),version:SITE_VERSION,mode:'fallback'})}
   }
   if(url.pathname==='/api/site-version')return json({version:SITE_VERSION,assets:ASSET_VERSION,platform:'Cloudflare Workers'});
   const response=await env.ASSETS.fetch(request);
