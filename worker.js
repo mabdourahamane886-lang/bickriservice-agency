@@ -1,4 +1,4 @@
-const SITE_VERSION = '2026-09-18-macaly-sync-1';
+const SITE_VERSION = '2026-09-18-ui-whatsapp-ai-1';
 const ASSET_VERSION = '2026-09-18-macaly-sync-1';
 const SUPABASE_URL = 'https://okdohokhlkxrmxpevees.supabase.co';
 
@@ -10,7 +10,7 @@ const SERVICES = [
 const SYSTEM_PROMPT = `Tu es Bickri AI, l'assistant officiel de Bickri Service Agency, agence digitale basée à Niamey, Niger.
 MISSION: répondre clairement aux visiteurs à propos des services de l'agence et les orienter vers la prise de contact.
 SERVICES: ${SERVICES.join(', ')}.
-CONTACT: WhatsApp +227 88 37 61 33. Email bickriserviceagency@gmail.com.
+CONTACT: utilisez le bouton WhatsApp ou l’adresse e-mail bickriserviceagency@gmail.com. Ne communique pas de numéro de téléphone.
 REGLES: reste dans le périmètre de Bickri Service Agency. Ne fabrique pas de tarifs, délais, garanties, clients ou résultats non fournis. Pour un prix exact, indique que le devis est personnalisé. Réponds en français sauf si l'utilisateur écrit clairement dans une autre langue. Ton professionnel, chaleureux et concis.`;
 
 function json(body, status = 200, extraHeaders = {}) {
@@ -172,6 +172,8 @@ export default {
     if (url.pathname === '/' || url.pathname === '/index.html') {
       if (type.includes('text/html')) {
         let html = await response.text();
+        // Remove the visible phone number while keeping the WhatsApp action links functional.
+        html = html.replace(/(>\s*WhatsApp\s*:\s*)\+227[\s\d-]+(?=<)/gi, '$1Contact via le bouton');
         const aiTag = `<script src="/bickri-ai.js?v=${ASSET_VERSION}" defer></script>`;
         const headTag = `<script src="/site-head.js?v=${ASSET_VERSION}" defer></script>`;
         const fixTag = `<script src="/site-fix.js?v=${ASSET_VERSION}" defer></script>`;
