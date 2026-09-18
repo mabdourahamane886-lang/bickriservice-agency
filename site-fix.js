@@ -1,6 +1,6 @@
 (()=>{
   const WA_URL='https://wa.me/22788376133?text=Bonjour%20Bickri%20Service%20Agency%2C%20je%20souhaite%20parler%20de%20mon%20projet.';
-  const WA_ASSET='/assets/bickri-whatsapp-ai.svg?v=2026-09-17-4';
+  const WA_ASSET='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAQDAwQDAwQEBAQFBQQFBwsHBwYGBw4KCggLEA4RERAOEA8SFBoWEhMYEw8QFh8XGBsbHR0dERYgIh8cIhocHRz/2wBDAQUFBQcGBw0HBw0cEhASHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBz/wAARCAEAAQADASIAAhEBAxEB/8QAHQABAAICAwEBAAAAAAAAAAAAAAcIAQYDBAUCCf/EAEYQAAEDAwEEBgYHBQYGAwAAAAEAAgMEBQYRBxIhMQgTQVFhkSJicYGhwRQjMkJSgrEVJDOSshYlcnOi0TREU2OT0qPC4f/EABsBAQADAQEBAQAAAAAAAAAAAAAFBgcEAwIB/8QANBEAAgECAgcHBAEFAQEAAAAAAAECAwQFEQYSITFBUbEUImGBkcHRQnGh4RMjMjNS8CSy/9oADAMBAAIRAxEAPwC/yIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiAIiIgCIiIgCIiA//9k=';
   const AI_ASSET='/bickri-ai.js?v=2026-09-17-4';
   function ensureAI(){
     if(document.querySelector('script[data-bickri-ai="1"]'))return;
@@ -28,14 +28,14 @@
       label=document.createElement('button');
       label.id='bickriAiLabel';
       label.type='button';
-      label.textContent='Bickri IA';
+      label.textContent='✦ Bickri IA';
       label.setAttribute('aria-label','Ouvrir Bickri IA');
       label.title='Ouvrir Bickri IA';
       label.onclick=openAI;
-      label.style.cssText='position:fixed;right:92px;bottom:29px;z-index:1001;border:1px solid #d9a441;border-radius:999px;padding:7px 11px;background:#08101f;color:#f3cf78;font:800 12px/1.1 "DM Sans",sans-serif;box-shadow:0 10px 28px rgba(8,16,31,.24);cursor:pointer;white-space:nowrap;';
+      label.style.cssText='position:fixed;right:20px;bottom:94px;z-index:1003;border:1px solid #d9a441;border-radius:999px;padding:7px 11px;background:#08101f;color:#f3cf78;font:800 12px/1.1 "DM Sans",sans-serif;box-shadow:0 10px 28px rgba(8,16,31,.24);cursor:pointer;white-space:nowrap;';
       document.body.appendChild(label);
     }
-    if(window.innerWidth<=620){label.style.right='84px';label.style.bottom='27px';label.style.fontSize='11px';label.style.padding='6px 9px';}
+    if(window.innerWidth<=620){label.style.right='12px';label.style.bottom='88px';label.style.fontSize='11px';label.style.padding='6px 9px';}
   }
   function enhancePanel(){
     const panel=document.getElementById('bickriAiPanel');
@@ -65,7 +65,7 @@
         wa.dataset.bickriAIButton='1';
       }
       wa.style.background='transparent';
-      wa.style.width='70px';wa.style.height='70px';wa.style.borderRadius='50%';
+      wa.style.width='68px';wa.style.height='68px';wa.style.borderRadius='50%';
       wa.style.padding='0';wa.style.border='0';wa.style.overflow='visible';
       wa.style.display='grid';wa.style.placeItems='center';wa.style.zIndex='1002';
       wa.style.boxShadow='0 16px 35px rgba(0,0,0,.22)';
