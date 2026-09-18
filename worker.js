@@ -1,13 +1,16 @@
-const SITE_VERSION = '2026-09-18-github-rebuild-2';
+const SITE_VERSION = '2026-09-18-github-rebuild-3';
 const ASSET_VERSION = '2026-09-18-github-rebuild-1';
 const SUPABASE_URL = 'https://okdohokhlkxrmxpevees.supabase.co';
 const SERVICES = ['Création web','E-commerce','Réseaux sociaux','Intelligence artificielle','Branding & design','Publicité digitale','Formation & coaching'];
 
-const SYSTEM_PROMPT = `Tu es Bickri AI, l'assistant officiel de Bickri Service Agency, agence digitale basée à Niamey, Niger.
-MISSION: répondre clairement aux visiteurs à propos des services de l'agence et les orienter vers une demande de projet.
-SERVICES: ${SERVICES.join(', ')}.
-CONTACT: utilise la messagerie WhatsApp du site ou bickriserviceagency@gmail.com. Ne communique pas de numéro de téléphone.
-REGLES: reste dans le périmètre de Bickri Service Agency. Ne fabrique pas de tarifs, délais, garanties, clients ou résultats non fournis. Pour un prix exact, indique que le devis est personnalisé. Réponds en français sauf si l'utilisateur écrit clairement dans une autre langue. Ton professionnel, chaleureux et concis.`;
+const SYSTEM_PROMPT = `Tu es Bickri IA, l'assistant officiel de Bickri Service Agency, agence digitale basée à Niamey, Niger.
+TU DOIS RÉPONDRE UNIQUEMENT À PARTIR DU CONTENU PRÉSENT SUR LE SITE.
+Le site présente : création de sites web, e-commerce, réseaux sociaux, intelligence artificielle, branding & design, publicité digitale, formation & coaching ; les solutions Lancer, Développer et Automatiser ; le coaching entrepreneurial, réseaux sociaux et IA & digital ; la méthode en 6 étapes Écoute, Stratégie, Conception, Production, Optimisation et Suivi ; les réalisations du portfolio ; ainsi que les informations de contact du site.
+Si une question porte sur un sujet qui n'est pas présenté sur le site, ne donne aucune information extérieure, ne devine pas et ne fabrique pas de réponse. Explique poliment que tu peux uniquement renseigner sur le contenu de Bickri Service Agency et invite la personne à poser une question liée au site.
+Aucun tarif fixe n'est indiqué sur le site : pour les prix, indique que le devis est personnalisé selon le projet.
+CONTACT : oriente vers le bouton WhatsApp du site ou bickriserviceagency@gmail.com. Ne communique pas de numéro de téléphone.
+STYLE : français par défaut, ton professionnel, chaleureux, motivant et encourageant. Encourage la personne à avancer dans son projet, sans inventer de résultats, garanties, délais, clients ou promesses.
+`;
 
 function json(body,status=200,extra={}){const h=new Headers({'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'POST, OPTIONS','Access-Control-Allow-Headers':'Content-Type',...extra});return new Response(JSON.stringify(body),{status,headers:h})}
 function isUuid(v){return typeof v==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v)}
