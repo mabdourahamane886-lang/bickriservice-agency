@@ -39,11 +39,11 @@ export default {async fetch(request,env,ctx){
     if(request.method==='OPTIONS')return json({},204);
     if(request.method!=='POST')return json({error:'Method not allowed'},405);
     const apiKey=env.AI_API_KEY, endpoint=env.AI_API_URL, model=env.AI_MODEL;
-    if(!apiKey||!endpoint||!model)return json({answer:fallbackAnswer(message),version:SITE_VERSION,mode:'local'});
     let body;try{body=await request.json()}catch{return json({error:'Invalid JSON body'},400)}
     const message=typeof body?.message==='string'?body.message.trim():'';
     if(!message)return json({error:'Message required'},400);
     if(message.length>2000)return json({error:'Message too long'},400);
+    if(!apiKey||!endpoint||!model)return json({answer:fallbackAnswer(message),version:SITE_VERSION,mode:'local'});
     const clientHistory=Array.isArray(body?.history)?body.history.slice(-8).filter(x=>x&&(x.role==='user'||x.role==='assistant')&&typeof x.content==='string').map(x=>({role:x.role,content:x.content.slice(0,2000)})):[];
     let sessionId=getSessionId(request),conversationId=null,storedHistory=[];
     const supabaseKey=env.SUPABASE_SERVICE_ROLE_KEY;
