@@ -1,5 +1,5 @@
-const SITE_VERSION = '2026-09-17-cloudflare-final-5';
-const ASSET_VERSION = '2026-09-17-5';
+const SITE_VERSION = '2026-09-18-macaly-sync-1';
+const ASSET_VERSION = '2026-09-18-macaly-sync-1';
 const SUPABASE_URL = 'https://okdohokhlkxrmxpevees.supabase.co';
 
 const SERVICES = [
@@ -160,7 +160,14 @@ export default {
 
     if (url.pathname === '/api/site-version') return json({ version: SITE_VERSION, assets: ASSET_VERSION, platform: 'Cloudflare Workers' });
 
-    const response = await env.ASSETS.fetch(request);
+    // Production frontend source: latest Macaly application.
+    // Cloudflare remains the public production endpoint; /api/bickri-ai stays on this Worker.
+    const upstreamUrl = new URL(request.url);
+    upstreamUrl.protocol = 'https:';
+    upstreamUrl.hostname = 'r8m11vobvcj4ndqzqvxgylr6.macaly.app';
+    upstreamUrl.port = '';
+    const upstreamRequest = new Request(upstreamUrl.toString(), request);
+    const response = await fetch(upstreamRequest);
     const type = response.headers.get('content-type') || '';
     if (url.pathname === '/' || url.pathname === '/index.html') {
       if (type.includes('text/html')) {
