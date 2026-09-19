@@ -1,5 +1,5 @@
-const SITE_VERSION = '2026-09-18-github-rebuild-3';
-const ASSET_VERSION = '2026-09-18-github-rebuild-1';
+const SITE_VERSION = '2026-09-19-logo-exact-1';
+const ASSET_VERSION = '2026-09-19-logo-exact-1';
 const SUPABASE_URL = 'https://okdohokhlkxrmxpevees.supabase.co';
 const SERVICES = ['Création web','E-commerce','Réseaux sociaux','Intelligence artificielle','Branding & design','Publicité digitale','Formation & coaching'];
 
