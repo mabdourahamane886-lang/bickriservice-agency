@@ -21,12 +21,30 @@
     if(!document.getElementById('bickri-webpage-schema')){const ld=document.createElement('script');ld.type='application/ld+json';ld.id='bickri-webpage-schema';ld.textContent=JSON.stringify({'@context':'https://schema.org','@type':'WebPage',name:title,url,inLanguage:document.documentElement.lang||'fr',isPartOf:{'@type':'WebSite',name:'Bickri Service Agency',url:'https://bickriservice-agency.vercel.app/'}});document.head.appendChild(ld)}
   }
   function addArabicLink(){const desktop=document.querySelector('.links');if(desktop&&!desktop.querySelector('a[href="/ar/"]')){const a=document.createElement('a');a.href='/ar/';a.textContent='العربية';desktop.appendChild(a)}const mobile=document.querySelector('.mobile');if(mobile&&!mobile.querySelector('a[href="/ar/"]')){const a=document.createElement('a');a.href='/ar/';a.textContent='العربية';mobile.appendChild(a)}}
+  function initPortfolioFilters(){
+    const buttons=document.querySelectorAll('.portfolioFilter');
+    const cards=document.querySelectorAll('.projectCard');
+    if(!buttons.length||!cards.length)return;
+    buttons.forEach(button=>{
+      if(button.dataset.filterBound)return;
+      button.dataset.filterBound='1';
+      button.addEventListener('click',()=>{
+        const filter=button.dataset.filter||'all';
+        buttons.forEach(b=>b.classList.toggle('active',b===button));
+        cards.forEach(card=>{
+          const categories=(card.dataset.category||'').split(/s+/);
+          card.classList.toggle('is-hidden',filter!=='all'&&!categories.includes(filter));
+        });
+      });
+    });
+  }
   function initUI(){
     const menu=document.querySelector('.menu'),mobile=document.querySelector('.mobile');
     if(menu&&mobile&&!menu.dataset.bound){menu.dataset.bound='1';menu.setAttribute('aria-expanded','false');menu.addEventListener('click',()=>{mobile.classList.toggle('open');menu.setAttribute('aria-expanded',mobile.classList.contains('open')?'true':'false')})}
     document.querySelectorAll('[data-wa]').forEach(a=>{if(a.dataset.waBound)return;a.dataset.waBound='1';a.addEventListener('click',e=>{e.preventDefault();const text=a.getAttribute('data-wa')||'Bonjour Bickri Service Agency, je souhaite obtenir des informations.';window.open('https://wa.me/22788376133?text='+encodeURIComponent(text),'_blank','noopener')})});
     document.querySelectorAll('.faq button').forEach(b=>{if(b.dataset.faqBound)return;b.dataset.faqBound='1';b.addEventListener('click',()=>b.parentElement.classList.toggle('open'))});
     const y=document.querySelector('[data-year]');if(y)y.textContent=new Date().getFullYear();
+    initPortfolioFilters();
   }
   function boot(){addScript('/_vercel/insights/script.js','bickri-vercel-analytics');addScript('/_vercel/speed-insights/script.js','bickri-vercel-speed');enhanceSEO();addArabicLink();initUI()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
