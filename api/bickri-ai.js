@@ -72,16 +72,16 @@ module.exports = async function handler(req, res) {
     const data = await upstream.json().catch(() => ({}));
     if (!upstream.ok) {
       console.error('Bickri AI provider error', upstream.status, data);
-      return json(res, 502, {error:'AI provider error'});
+      return json(res, 200, {answer:fallbackAnswer(message),mode:'local'});
     }
 
     const content = data?.choices?.[0]?.message?.content || data?.output_text || data?.response;
-    if (typeof content !== 'string' || !content.trim()) return json(res, 502, {error:'Empty AI response'});
+    if (typeof content !== 'string' || !content.trim()) return json(res, 200, {answer:fallbackAnswer(message),mode:'local'});
 
     res.setHeader('Cache-Control','no-store');
     return json(res, 200, {answer:content.trim()});
   } catch (error) {
     console.error('Bickri AI request failed', error);
-    return json(res, 500, {error:'AI request failed'});
+    return json(res, 200, {answer:fallbackAnswer(message),mode:'local'});
   }
 };
