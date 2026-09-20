@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#08101f">
-<meta name="description" content="Bickri Service Agency — solutions digitales, web, e-commerce, IA, branding, réseaux sociaux, publicité, coaching et formation.">
+<meta name="description" content="Bickri Service Agency — agence digitale à Niamey : sites web, e-commerce, IA, réseaux sociaux, branding, publicité, formation et coaching."><link rel="canonical" href="https://bickriservice-agency.vercel.app/"><link rel="icon" href="/assets/bickri-b-logo.svg"><meta property="og:type" content="website"><meta property="og:url" content="https://bickriservice-agency.vercel.app/"><meta property="og:image" content="https://bickriservice-agency.vercel.app/hero-yellow.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Bickri Service Agency — Agence digitale"><meta name="twitter:description" content="Web, e-commerce, IA, réseaux sociaux, branding, publicité, coaching et formation."><meta name="twitter:image" content="https://bickriservice-agency.vercel.app/hero-yellow.jpg"><link rel="stylesheet" href="/bsa-features.css">
 <meta property="og:title" content="Bickri Service Agency — Agence digitale">
 <meta property="og:description" content="Web, e-commerce, IA, réseaux sociaux, branding, publicité, coaching et formation.">
 <title>Bickri Service Agency — Agence digitale</title>
@@ -33,7 +33,7 @@
 @media(max-width:980px){.navLinks{display:none}.menuBtn{display:block}.heroGrid,.agencyGrid,.contactGrid{grid-template-columns:1fr}.serviceGrid{grid-template-columns:repeat(2,1fr)}.statsGrid{grid-template-columns:repeat(2,1fr)}.solutionGrid,.coachGrid,.portfolioGrid{grid-template-columns:1fr}.steps{grid-template-columns:repeat(3,1fr)}.faqGrid{grid-template-columns:1fr}.footerGrid{grid-template-columns:1fr 1fr}}
 @media(max-width:620px){.wrap{width:min(100% - 22px,1160px)}.nav{min-height:76px}.brandMark{width:44px;height:44px}.brandMark img{width:44px;height:44px}.brandText b{font-size:17px}.brandText small{font-size:7px}.hero{padding:55px 0 28px}.hero h1{font-size:3.25rem}.heroLead{font-size:17px}.heroActions{display:grid;grid-template-columns:1fr 1fr}.heroActions .btn{min-height:54px;padding:0 11px;font-size:14px}.heroVisual{border-radius:0;padding:0;margin:0 -11px}.heroVisual img{height:420px;border-radius:0}.heroBadge{left:20px;right:20px;bottom:20px}.serviceGrid,.statsGrid,.steps,.footerGrid,.formGrid{grid-template-columns:1fr}.section{padding:64px 0}.sectionTitle{font-size:2.4rem}.field.full{grid-column:auto}.copy{display:block}.copy div+div{margin-top:5px}.floatingWrap{right:12px;bottom:12px}.aiPanel{right:12px;bottom:92px}.aiChip{font-size:11px}}
 </style>
-</head>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","name":"Bickri Service Agency","url":"https://bickriservice-agency.vercel.app/","email":"bickriserviceagency@gmail.com","address":{"@type":"PostalAddress","addressLocality":"Niamey","addressCountry":"NE"}},{"@type":"ProfessionalService","name":"Bickri Service Agency","url":"https://bickriservice-agency.vercel.app/","areaServed":["Niger","Afrique"],"serviceType":["Web development","E-commerce","Artificial intelligence","Branding","Social media","Digital advertising","Training","Coaching"]},{"@type":"WebSite","name":"Bickri Service Agency","url":"https://bickriservice-agency.vercel.app/","inLanguage":"fr"}]}</script></head>
 <body>
 <header class="header">
   <div class="wrap nav">
@@ -122,5 +122,5 @@ async function ask(){const q=aiInput.value.trim();if(!q)return;addMsg(q,'user');
 aiSend.onclick=ask;aiInput.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ask()}};document.querySelectorAll('.suggest').forEach(b=>b.onclick=()=>{aiInput.value=b.textContent;ask()});
 document.getElementById('contactForm').addEventListener('submit',e=>{e.preventDefault();const name=document.getElementById('name').value.trim(),email=document.getElementById('email').value.trim(),phone=document.getElementById('phone').value.trim(),company=document.getElementById('company').value.trim(),service=document.getElementById('service').value,project=document.getElementById('project').value.trim();const msg='Bonjour Bickri Service Agency, je souhaite un devis.\n\nNom : '+name+'\nE-mail : '+email+'\nWhatsApp : '+phone+'\nEntreprise : '+company+'\nService : '+service+'\nProjet : '+project;window.open(WA+encodeURIComponent(msg),'_blank','noopener')});
 </script>
-</body>
+<script defer src="/bsa-features.js"></script></body>
 </html>
