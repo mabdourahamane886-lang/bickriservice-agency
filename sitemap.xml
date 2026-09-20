@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://bickriservice-agency.bickriserviceagency.dev/</loc>
-  </url>
+  <url><loc>https://bickriservice-agency.vercel.app/</loc></url>
+  <url><loc>https://bickriservice-agency.vercel.app/services/</loc></url>
+  <url><loc>https://bickriservice-agency.vercel.app/services/creation-sites-web/</loc></url>
+  <url><loc>https://bickriservice-agency.vercel.app/services/e-commerce/</loc></url>
+  <url><loc>https://bickriservice-agency.vercel.app/services/reseaux-sociaux/</loc></url>
+  <url><loc>https://bickriservice-agency.vercel.app/services/intelligence-artificielle/</loc></url>
+  <url><loc>https://bickriservice-agency.vercel.app/services/branding-design/</loc></url>
+  <url><loc>https://bickriservice-agency.vercel.app/services/publicite-digitale/</loc></url>
+  <url><loc>https://bickriservice-agency.vercel.app/services/formation-coaching/</loc></url>
+  <url><loc>https://bickriservice-agency.vercel.app/tarifs/</loc></url>
+  <url><loc>https://bickriservice-agency.vercel.app/portfolio/</loc></url>
+  <url><loc>https://bickriservice-agency.vercel.app/formations/</loc></url>
+  <url><loc>https://bickriservice-agency.vercel.app/coaching/</loc></url>
+  <url><loc>https://bickriservice-agency.vercel.app/blog/</loc></url>
+  <url><loc>https://bickriservice-agency.vercel.app/blog/integrer-ia-entreprise/</loc></url>
+  <url><loc>https://bickriservice-agency.vercel.app/blog/site-professionnel/</loc></url>
+  <url><loc>https://bickriservice-agency.vercel.app/blog/strategie-reseaux-sociaux/</loc></url>
+  <url><loc>https://bickriservice-agency.vercel.app/a-propos/</loc></url>
+  <url><loc>https://bickriservice-agency.vercel.app/faq/</loc></url>
+  <url><loc>https://bickriservice-agency.vercel.app/rendez-vous/</loc></url>
+  <url><loc>https://bickriservice-agency.vercel.app/ar/</loc></url>
 </urlset>
