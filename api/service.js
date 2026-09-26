@@ -1,4 +1,4 @@
-// Dynamic share pages for Bickri Service Agency.
+// Dynamic social preview pages for Bickri Service Agency.
 const services = [
   {
     "name": "Création de sites web",
@@ -408,33 +408,35 @@ const services = [
     "code": "BSA2E8UJGF"
   }
 ];
+
 const SITE='https://bickriservice-agency.vercel.app';
 function escapeHtml(value){
-  if(value==null) value='';
-  return String(value).replace(/[&<>"']/g,function(ch){
-    const map={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};
-    return map[ch];
+  return String(value==null?'':value).replace(/[&<>"']/g,function(ch){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
   });
 }
-function absoluteImage(img){
-  var value=String(img);
-  if(value.indexOf('http://')===0 || value.indexOf('https://')===0) return value;
-  if(value.charAt(0)==='/') return SITE+value;
-  return SITE+'/'+value;
+function absoluteImage(src){
+  if(/^https?:\/\//i.test(src)) return src;
+  return SITE+(String(src).charAt(0)==='/'?src:'/'+src);
 }
 module.exports=function(req,res){
-  var code='';
-  if(req && req.query && req.query.code) code=String(req.query.code).toUpperCase();
-  var service=services.find(function(s){return s.code===code;});
+  const code=String(req.query&&req.query.code||'').toUpperCase();
+  const service=services.find(function(item){return item.code===code;});
   res.setHeader('Content-Type','text/html; charset=utf-8');
   res.setHeader('Cache-Control','public, s-maxage=3600, stale-while-revalidate=86400');
   if(!service){
     res.statusCode=404;
-    return res.end('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Service introuvable</title></head><body><h1>Référence de service introuvable</h1><p>Cette référence Bickri Service Agency n’existe pas.</p><p><a href="'+SITE+'">Retour au site</a></p></body></html>');
+    return res.end('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Service introuvable</title></head><body><h1>Référence de service introuvable</h1><p><a href="'+SITE+'">Retour à Bickri Service Agency</a></p></body></html>');
   }
-  var image=absoluteImage(service.img);
-  var title=service.name+' — Bickri Service Agency';
-  var description=service.desc+' Service disponible à Niamey, Niger et pour le marché africain. Référence : '+service.code;
-  var publicUrl=SITE+'/s/'+service.code;
-  return res.end('<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+escapeHtml(title)+'</title><meta name="description" content="'+escapeHtml(description)+'"><link rel="canonical" href="'+escapeHtml(publicUrl)+'"><meta property="og:type" content="website"><meta property="og:site_name" content="Bickri Service Agency"><meta property="og:title" content="'+escapeHtml(title)+'"><meta property="og:description" content="'+escapeHtml(description)+'"><meta property="og:url" content="'+escapeHtml(publicUrl)+'"><meta property="og:image" content="'+escapeHtml(image)+'"><meta property="og:image:alt" content="'+escapeHtml(service.name)+'"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="'+escapeHtml(title)+'"><meta name="twitter:description" content="'+escapeHtml(description)+'"><meta name="twitter:image" content="'+escapeHtml(image)+'"></head><body style="margin:0;background:#08101f;color:#fff;font-family:Arial,sans-serif"><main style="max-width:900px;margin:0 auto;padding:24px"><img src="'+escapeHtml(image)+'" alt="'+escapeHtml(service.name)+'" style="width:100%;max-height:520px;object-fit:cover;border-radius:20px"><p style="color:#d8b45a;letter-spacing:.08em;font-weight:700">BICKRI SERVICE AGENCY · NIAMEY · NIGER</p><h1>'+escapeHtml(service.name)+'</h1><p style="font-size:18px;line-height:1.6">'+escapeHtml(service.desc)+'</p><p><strong>Référence :</strong> '+escapeHtml(service.code)+'</p><p><strong>Ce que nous faisons :</strong> '+escapeHtml(service.what)+'</p><p><strong>Pour qui :</strong> '+escapeHtml(service.who)+'</p><p><strong>Ce que vous obtenez :</strong> '+escapeHtml(service.get)+'</p><p><strong>Pourquoi :</strong> '+escapeHtml(service.why)+'</p><p><a href="'+SITE+'" style="display:inline-block;padding:14px 20px;background:#d8b45a;color:#08101f;text-decoration:none;border-radius:10px;font-weight:700">Voir Bickri Service Agency</a></p></main><script>setTimeout(function(){window.location.replace("/?service="+encodeURIComponent("'+service.code+'"));},80);</script></body></html>');
+  const publicUrl=SITE+'/s/'+encodeURIComponent(service.code);
+  const appUrl=SITE+'/?service='+encodeURIComponent(service.code);
+  const image=absoluteImage(service.img);
+  const title=service.name+' — Bickri Service Agency';
+  const description=service.desc+' Service disponible à Niamey, Niger. Référence : '+service.code;
+  const html='<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
+    '<title>'+escapeHtml(title)+'</title><meta name="description" content="'+escapeHtml(description)+'"><link rel="canonical" href="'+escapeHtml(publicUrl)+'">'+
+    '<meta property="og:type" content="website"><meta property="og:site_name" content="Bickri Service Agency"><meta property="og:url" content="'+escapeHtml(publicUrl)+'"><meta property="og:title" content="'+escapeHtml(title)+'"><meta property="og:description" content="'+escapeHtml(description)+'"><meta property="og:image" content="'+escapeHtml(image)+'"><meta property="og:image:alt" content="'+escapeHtml(service.name)+'"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">'+
+    '<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="'+escapeHtml(title)+'"><meta name="twitter:description" content="'+escapeHtml(description)+'"><meta name="twitter:image" content="'+escapeHtml(image)+'">'+
+    '</head><body style="margin:0;background:#08101f;color:#fff;font-family:Arial,sans-serif"><main style="max-width:900px;margin:auto;padding:24px"><img src="'+escapeHtml(image)+'" alt="'+escapeHtml(service.name)+'" style="width:100%;max-height:520px;object-fit:cover;border-radius:20px"><p style="color:#d9a441;font-weight:700;letter-spacing:.08em">BICKRI SERVICE AGENCY · NIAMEY · NIGER</p><h1>'+escapeHtml(service.name)+'</h1><p style="font-size:18px;line-height:1.6">'+escapeHtml(service.desc)+'</p><p><strong>Référence :</strong> '+escapeHtml(service.code)+'</p><p><a href="'+escapeHtml(appUrl)+'" style="display:inline-block;padding:14px 20px;background:#d9a441;color:#08101f;text-decoration:none;border-radius:10px;font-weight:700">Ouvrir la fiche du service</a></p></main><script>window.location.replace('+JSON.stringify(appUrl)+')</script></body></html>';
+  return res.end(html);
 };
