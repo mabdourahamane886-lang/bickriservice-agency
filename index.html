@@ -157,7 +157,7 @@ function makeServiceCode(seed){
   return out;
 }
 services.forEach((s,i)=>s.code=makeServiceCode(s.slug+'|'+i));
-function servicePublicUrl(s){return location.origin+'/?service='+encodeURIComponent(s.code)}
+function servicePublicUrl(s){return location.origin+'/s/'+encodeURIComponent(s.code)}
 function renderServices(){
   grid.innerHTML='';
   services.forEach((s,i)=>{
@@ -174,7 +174,7 @@ function openService(i,updateUrl=true){const s=services[i];document.getElementBy
 grid.addEventListener('click',e=>{const b=e.target.closest('.serviceBtn');if(b)openService(Number(b.dataset.i));const copy=e.target.closest('.copyCode');if(copy){const s=services.find(x=>x.code===copy.dataset.code);if(s){const url=servicePublicUrl(s);navigator.clipboard?.writeText(url).then(()=>{const old=copy.textContent;copy.textContent='Copié ✓';setTimeout(()=>copy.textContent=old,1400)}).catch(()=>window.prompt('Copiez ce lien :',url))}}});
 document.getElementById('modalCopy').onclick=()=>{const url=document.getElementById('modalLink').href;navigator.clipboard?.writeText(url).then(()=>{const b=document.getElementById('modalCopy');b.textContent='Copié ✓';setTimeout(()=>b.textContent='Copier',1400)}).catch(()=>window.prompt('Copiez ce lien :',url))};
 document.getElementById('modalClose').onclick=()=>{modal.classList.remove('open');history.replaceState(null,'',location.pathname)};modal.addEventListener('click',e=>{if(e.target===modal){modal.classList.remove('open');history.replaceState(null,'',location.pathname)}});
-const initialCode=new URLSearchParams(location.search).get('service');if(initialCode){const idx=services.findIndex(s=>s.code===initialCode);if(idx>=0)openService(idx,false)}
+const pathCode=location.pathname.match(/^\/s\/([A-Za-z0-9]+)\/?$/)?.[1];const initialCode=pathCode||new URLSearchParams(location.search).get('service');if(initialCode){const idx=services.findIndex(s=>s.code.toUpperCase()===initialCode.toUpperCase());if(idx>=0)openService(idx,false)}
 document.querySelectorAll('.faq button').forEach(b=>b.onclick=()=>b.parentElement.classList.toggle('open'));
 document.querySelectorAll('.coachBtn').forEach(b=>b.onclick=()=>{const map={entrepreneurial:'coaching entrepreneurial',social:'coaching réseaux sociaux',ai:'coaching IA & digital'};window.open(WA+encodeURIComponent('Bonjour Bickri Service Agency, je souhaite un '+map[b.dataset.type]+'.'),'_blank','noopener')});
 const menu=document.querySelector('.menuBtn'),mobile=document.getElementById('mobileNav');menu.onclick=()=>{menu.classList.toggle('open');mobile.classList.toggle('open');menu.setAttribute('aria-expanded',mobile.classList.contains('open'))};mobile.addEventListener('click',e=>{if(e.target.matches('a')){menu.classList.remove('open');mobile.classList.remove('open')}});
