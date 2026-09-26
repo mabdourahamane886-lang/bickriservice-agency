@@ -156,7 +156,8 @@ function makeServiceCode(seed){
   for(let j=0;j<7;j++){h=Math.imul(h^h>>>13,1274126177);out+=alphabet[Math.abs(h)%alphabet.length]}
   return out;
 }
-services.forEach((s,i)=>s.code=makeServiceCode(s.slug+'|'+i));
+services.forEach((s,i)=>s.code=makeServiceCode(s.slug+'|const serviceCodes={"creation-sites-web":"BSAF4EMA8V","e-commerce":"BSATXERV6J","reseaux-sociaux":"BSAA574TMY","intelligence-artificielle":"BSANBSJ9RZ","branding-design":"BSAVB3Y83M","publicite-digitale":"BSA4SK5C8L","formation-coaching":"BSAXRVRKHF","seo-referencement":"BSAV7N62K8","creation-contenu":"BSA6PLT4KZ","montage-video":"BSAARTPY4P","applications-mobiles":"BSAMUNDMXE","chatbots-assistants-ia":"BSATNRFWSV","automatisation-digitale":"BSAPRUQ26J","email-marketing":"BSATYDYYJ7","google-business-profile":"BSAHJU2UBY","reputation-en-ligne":"BSAEMKFCEH","community-management":"BSAFC5PDVK","influence-partenariats":"BSA462ZFXS","produits-numeriques":"BSACA4FVND","landing-pages":"BSAE6UQDHY","audit-digital":"BSA8P74W6Y","cybersecurite":"BSAYNRNS8U","maintenance-web":"BSA4YSW6D4","hebergement-domaines":"BSAVPQA266","analytics-reporting":"BSAGBZJBS4","marketing-whatsapp":"BSAC95TRJW","creation-podcasts":"BSAKAQVRY9","production-photo":"BSAEVJ5PSQ","motion-design":"BSACFQX267","design-ui-ux":"BSA4VJ6R44","prototypage-digital":"BSA53X5LYM","transformation-digitale":"BSA9MVSL6M","crm-gestion-clients":"BSAQPFMJGZ","solutions-reservation":"BSASPD4W5V","billetterie-en-ligne":"BSAMUT39D6","plateformes-web":"BSAUP347JP","integration-api":"BSA2E8UJGF"};
+services.forEach(s=>s.code=serviceCodes[s.slug]||makeServiceCode(s.slug));
 function servicePublicUrl(s){return location.origin+'/s/'+encodeURIComponent(s.code)}
 function renderServices(){
   grid.innerHTML='';
