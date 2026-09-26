@@ -2,10 +2,6 @@
   "rewrites": [
     {
       "source": "/s/:code",
-      "destination": "/api/bickri-ai?code=:code"
-    },
-    {
-      "source": "/s/:code",
       "destination": "/api/service?code=:code"
     }
   ],
