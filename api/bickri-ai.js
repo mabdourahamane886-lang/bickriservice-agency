@@ -1,3 +1,15 @@
+function esc(value){
+  return String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function absoluteUrl(req, value){
+  if(/^https?:\\/\\//i.test(value)) return value;
+  const host = req.headers['x-forwarded-host'] || req.headers.host || 'bickriservice-agency.vercel.app';
+  const proto = req.headers['x-forwarded-proto'] || 'https';
+  return proto + '://' + host + (value.startsWith('/') ? value : '/' + value);
+}
+
+const SERVICES_SHARE = require('../services-share.json');
 const SERVICES = [
   {name:'Création web', details:'Sites vitrines, landing pages, plateformes web et interfaces responsive pour entrepreneurs, entreprises, associations, créateurs et organisations.'},
   {name:'E-commerce', details:'Boutiques en ligne, catalogues, fiches produits, parcours de commande et expériences mobiles pour commerçants et marques.'},
@@ -31,6 +43,44 @@ function json(res, status, body) {
 }
 
 module.exports = async function handler(req, res) {
+  if (req.method === 'GET' && req.query?.code) {
+    const code = String(req.query.code).trim().toUpperCase();
+    const service = SERVICES_SHARE.find(item => item.code === code);
+    if (!service) return res.status(404).send('Service introuvable');
+
+    const publicUrl = absoluteUrl(req, '/s/' + encodeURIComponent(service.code));
+    const imageUrl = absoluteUrl(req, service.img);
+    const title = service.name + ' — Bickri Service Agency';
+    const description = service.desc;
+    const html = '<!doctype html><html lang="fr"><head>' +
+      '<meta charset="utf-8">' +
+      '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<meta name="description" content="' + esc(description) + '">' +
+      '<meta property="og:type" content="website">' +
+      '<meta property="og:site_name" content="Bickri Service Agency">' +
+      '<meta property="og:title" content="' + esc(title) + '">' +
+      '<meta property="og:description" content="' + esc(description) + '">' +
+      '<meta property="og:url" content="' + esc(publicUrl) + '">' +
+      '<meta property="og:image" content="' + esc(imageUrl) + '">' +
+      '<meta property="og:image:alt" content="' + esc(title) + '">' +
+      '<meta property="og:image:width" content="1200">' +
+      '<meta property="og:image:height" content="630">' +
+      '<meta name="twitter:card" content="summary_large_image">' +
+      '<meta name="twitter:title" content="' + esc(title) + '">' +
+      '<meta name="twitter:description" content="' + esc(description) + '">' +
+      '<meta name="twitter:image" content="' + esc(imageUrl) + '">' +
+      '<link rel="canonical" href="' + esc(publicUrl) + '">' +
+      '<title>' + esc(title) + '</title></head><body>' +
+      '<h1>' + esc(service.name) + '</h1><p>' + esc(description) + '</p>' +
+      '<p>Référence : ' + esc(service.code) + '</p>' +
+      '<script>location.replace("/?service=" + encodeURIComponent(' + JSON.stringify('CODE_PLACEHOLDER') + '));</script>' +
+      '</body></html>';
+    res.setHeader('Content-Type','text/html; charset=utf-8');
+    res.setHeader('Cache-Control','public, s-maxage=3600, stale-while-revalidate=86400');
+    return res.status(200).send(html.replace('CODE_PLACEHOLDER', service.code));
+  }
+
+
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
