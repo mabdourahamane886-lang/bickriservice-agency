@@ -3,7 +3,7 @@ function esc(value){
 }
 
 function absoluteUrl(req, value){
-  if(/^https?:\\/\\//i.test(value)) return value;
+  if(/^https?:\/\//i.test(value)) return value;
   const host = req.headers['x-forwarded-host'] || req.headers.host || 'bickriservice-agency.vercel.app';
   const proto = req.headers['x-forwarded-proto'] || 'https';
   return proto + '://' + host + (value.startsWith('/') ? value : '/' + value);
