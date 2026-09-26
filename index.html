@@ -187,5 +187,5 @@ async function ask(){const q=aiInput.value.trim();if(!q)return;addMsg(q,'user');
 aiSend.onclick=ask;aiInput.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ask()}};document.querySelectorAll('.suggest').forEach(b=>b.onclick=()=>{aiInput.value=b.textContent;ask()});
 document.getElementById('contactForm').addEventListener('submit',e=>{e.preventDefault();const name=document.getElementById('name').value.trim(),email=document.getElementById('email').value.trim(),phone=document.getElementById('phone').value.trim(),company=document.getElementById('company').value.trim(),service=document.getElementById('service').value,project=document.getElementById('project').value.trim();const msg='Bonjour Bickri Service Agency, je souhaite un devis.\n\nNom : '+name+'\nE-mail : '+email+'\nWhatsApp : '+phone+'\nEntreprise : '+company+'\nService : '+service+'\nProjet : '+project;window.open(WA+encodeURIComponent(msg),'_blank','noopener')});
 </script>
-<script defer src="/bsa-features.js"></script></body>
+<script defer src="/bsa-features.js"></script><!-- BSA production deployment trigger: 2026-09-26 --></body>
 </html>
