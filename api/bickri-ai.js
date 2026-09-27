@@ -182,7 +182,7 @@ async function callProvider(endpoint, apiKey, model, systemPrompt, history, mess
       console.error('Bickri AI provider error', upstream.status, data);
       return null;
     }
-    return typeof data?.output_text === 'string' ? data.output_text.trim() : null;
+    return typeof data?.output_text === 'string' ? data.output_text.trim() : (Array.isArray(data?.output) ? data.output.flatMap(item => Array.isArray(item?.content) ? item.content : []).map(item => item?.text || '').filter(Boolean).join('\n').trim() : null);
   }
 
   const upstream = await fetch(endpoint, {
@@ -253,7 +253,7 @@ module.exports = async function handler(req, res) {
 
   const apiKey = process.env.OPENAI_API_KEY || process.env.AI_API_KEY;
   const endpoint = process.env.AI_API_URL || 'https://api.openai.com/v1/responses';
-  const model = process.env.OPENAI_MODEL || process.env.AI_MODEL;
+  const model = process.env.OPENAI_MODEL || process.env.AI_MODEL || 'gpt-5.4-mini';
   const cookie = String(req.headers.cookie || '');
   const cookieMatch = cookie.match(/(?:^|;\\s*)bickri_ai_session=([a-zA-Z0-9_-]{16,80})/);
   let sessionId = cleanSessionId(req.body?.sessionId) || cleanSessionId(cookieMatch?.[1]);
