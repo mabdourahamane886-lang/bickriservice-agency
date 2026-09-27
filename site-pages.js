@@ -38,6 +38,29 @@
       });
     });
   }
+  function initServicePhoto(){
+    if(!location.pathname.startsWith('/services/'))return;
+    const slug=location.pathname.split('/').filter(Boolean)[1];
+    if(!slug)return;
+    const heroGrid=document.querySelector('.heroGrid');
+    if(!heroGrid||heroGrid.querySelector('.servicePageImage'))return;
+    fetch('/services-share.json',{cache:'no-store'})
+      .then(r=>r.ok?r.json():[])
+      .then(items=>{
+        const service=items.find(x=>x.slug===slug);
+        if(!service||!service.img)return;
+        const img=document.createElement('img');
+        img.className='servicePageImage';
+        img.src=service.img;
+        img.alt=service.name||document.title;
+        img.loading='eager';
+        img.decoding='async';
+        img.addEventListener('error',()=>img.remove());
+        const content=heroGrid.firstElementChild;
+        if(content)content.insertAdjacentElement('afterend',img);
+      })
+      .catch(()=>{});
+  }
   function initUI(){
     const menu=document.querySelector('.menu'),mobile=document.querySelector('.mobile');
     if(menu&&mobile&&!menu.dataset.bound){menu.dataset.bound='1';menu.setAttribute('aria-expanded','false');menu.addEventListener('click',()=>{mobile.classList.toggle('open');menu.setAttribute('aria-expanded',mobile.classList.contains('open')?'true':'false')})}
@@ -45,6 +68,7 @@
     document.querySelectorAll('.faq button').forEach(b=>{if(b.dataset.faqBound)return;b.dataset.faqBound='1';b.addEventListener('click',()=>b.parentElement.classList.toggle('open'))});
     const y=document.querySelector('[data-year]');if(y)y.textContent=new Date().getFullYear();
     initPortfolioFilters();
+    initServicePhoto();
   }
   function boot(){addScript('/_vercel/insights/script.js','bickri-vercel-analytics');addScript('/_vercel/speed-insights/script.js','bickri-vercel-speed');enhanceSEO();addArabicLink();initUI()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
