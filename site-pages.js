@@ -62,6 +62,12 @@
       })
       .catch(()=>{});
   }
+  function initServiceDetailScroll(){
+    if(!location.pathname.startsWith('/services/'))return;
+    document.body.classList.add('service-detail-mode');
+    const main=document.querySelector('main');
+    if(main)main.classList.add('serviceDetailScroller');
+  }
   function initUI(){
     const menu=document.querySelector('.menu'),mobile=document.querySelector('.mobile');
     if(menu&&mobile&&!menu.dataset.bound){menu.dataset.bound='1';menu.setAttribute('aria-expanded','false');menu.addEventListener('click',()=>{mobile.classList.toggle('open');menu.setAttribute('aria-expanded',mobile.classList.contains('open')?'true':'false')})}
@@ -70,6 +76,7 @@
     const y=document.querySelector('[data-year]');if(y)y.textContent=new Date().getFullYear();
     initPortfolioFilters();
     initServicePhoto();
+    initServiceDetailScroll();
   }
   function boot(){addScript('/_vercel/insights/script.js','bickri-vercel-analytics');addScript('/_vercel/speed-insights/script.js','bickri-vercel-speed');enhanceSEO();addArabicLink();initUI()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
