@@ -79,3 +79,48 @@ create policy agency_leads_public_insert on public.agency_leads for insert to an
 
 grant select on public.agency_settings, public.agency_services, public.agency_projects, public.agency_faqs, public.agency_testimonials to anon, authenticated;
 grant insert on public.agency_leads to anon, authenticated;
+
+
+-- Bickri AI persistent knowledge/memory
+create table if not exists public.bickri_ai_knowledge (
+  id uuid primary key default gen_random_uuid(),
+  category text not null default 'general',
+  title text not null,
+  content text not null,
+  keywords text[] not null default '{}',
+  priority int not null default 50,
+  active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.bickri_ai_memory (
+  id uuid primary key default gen_random_uuid(),
+  session_id text not null,
+  memory_key text not null,
+  memory_value text not null,
+  source text not null default 'conversation',
+  active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique(session_id, memory_key)
+);
+
+create table if not exists public.bickri_ai_conversations (
+  id uuid primary key default gen_random_uuid(),
+  session_id text not null,
+  role text not null check (role in ('user','assistant')),
+  content text not null,
+  created_at timestamptz not null default now()
+);
+
+alter table public.bickri_ai_knowledge enable row level security;
+alter table public.bickri_ai_memory enable row level security;
+alter table public.bickri_ai_conversations enable row level security;
+
+drop policy if exists bickri_ai_knowledge_public_read on public.bickri_ai_knowledge;
+create policy bickri_ai_knowledge_public_read on public.bickri_ai_knowledge
+  for select to anon, authenticated using (active = true);
+
+revoke all on public.bickri_ai_memory, public.bickri_ai_conversations from anon, authenticated;
+grant select on public.bickri_ai_knowledge to anon, authenticated;
