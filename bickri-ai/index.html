@@ -1,148 +1,174 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Bickri AI, l'assistant officiel de Bickri Service Agency. Réponses aux clients, services, devis et contact WhatsApp.">
-  <meta name="theme-color" content="#08101f">
-  <meta property="og:title" content="Bickri AI — Bickri Service Agency">
-  <meta property="og:description" content="L'assistant officiel de Bickri Service Agency pour renseigner les clients et les orienter vers l'agence.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://bickriservice-agency.vercel.app/bickri-ai/">
-  <title>Bickri AI — Bickri Service Agency</title>
-  <style>
-    :root{--navy:#08101f;--navy2:#10213d;--gold:#d9a441;--gold2:#f3cf78;--ink:#14213a;--muted:#667289;--line:#e6eaf0;--bg:#f6f8fb;--white:#fff;--green:#25D366}
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:radial-gradient(circle at 50% -10%,#fff 0,#f7f9fc 45%,#eef2f7 100%);min-height:100vh}
-    a{color:inherit}
-    .top{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.9);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
-    .topin{max-width:1180px;margin:auto;min-height:76px;padding:12px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px}
-    .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
-    .brand img{width:48px;height:48px}
-    .brand b{display:block;font-size:18px;letter-spacing:.06em}
-    .brand small{display:block;margin-top:4px;font-size:9px;letter-spacing:.2em;color:var(--muted);font-weight:800}
-    .back{padding:11px 16px;border:1px solid var(--line);border-radius:14px;text-decoration:none;font-weight:800;font-size:13px;background:#fff}
-    main{max-width:1180px;margin:0 auto;padding:44px 22px 70px}
-    .hero{text-align:center;max-width:800px;margin:0 auto 28px}
-    .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 13px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:12px;font-weight:900;color:var(--navy)}
-    .badge i{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 5px #25d36618}
-    h1{font-size:clamp(36px,7vw,64px);line-height:1.02;margin:20px 0 14px;letter-spacing:-.045em;color:var(--navy)}
-    h1 span{color:var(--gold)}
-    .hero p{font-size:18px;line-height:1.65;color:var(--muted);margin:0}
-    .layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:22px;align-items:start}
-    .chat,.info{background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:28px;box-shadow:0 24px 80px rgba(8,16,31,.09);overflow:hidden}
-    .chatHead{padding:20px 22px;background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;display:flex;align-items:center;gap:13px}
-    .chatHead img{width:50px;height:50px}
-    .chatHead strong{display:block;font-size:18px}
-    .chatHead small{display:block;margin-top:4px;color:#cbd4e3}
-    .suggestions{display:flex;gap:8px;overflow:auto;padding:13px;border-bottom:1px solid var(--line);background:#fbfcfe}
-    .suggestions button{white-space:nowrap;border:1px solid #dde4ee;background:#fff;color:var(--ink);border-radius:999px;padding:9px 12px;font-weight:800;font-size:11px;cursor:pointer}
-    .messages{height:500px;overflow:auto;padding:18px;background:#f7f9fc}
-    .msg{max-width:88%;padding:12px 14px;border-radius:17px;margin:8px 0;font-size:14px;line-height:1.6;white-space:pre-wrap}
-    .msg.ai{background:#fff;border:1px solid #e4e9f0}
-    .msg.user{margin-left:auto;background:var(--navy);color:#fff}
-    .composer{display:flex;gap:9px;padding:13px;border-top:1px solid var(--line);background:#fff}
-    textarea{flex:1;min-height:48px;max-height:130px;resize:none;border:1px solid #dbe2ec;border-radius:15px;padding:13px 14px;font:inherit;outline:none}
-    textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px #d9a44122}
-    .send{width:52px;border:0;border-radius:15px;background:var(--gold);color:var(--navy);font-size:20px;font-weight:900;cursor:pointer}
-    .info{padding:22px;position:sticky;top:98px}
-    .info h2{margin:0 0 12px;font-size:20px}
-    .info p{color:var(--muted);line-height:1.65;font-size:14px}
-    .creator{margin:18px 0;padding:17px;border-radius:18px;background:linear-gradient(135deg,#f8f3e7,#fff);border:1px solid #eadbb8}
-    .creator small{display:block;color:var(--muted);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.12em}
-    .creator strong{display:block;margin-top:5px;font-size:18px}
-    .contact{display:grid;gap:10px;margin-top:18px}
-    .contact a{display:flex;align-items:center;justify-content:center;gap:9px;text-decoration:none;font-weight:900;padding:13px 14px;border-radius:15px}
-    .wa{background:var(--green);color:#fff}
-    .email{background:var(--navy);color:#fff}
-    .note{font-size:11px!important;text-align:center;margin-top:13px}
-    footer{text-align:center;color:#7a8598;font-size:12px;padding:0 22px 35px}
-    @media(max-width:820px){.layout{grid-template-columns:1fr}.info{position:static}.messages{height:52vh;min-height:360px}.topin{padding:10px 15px}.back{padding:9px 12px}}
-    @media(max-width:520px){main{padding:30px 14px 50px}.hero p{font-size:16px}.chat,.info{border-radius:22px}.messages{height:54vh}.brand small{letter-spacing:.14em}.back{font-size:11px}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Bickri AI — assistant officiel de Bickri Service Agency.">
+<meta name="theme-color" content="#ffffff">
+<title>Bickri AI — Bickri Service Agency</title>
+<style>
+:root{--bg:#fff;--side:#f7f7f8;--soft:#ececf1;--ink:#202123;--muted:#6e6e73;--gold:#d9a441;--navy:#08101f;--green:#25d366}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+button,textarea{font:inherit}
+button{cursor:pointer}
+.app{height:100dvh;display:flex;background:#fff}
+.sidebar{width:272px;flex:0 0 272px;background:var(--side);display:flex;flex-direction:column;padding:13px 10px;border-right:1px solid #e9e9ec;z-index:30}
+.brand{display:flex;align-items:center;gap:10px;padding:5px 8px 18px;text-decoration:none;color:var(--ink)}
+.brand img{width:38px;height:38px}.brand b{font-size:15px;letter-spacing:.02em}.brand small{display:block;font-size:9px;color:#8a8a90;letter-spacing:.13em;margin-top:2px;font-weight:700}
+.new{width:100%;border:1px solid #dedee3;background:#fff;border-radius:10px;padding:11px 12px;text-align:left;font-weight:700;color:#303036;display:flex;align-items:center;gap:10px;box-shadow:0 1px 2px #00000008}
+.new svg{width:18px;height:18px}
+.section{font-size:11px;color:#8a8a90;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:22px 10px 8px}
+.history{overflow:auto;flex:1}.history button{display:block;width:100%;border:0;background:transparent;text-align:left;padding:10px 11px;border-radius:8px;color:#3e3e43;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px;margin-bottom:2px}.history button:hover{background:#e9e9eb}
+.sideBottom{border-top:1px solid #e5e5e8;padding-top:10px}.contact{display:flex;align-items:center;gap:10px;padding:10px;border-radius:9px;color:#404046;text-decoration:none;font-size:12px}.contact:hover{background:#e9e9eb}.avatar{width:28px;height:28px;border-radius:50%;background:var(--navy);display:grid;place-items:center;color:#f3cf78;font-size:11px;font-weight:900}
+.main{min-width:0;flex:1;height:100%;display:flex;flex-direction:column;position:relative;background:#fff}
+.topbar{height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid #f0f0f2;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);z-index:10}
+.topTitle{font-weight:700;font-size:15px}.topTitle span{color:var(--gold)}
+.iconBtn{width:38px;height:38px;border:0;background:transparent;border-radius:9px;display:grid;place-items:center;color:#444}.iconBtn:hover{background:#f3f3f5}.mobileOnly{display:none}
+.chat{flex:1;min-height:0;display:flex;flex-direction:column}
+.messages{flex:1;overflow:auto;padding:34px 18px 150px;scroll-behavior:smooth}
+.empty{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px 0 80px}
+.aiLogo{width:66px;height:66px;margin-bottom:18px}
+.empty h1{font-size:31px;line-height:1.15;margin:0 0 10px;letter-spacing:-.035em;font-weight:700}.empty h1 span{color:var(--gold)}
+.empty p{margin:0;color:var(--muted);font-size:14px}
+.quick{display:grid;grid-template-columns:repeat(2,minmax(220px,1fr));gap:10px;max-width:690px;width:100%;margin-top:28px}.quick button{background:#fff;border:1px solid #dedee3;border-radius:12px;text-align:left;padding:13px 14px;color:#3b3b40;font-size:13px;line-height:1.35}.quick button:hover{background:#f7f7f8}
+.row{width:100%;max-width:800px;margin:0 auto 28px;display:flex;gap:14px;align-items:flex-start}.row.user{justify-content:flex-end}.bubble{max-width:78%;font-size:15px;line-height:1.65;white-space:pre-wrap}.user .bubble{background:#f1f1f3;border-radius:18px;padding:11px 15px}.ai .bubble{padding:2px 0}.miniLogo{width:28px;height:28px;flex:0 0 28px;margin-top:2px}
+.composerWrap{position:absolute;left:0;right:0;bottom:0;padding:14px 18px 18px;background:linear-gradient(transparent,#fff 26%,#fff)}
+.composer{max-width:800px;margin:auto;border:1px solid #d9d9de;background:#fff;border-radius:24px;min-height:52px;display:flex;align-items:flex-end;padding:7px 8px 7px 14px;box-shadow:0 2px 12px #0000000a}
+textarea{flex:1;border:0;outline:0;resize:none;max-height:160px;min-height:35px;padding:8px 4px;background:transparent;color:var(--ink);line-height:1.45}.composer textarea::placeholder{color:#8a8a91}
+.plus,.send{width:35px;height:35px;border:0;border-radius:50%;display:grid;place-items:center;flex:0 0 35px}.plus{background:transparent;color:#555}.plus:hover{background:#f1f1f3}.send{background:#202123;color:#fff}.send:disabled{background:#d6d6d8;color:#fff;cursor:default}
+.disclaimer{text-align:center;color:#9a9aa0;font-size:10px;margin-top:7px}
+.overlay{display:none}
+@media(max-width:760px){
+.sidebar{position:fixed;left:-290px;top:0;bottom:0;transition:left .2s ease;box-shadow:12px 0 35px #0002}.sidebar.open{left:0}.mobileOnly{display:grid}.quick{grid-template-columns:1fr;max-width:520px}.messages{padding-left:14px;padding-right:14px}.row{max-width:100%}.bubble{max-width:84%}.empty h1{font-size:28px}
+.overlay.show{display:block;position:fixed;inset:0;background:#0005;z-index:20}.topbar{padding:0 10px}.composerWrap{padding:10px 10px 12px}
+}
+@media(max-width:430px){.quick button{font-size:12px}.empty p{font-size:13px}.empty{padding-bottom:40px}.messages{padding-bottom:130px}.topTitle{font-size:14px}}
+</style>
 </head>
 <body>
-  <header class="top">
-    <div class="topin">
-      <a class="brand" href="/">
-        <img src="/assets/bickri-whatsapp-ai.svg" alt="Bickri AI">
-        <span><b>BICKRI AI</b><small>SERVICE AGENCY</small></span>
-      </a>
-      <a class="back" href="/">← Retour au site</a>
-    </div>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <a class="brand" href="/" aria-label="Bickri Service Agency">
+    <img src="/assets/bickri-whatsapp-ai.svg" alt="Bickri AI">
+    <span><b>Bickri AI</b><small>SERVICE AGENCY</small></span>
+  </a>
+  <button class="new" id="newChat">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+    Nouvelle discussion
+  </button>
+  <div class="section">Historique</div>
+  <div class="history" id="history"></div>
+  <div class="sideBottom">
+    <a class="contact" href="https://wa.me/22788376133?text=Bonjour%20Bickri%20Service%20Agency%2C%20je%20viens%20de%20Bickri%20AI." target="_blank" rel="noopener">
+      <span class="avatar">MB</span><span>Mohamed Bickri Jr<br><small style="color:#8a8a90">+227 88 37 61 33</small></span>
+    </a>
+  </div>
+</aside>
+<div class="overlay" id="overlay"></div>
+
+<main class="main">
+  <header class="topbar">
+    <button class="iconBtn mobileOnly" id="menu" aria-label="Ouvrir le menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <div class="topTitle">Bickri <span>AI</span></div>
+    <a class="iconBtn" href="/" aria-label="Retour au site" title="Retour au site">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/><path d="M9 12h10"/></svg>
+    </a>
   </header>
 
-  <main>
-    <section class="hero">
-      <span class="badge"><i></i> Assistant officiel Bickri Service Agency</span>
-      <h1>Bonjour, je suis <span>Bickri AI</span>.</h1>
-      <p>Je réponds aux questions des clients sur les services de l'agence, les formations, le coaching, les devis et la manière de nous contacter.</p>
-    </section>
+  <section class="chat">
+    <div class="messages" id="messages" aria-live="polite"></div>
+  </section>
 
-    <section class="layout" aria-label="Bickri AI">
-      <div class="chat">
-        <div class="chatHead">
-          <img src="/assets/bickri-whatsapp-ai.svg" alt="">
-          <div><strong>Bickri AI</strong><small>Assistant client de Bickri Service Agency</small></div>
-        </div>
-        <div class="suggestions">
-          <button type="button">Quels services proposez-vous ?</button>
-          <button type="button">Comment obtenir un devis ?</button>
-          <button type="button">Comment vous contacter ?</button>
-          <button type="button">Qui a créé Bickri Service Agency ?</button>
-        </div>
-        <div class="messages" id="messages" aria-live="polite"></div>
-        <form class="composer" id="form">
-          <textarea id="input" rows="1" maxlength="2000" placeholder="Écrivez votre question…" aria-label="Votre question"></textarea>
-          <button class="send" type="submit" aria-label="Envoyer">➤</button>
-        </form>
-      </div>
+  <div class="composerWrap">
+    <form class="composer" id="form">
+      <button class="plus" type="button" aria-label="Ajouter" title="Ajouter">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+      <textarea id="input" rows="1" maxlength="2000" placeholder="Demandez quelque chose à Bickri AI…" aria-label="Message"></textarea>
+      <button class="send" id="send" type="submit" disabled aria-label="Envoyer">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m5 12 14-7-3 14-4-6-7-1Z"/><path d="m12 13 7-8"/></svg>
+      </button>
+    </form>
+    <div class="disclaimer">Bickri AI peut faire des erreurs. Pour un devis ou une information contractuelle, contactez directement Bickri Service Agency.</div>
+  </div>
+</main>
+</div>
 
-      <aside class="info">
-        <h2>Besoin de parler directement à l'agence ?</h2>
-        <p>Bickri AI peut vous orienter. Pour un devis personnalisé ou une demande commerciale, contactez directement Bickri Service Agency.</p>
+<script>
+const messages=document.getElementById('messages');
+const input=document.getElementById('input');
+const form=document.getElementById('form');
+const send=document.getElementById('send');
+const historyEl=document.getElementById('history');
+const sidebar=document.getElementById('sidebar');
+const overlay=document.getElementById('overlay');
+const STORAGE='bickri_ai_chats_v2';
+let chats=JSON.parse(localStorage.getItem(STORAGE)||'[]');
+let current={id:Date.now(),title:'Nouvelle discussion',messages:[]};
 
-        <div class="creator">
-          <small>Créateur / fondateur</small>
-          <strong>Mohamed Bickri Jr</strong>
-        </div>
-
-        <div class="contact">
-          <a class="wa" href="https://wa.me/22788376133?text=Bonjour%20Bickri%20Service%20Agency%2C%20je%20viens%20de%20Bickri%20AI." target="_blank" rel="noopener">💬 WhatsApp · +227 88 37 61 33</a>
-          <a class="email" href="mailto:bickriserviceagency@gmail.com">✉️ bickriserviceagency@gmail.com</a>
-        </div>
-        <p class="note">Bickri Service Agency · Niamey, Niger</p>
-      </aside>
-    </section>
-  </main>
-
-  <footer>© <span id="year"></span> Bickri Service Agency · Bickri AI</footer>
-
-  <script>
-    const messages=document.getElementById('messages');
-    const input=document.getElementById('input');
-    const form=document.getElementById('form');
-    const history=[];
-    const add=(text,role)=>{const el=document.createElement('div');el.className='msg '+(role==='user'?'user':'ai');el.textContent=text;messages.appendChild(el);messages.scrollTop=messages.scrollHeight};
-    const ask=async(q)=>{
-      const text=q.trim(); if(!text)return;
-      add(text,'user'); history.push({role:'user',content:text}); input.value='';
-      let answer='';
-      try{
-        const res=await fetch('/api/bickri-ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text,history:history.slice(-8)})});
-        const data=await res.json().catch(()=>({}));
-        answer=res.ok&&data.answer?data.answer:'Je rencontre un problème temporaire. Vous pouvez contacter directement Bickri Service Agency sur WhatsApp au +227 88 37 61 33.';
-      }catch(e){
-        answer='Je rencontre un problème temporaire. Vous pouvez contacter directement Bickri Service Agency sur WhatsApp au +227 88 37 61 33.';
-      }
-      add(answer,'ai'); history.push({role:'assistant',content:answer});
-    };
-    add('Bonjour 👋 Je suis Bickri AI, l’assistant officiel de Bickri Service Agency. Comment puis-je vous aider aujourd’hui ?','ai');
-    form.addEventListener('submit',e=>{e.preventDefault();ask(input.value)});
-    input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ask(input.value)}});
-    document.querySelectorAll('.suggestions button').forEach(b=>b.addEventListener('click',()=>ask(b.textContent)));
-    document.getElementById('year').textContent=new Date().getFullYear();
-  </script>
+const escTitle=s=>s.replace(/\s+/g,' ').trim().slice(0,42)||'Nouvelle discussion';
+function save(){localStorage.setItem(STORAGE,JSON.stringify(chats.slice(-30)))}
+function renderHistory(){
+ historyEl.innerHTML='';
+ [...chats].reverse().forEach(c=>{
+   const b=document.createElement('button');b.textContent=c.title;b.title=c.title;
+   b.onclick=()=>{current=JSON.parse(JSON.stringify(c));renderChat();closeMenu()};historyEl.appendChild(b);
+ });
+}
+function renderChat(){
+ messages.innerHTML='';
+ if(!current.messages.length){
+   const empty=document.createElement('div');empty.className='empty';
+   empty.innerHTML='<img class="aiLogo" src="/assets/bickri-whatsapp-ai.svg" alt="Bickri AI"><h1>Bonjour, je suis <span>Bickri AI</span>.</h1><p>Comment puis-je vous aider avec Bickri Service Agency ?</p><div class="quick"><button>Quels services proposez-vous ?</button><button>Comment obtenir un devis ?</button><button>Quel est votre numéro WhatsApp ?</button><button>Qui a créé Bickri Service Agency ?</button></div>';
+   messages.appendChild(empty);
+   empty.querySelectorAll('.quick button').forEach(b=>b.onclick=()=>ask(b.textContent));
+   return;
+ }
+ current.messages.forEach(m=>addMessage(m.content,m.role,false));
+ scrollBottom();
+}
+function addMessage(text,role,scroll=true){
+ const row=document.createElement('div');row.className='row '+(role==='user'?'user':'ai');
+ if(role==='assistant'){const img=document.createElement('img');img.className='miniLogo';img.src='/assets/bickri-whatsapp-ai.svg';img.alt='';row.appendChild(img)}
+ const bubble=document.createElement('div');bubble.className='bubble';bubble.textContent=text;row.appendChild(bubble);messages.appendChild(row);
+ if(scroll)scrollBottom();
+}
+function scrollBottom(){messages.scrollTop=messages.scrollHeight}
+function autoSize(){input.style.height='auto';input.style.height=Math.min(input.scrollHeight,160)+'px';send.disabled=!input.value.trim()}
+async function ask(q){
+ const text=q.trim();if(!text)return;
+ if(!current.messages.length){current.title=escTitle(text)}
+ current.messages.push({role:'user',content:text});
+ messages.querySelector('.empty')?.remove();
+ addMessage(text,'user');
+ input.value='';autoSize();
+ const waiting={role:'assistant',content:'…'};addMessage('…','assistant');current.messages.push(waiting);
+ try{
+   const res=await fetch('/api/bickri-ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text,history:current.messages.slice(-9,-1)})});
+   const data=await res.json().catch(()=>({}));
+   const answer=res.ok&&data.answer?data.answer:'Je rencontre un problème temporaire. Contactez Bickri Service Agency sur WhatsApp au +227 88 37 61 33.';
+   current.messages[current.messages.length-1].content=answer;
+   const last=messages.lastElementChild?.querySelector('.bubble');if(last)last.textContent=answer;
+ }catch(e){
+   const answer='Je rencontre un problème temporaire. Contactez Bickri Service Agency sur WhatsApp au +227 88 37 61 33.';
+   current.messages[current.messages.length-1].content=answer;
+   const last=messages.lastElementChild?.querySelector('.bubble');if(last)last.textContent=answer;
+ }
+ chats=chats.filter(c=>c.id!==current.id);chats.push(JSON.parse(JSON.stringify(current)));save();renderHistory();scrollBottom();
+}
+function newChat(){if(current.messages.length){chats=chats.filter(c=>c.id!==current.id);chats.push(JSON.parse(JSON.stringify(current)));save();renderHistory()}current={id:Date.now(),title:'Nouvelle discussion',messages:[]};renderChat();closeMenu()}
+function closeMenu(){sidebar.classList.remove('open');overlay.classList.remove('show')}
+document.getElementById('newChat').onclick=newChat;
+document.getElementById('menu').onclick=()=>{sidebar.classList.add('open');overlay.classList.add('show')};
+overlay.onclick=closeMenu;
+form.onsubmit=e=>{e.preventDefault();ask(input.value)};
+input.addEventListener('input',autoSize);
+input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ask(input.value)}});
+renderHistory();renderChat();autoSize();
+</script>
 </body>
 </html>
