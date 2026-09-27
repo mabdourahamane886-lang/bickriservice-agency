@@ -42,8 +42,9 @@
     if(!location.pathname.startsWith('/services/'))return;
     const slug=location.pathname.split('/').filter(Boolean)[1];
     if(!slug)return;
+    const hero=document.querySelector('.hero');
     const heroGrid=document.querySelector('.heroGrid');
-    if(!heroGrid||heroGrid.querySelector('.servicePageImage'))return;
+    if(!hero||!heroGrid||hero.querySelector('.servicePageImage'))return;
     fetch('/services-share.json',{cache:'no-store'})
       .then(r=>r.ok?r.json():[])
       .then(items=>{
@@ -56,8 +57,8 @@
         img.loading='eager';
         img.decoding='async';
         img.addEventListener('error',()=>img.remove());
-        const content=heroGrid.firstElementChild;
-        if(content)content.insertAdjacentElement('afterend',img);
+        const wrap=hero.querySelector('.wrap');
+        if(wrap)wrap.insertBefore(img,heroGrid);
       })
       .catch(()=>{});
   }
