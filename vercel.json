@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/s/:code",
-      "destination": "/api/service?code=:code"
+      "destination": "/index.html?service=:code"
     }
   ],
   "headers": [
