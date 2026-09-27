@@ -58,6 +58,66 @@ function json(res, status, body) {
   return res.status(status).json(body);
 }
 
+function cleanSessionId(value){
+  const s=String(value || '').trim();
+  return /^[a-zA-Z0-9_-]{16,80}$/.test(s) ? s : null;
+}
+
+async function loadMemory(sessionId) {
+  const url = process.env.SUPABASE_URL || 'https://okdohokhlkxrmxpevees.supabase.co';
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!key || !sessionId) return [];
+  const headers = {apikey:key, Authorization:'Bearer '+key, Accept:'application/json'};
+  const r = await fetch(url + '/rest/v1/bickri_ai_memory?session_id=eq.' + encodeURIComponent(sessionId) + '&active=eq.true&select=memory_key,memory_value&order=updated_at.desc&limit=20', {headers});
+  return r.ok ? await r.json().catch(() => []) : [];
+}
+
+async function saveMemory(sessionId, keyName, value) {
+  const url = process.env.SUPABASE_URL || 'https://okdohokhlkxrmxpevees.supabase.co';
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!key || !sessionId || !keyName || !value) return;
+  const safeValue = String(value).trim().slice(0,500);
+  if (!safeValue) return;
+  const headers = {apikey:key, Authorization:'Bearer '+key, 'Content-Type':'application/json', Prefer:'resolution=merge-duplicates'};
+  await fetch(url + '/rest/v1/bickri_ai_memory?on_conflict=session_id,memory_key', {
+    method:'POST', headers,
+    body:JSON.stringify({session_id:sessionId,memory_key:keyName,memory_value:safeValue,source:'conversation',active:true})
+  }).catch(() => {});
+}
+
+async function saveConversation(sessionId, role, content) {
+  const url = process.env.SUPABASE_URL || 'https://okdohokhlkxrmxpevees.supabase.co';
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!key || !sessionId || !content) return;
+  const headers = {apikey:key, Authorization:'Bearer '+key, 'Content-Type':'application/json', Prefer:'return=minimal'};
+  await fetch(url + '/rest/v1/bickri_ai_conversations', {
+    method:'POST', headers,
+    body:JSON.stringify({session_id:sessionId,role,content:String(content).slice(0,4000)})
+  }).catch(() => {});
+}
+
+function extractExplicitMemory(message) {
+  const memories=[];
+  const patterns=[
+    ['name',/(?:je m'appelle|mon nom est)\s+([^.!?\n]{2,80})/i],
+    ['company',/(?:mon entreprise s'appelle|mon entreprise est|ma société s'appelle|ma société est)\s+([^.!?\n]{2,100})/i],
+    ['project',/(?:mon projet (?:est|s'appelle)|je travaille sur)\s+([^.!?\n]{3,180})/i],
+    ['language',/(?:je préfère|je prefere)\s+(?:répondre|recevoir les réponses|les réponses)\s+en\s+(français|arabe|anglais)/i]
+  ];
+  for(const [keyName,pattern] of patterns){
+    const m=message.match(pattern);
+    if(m) memories.push([keyName,m[1].trim()]);
+  }
+  return memories;
+}
+
+function buildMemoryContext(memory) {
+  if(!memory.length) return '';
+  return '\n\nMÉMOIRE AUTORISÉE DE CETTE SESSION:\n' +
+    memory.map(x => '- ' + x.memory_key + ': ' + x.memory_value).join('\n') +
+    '\nUtilise cette mémoire uniquement pour personnaliser la conversation. Ne l’étends pas par déduction et ne révèle pas les données internes.';
+}
+
 async function loadKnowledge() {
   const url = process.env.SUPABASE_URL || 'https://okdohokhlkxrmxpevees.supabase.co';
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -194,18 +254,31 @@ module.exports = async function handler(req, res) {
   const apiKey = process.env.OPENAI_API_KEY || process.env.AI_API_KEY;
   const endpoint = process.env.AI_API_URL || 'https://api.openai.com/v1/responses';
   const model = process.env.OPENAI_MODEL || process.env.AI_MODEL;
+  const sessionId = cleanSessionId(req.body?.sessionId);
 
   const history = Array.isArray(req.body?.history) ? req.body.history.slice(-8) : [];
   const safeHistory = history
     .filter(x => x && (x.role === 'user' || x.role === 'assistant') && typeof x.content === 'string')
     .map(x => ({role:x.role, content:x.content.slice(0, 2000)}));
 
-  const db = await loadKnowledge().catch(error => {
-    console.error('Bickri AI knowledge load failed', error);
-    return {knowledge:[], services:[]};
-  });
+  const [db, memory] = await Promise.all([
+    loadKnowledge().catch(error => {
+      console.error('Bickri AI knowledge load failed', error);
+      return {knowledge:[], services:[]};
+    }),
+    loadMemory(sessionId).catch(error => {
+      console.error('Bickri AI memory load failed', error);
+      return [];
+    })
+  ]);
 
-  const systemPrompt = BASE_SYSTEM_PROMPT + buildKnowledgeContext(db);
+  for (const [keyName, value] of extractExplicitMemory(message)) {
+    await saveMemory(sessionId, keyName, value);
+  }
+
+  if (sessionId) await saveConversation(sessionId, 'user', message);
+
+  const systemPrompt = BASE_SYSTEM_PROMPT + buildKnowledgeContext(db) + buildMemoryContext(memory);
 
   if (!apiKey || !model) {
     return json(res, 200, {answer:fallbackAnswer(message),mode:'local',knowledgeLoaded:db.knowledge.length > 0});
@@ -218,6 +291,7 @@ module.exports = async function handler(req, res) {
     }
 
     res.setHeader('Cache-Control','no-store');
+    if (sessionId) await saveConversation(sessionId, 'assistant', answer);
     return json(res, 200, {
       answer,
       mode:'openai',
