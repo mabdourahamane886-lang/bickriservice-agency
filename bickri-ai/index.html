@@ -29,11 +29,11 @@ button{cursor:pointer}
 .chat{flex:1;min-height:0;display:flex;flex-direction:column}
 .messages{flex:1;overflow:auto;padding:34px 18px 150px;scroll-behavior:smooth}
 .empty{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px 0 80px}
-.aiLogo{width:66px;height:66px;margin-bottom:18px}
+.aiLogo{width:66px;height:66px;margin-bottom:18px;border-radius:20px;background:#d9a441;color:#08101f;display:grid;place-items:center;font-size:42px;font-weight:900;box-shadow:0 10px 28px rgba(217,164,65,.22)}
 .empty h1{font-size:31px;line-height:1.15;margin:0 0 10px;letter-spacing:-.035em;font-weight:700}.empty h1 span{color:var(--gold)}
 .empty p{margin:0;color:var(--muted);font-size:14px}
 .quick{display:grid;grid-template-columns:repeat(2,minmax(220px,1fr));gap:10px;max-width:690px;width:100%;margin-top:28px}.quick button{background:#fff;border:1px solid #dedee3;border-radius:12px;text-align:left;padding:13px 14px;color:#3b3b40;font-size:13px;line-height:1.35}.quick button:hover{background:#f7f7f8}
-.row{width:100%;max-width:800px;margin:0 auto 28px;display:flex;gap:14px;align-items:flex-start}.row.user{justify-content:flex-end}.bubble{max-width:78%;font-size:15px;line-height:1.65;white-space:pre-wrap}.user .bubble{background:#f1f1f3;border-radius:18px;padding:11px 15px}.ai .bubble{padding:2px 0}.miniLogo{width:28px;height:28px;flex:0 0 28px;margin-top:2px}
+.row{width:100%;max-width:800px;margin:0 auto 28px;display:flex;gap:14px;align-items:flex-start}.row.user{justify-content:flex-end}.bubble{max-width:78%;font-size:15px;line-height:1.65;white-space:pre-wrap}.user .bubble{background:#f1f1f3;border-radius:18px;padding:11px 15px}.ai .bubble{padding:2px 0}.miniLogo{width:28px;height:28px;flex:0 0 28px;margin-top:2px;border-radius:9px;background:#d9a441;color:#08101f;display:grid;place-items:center;font-size:17px;font-weight:900}
 .composerWrap{position:absolute;left:0;right:0;bottom:0;padding:14px 18px 18px;background:linear-gradient(transparent,#fff 26%,#fff)}
 .composer{max-width:800px;margin:auto;border:1px solid #d9d9de;background:#fff;border-radius:24px;min-height:52px;display:flex;align-items:flex-end;padding:7px 8px 7px 14px;box-shadow:0 2px 12px #0000000a}
 textarea{flex:1;border:0;outline:0;resize:none;max-height:160px;min-height:35px;padding:8px 4px;background:transparent;color:var(--ink);line-height:1.45}.composer textarea::placeholder{color:#8a8a91}
@@ -123,7 +123,7 @@ function renderChat(){
  messages.innerHTML='';
  if(!current.messages.length){
    const empty=document.createElement('div');empty.className='empty';
-   empty.innerHTML='<img class="aiLogo" src="/assets/bickri-ai-logo.svg" alt="Bickri AI"><h1>Bonjour, je suis <span>Bickri AI</span>.</h1><p>Comment puis-je vous aider avec Bickri Service Agency ?</p><div class="quick"><button>Quels services proposez-vous ?</button><button>Comment obtenir un devis ?</button><button>Quel est votre numéro WhatsApp ?</button><button>Qui a créé Bickri Service Agency ?</button></div>';
+   empty.innerHTML='<div class="aiLogo">B</div><h1>Bonjour, je suis <span>Bickri AI</span>.</h1><p>Comment puis-je vous aider avec Bickri Service Agency ?</p><div class="quick"><button>Quels services proposez-vous ?</button><button>Comment obtenir un devis ?</button><button>Quel est votre numéro WhatsApp ?</button><button>Qui a créé Bickri Service Agency ?</button></div>';
    messages.appendChild(empty);
    empty.querySelectorAll('.quick button').forEach(b=>b.onclick=()=>ask(b.textContent));
    return;
