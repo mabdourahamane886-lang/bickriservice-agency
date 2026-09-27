@@ -18,7 +18,7 @@ create table if not exists public.agency_services (
   process_steps jsonb not null default '[]'::jsonb,
   price_note text, cta_label text default 'Demander un devis', whatsapp_message text,
   sort_order int not null default 0, active boolean not null default true,
-  created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+  reference_code text unique, share_url text, og_title text, og_description text, og_image text,\n  created_at timestamptz not null default now(), updated_at timestamptz not null default now()
 );
 
 create table if not exists public.agency_projects (
