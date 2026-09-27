@@ -108,6 +108,8 @@ const sidebar=document.getElementById('sidebar');
 const overlay=document.getElementById('overlay');
 const STORAGE='bickri_ai_chats_v2';
 let chats=JSON.parse(localStorage.getItem(STORAGE)||'[]');
+let sessionId=localStorage.getItem('bickri_ai_session_id');
+if(!sessionId){sessionId='bsa_'+crypto.randomUUID().replace(/-/g,'');localStorage.setItem('bickri_ai_session_id',sessionId)}
 let current={id:Date.now(),title:'Nouvelle discussion',messages:[]};
 
 const escTitle=s=>s.replace(/\s+/g,' ').trim().slice(0,42)||'Nouvelle discussion';
@@ -148,7 +150,7 @@ async function ask(q){
  input.value='';autoSize();
  const waiting={role:'assistant',content:'…'};addMessage('…','assistant');current.messages.push(waiting);
  try{
-   const res=await fetch('/api/bickri-ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text,history:current.messages.slice(-9,-1)})});
+   const res=await fetch('/api/bickri-ai',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({message:text,sessionId,history:current.messages.slice(-9,-1)})});
    const data=await res.json().catch(()=>({}));
    const answer=res.ok&&data.answer?data.answer:'Je rencontre un problème temporaire. Contactez Bickri Service Agency sur WhatsApp au +227 88 37 61 33.';
    current.messages[current.messages.length-1].content=answer;
