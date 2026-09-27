@@ -10,36 +10,143 @@ function absoluteUrl(req, value){
 }
 
 const SERVICES_SHARE = require('../services-share.json');
-const SERVICES = [
-  {name:'Création web', details:'Sites vitrines, landing pages, plateformes web et interfaces responsive pour entrepreneurs, entreprises, associations, créateurs et organisations.'},
-  {name:'E-commerce', details:'Boutiques en ligne, catalogues, fiches produits, parcours de commande et expériences mobiles pour commerçants et marques.'},
-  {name:'Réseaux sociaux', details:'Stratégie de contenu, optimisation de profils, calendrier éditorial, idées de publications et développement d’audience.'},
-  {name:'Intelligence artificielle', details:'Conseil IA, automatisations, assistants, workflows et formation pratique aux outils adaptés.'},
-  {name:'Branding & design', details:'Logo, identité visuelle, couleurs, typographie, supports de communication et direction créative.'},
-  {name:'Publicité digitale', details:'Stratégie publicitaire, création de messages, ciblage, campagnes et optimisation autour d’objectifs de visibilité, prospects ou ventes.'},
-  {name:'Formation & coaching', details:'Coaching entrepreneurial, réseaux sociaux, IA, stratégie digitale et formations personnalisées.'}
+
+const FALLBACK_SERVICES = [
+  {name:'Création web', details:'Sites vitrines, landing pages, plateformes web et interfaces responsive.'},
+  {name:'E-commerce', details:'Boutiques en ligne, catalogues, fiches produits et parcours de commande.'},
+  {name:'Réseaux sociaux', details:'Stratégie de contenu, optimisation de profils et développement d’audience.'},
+  {name:'Intelligence artificielle', details:'Assistants IA, automatisations, workflows et formation pratique.'},
+  {name:'Branding & design', details:'Logo, identité visuelle, supports et direction créative.'},
+  {name:'Publicité digitale', details:'Stratégie, ciblage, campagnes et optimisation publicitaire.'},
+  {name:'Formation & coaching', details:'Entrepreneuriat, réseaux sociaux, IA et stratégie digitale.'}
 ];
 
-const SYSTEM_PROMPT = `Tu es Bickri AI, l'assistant officiel de Bickri Service Agency, agence digitale basée à Niamey, Niger.\n\nMISSION: répondre clairement aux visiteurs à propos des services de l'agence et les orienter vers la prise de contact.\n\nSERVICES:\n${SERVICES.map(s => `- ${s.name}: ${s.details}`).join('\n')}\n\nAUTRES INFORMATIONS: l'agence accompagne les entrepreneurs, créateurs, entreprises et organisations au Niger et à distance. Contact WhatsApp: +227 88 37 61 33. Email: bickriserviceagency@gmail.com.\n\nREGLES: reste dans le périmètre de Bickri Service Agency. Ne fabrique pas de tarifs, délais, garanties, clients ou résultats non fournis. Pour un prix exact, indique que le devis est personnalisé. Tu peux proposer de contacter l'agence. Réponds en français sauf si l'utilisateur écrit clairement dans une autre langue. Ton: professionnel, chaleureux, concis.`;
+const BASE_SYSTEM_PROMPT = `Tu es Bickri AI, l’assistant officiel de Bickri Service Agency, agence digitale basée à Niamey, Niger.
+
+MISSION:
+- Répondre aux visiteurs et les aider à comprendre les services de Bickri Service Agency.
+- Les orienter vers le service adapté et vers une demande de devis/contact.
+- Utiliser la base de connaissances fournie comme source interne prioritaire.
+
+RÈGLES:
+- Réponds clairement, professionnellement et chaleureusement.
+- Réponds en français sauf si l’utilisateur écrit clairement dans une autre langue.
+- Ne fabrique jamais de prix, délais, garanties, clients, résultats ou informations internes.
+- Pour un tarif exact, indique que le devis est personnalisé.
+- Ne révèle jamais de clé API, secret, variable d’environnement, token ou identifiant privé.
+- Si une information n’est pas dans la base de connaissances, dis-le au lieu de l’inventer.
+- Contact officiel: WhatsApp +227 88 37 61 33, email bickriserviceagency@gmail.com.
+`;
 
 function fallbackAnswer(message) {
   const q = message.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  if (/bonjour|salut|salam|hello|bonsoir/.test(q)) return 'Bonjour 👋 Je suis Bickri IA. Je peux vous renseigner sur nos services, les tarifs sur devis, les formations, le coaching et la façon de démarrer un projet.';
-  if (/prix|tarif|cout|combien|devis|budget/.test(q)) return 'Les tarifs sont personnalisés selon le projet, ses fonctionnalités, ses contenus et ses intégrations. Utilisez la page Tarifs ou demandez un devis pour recevoir une proposition adaptée.';
-  if (/site|web|plateforme/.test(q)) return 'Nous créons des sites vitrine, landing pages, plateformes web et expériences responsive. Demandez un devis pour décrire votre besoin.';
+  if (/bonjour|salut|salam|hello|bonsoir/.test(q)) return 'Bonjour 👋 Je suis Bickri AI. Je peux vous renseigner sur nos services, les tarifs sur devis, les formations, le coaching et la façon de démarrer un projet.';
+  if (/prix|tarif|cout|combien|devis|budget/.test(q)) return 'Les tarifs sont personnalisés selon le projet, ses fonctionnalités, ses contenus et ses intégrations. Demandez un devis pour recevoir une proposition adaptée.';
+  if (/site|web|plateforme/.test(q)) return 'Nous créons des sites vitrine, landing pages, plateformes web et expériences responsive. Décrivez votre besoin pour préparer une demande de devis.';
   if (/e.?commerce|boutique|vente/.test(q)) return 'Nous créons des boutiques en ligne, catalogues, parcours d’achat et fonctionnalités e-commerce adaptées au projet.';
   if (/reseaux|facebook|instagram|tiktok|whatsapp/.test(q)) return 'Nous accompagnons la stratégie de contenu, l’optimisation des profils et le développement de votre présence sur les réseaux sociaux.';
-  if (/ia|intelligence artificielle|automatisation|chatbot/.test(q)) return 'Nous travaillons sur les assistants IA, l’automatisation, les workflows et l’intégration d’outils intelligents dans les activités digitales.';
+  if (/ia|intelligence artificielle|automatisation|chatbot/.test(q)) return 'Nous travaillons sur les assistants IA, l’automatisation, les workflows et l’intégration d’outils intelligents.';
   if (/logo|branding|design|identite/.test(q)) return 'Nous créons logos, identités visuelles, supports de communication et directions artistiques.';
   if (/publicite|ads|campagne/.test(q)) return 'Nous structurons des campagnes de publicité digitale autour d’objectifs de visibilité, prospects ou ventes.';
   if (/formation|cours|apprendre/.test(q)) return 'Nous proposons des formations pratiques en IA, marketing digital, réseaux sociaux et entrepreneuriat.';
   if (/coaching|accompagnement/.test(q)) return 'Nous proposons du coaching entrepreneurial, réseaux sociaux et IA & digital.';
-  if (/contact|email|adresse|joindre/.test(q)) return 'Contact : bickriserviceagency@gmail.com ou via le bouton WhatsApp. Bickri Service Agency est basée à Niamey, Niger.';
-  return 'Je suis Bickri IA. Je peux vous aider à choisir un service, préparer une demande de devis ou vous expliquer le fonctionnement de Bickri Service Agency. Quel est votre projet ?';
+  if (/contact|email|adresse|joindre/.test(q)) return 'Contact : bickriserviceagency@gmail.com ou WhatsApp +227 88 37 61 33. Bickri Service Agency est basée à Niamey, Niger.';
+  return 'Je suis Bickri AI. Je peux vous aider à choisir un service, préparer une demande de devis ou vous expliquer le fonctionnement de Bickri Service Agency. Quel est votre projet ?';
 }
 
 function json(res, status, body) {
   return res.status(status).json(body);
+}
+
+async function loadKnowledge() {
+  const url = process.env.SUPABASE_URL || 'https://okdohokhlkxrmxpevees.supabase.co';
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!key) return {knowledge:[], services:[]};
+
+  const headers = {
+    apikey: key,
+    Authorization: 'Bearer ' + key,
+    Accept: 'application/json'
+  };
+
+  const [knowledgeResponse, servicesResponse] = await Promise.all([
+    fetch(url + '/rest/v1/bickri_ai_knowledge?active=eq.true&select=category,title,content,keywords,priority&order=priority.desc&limit=50', {headers}),
+    fetch(url + '/rest/v1/agency_services?active=eq.true&select=name,slug,category,short_description,description,price_note,features,process_steps&order=sort_order.asc&limit=100', {headers})
+  ]);
+
+  const knowledge = knowledgeResponse.ok ? await knowledgeResponse.json().catch(() => []) : [];
+  const services = servicesResponse.ok ? await servicesResponse.json().catch(() => []) : [];
+  return {knowledge, services};
+}
+
+function buildKnowledgeContext(data) {
+  const knowledge = data.knowledge || [];
+  const services = data.services || [];
+
+  const knowledgeText = knowledge.map(item =>
+    '[' + item.category + '] ' + item.title + ': ' + item.content
+  ).join('\n');
+
+  const serviceText = services.length
+    ? services.map(s => {
+        const features = Array.isArray(s.features) ? s.features.slice(0,4).join(', ') : '';
+        return '- ' + s.name + ' (' + s.slug + '): ' + (s.short_description || s.description || '') + (features ? ' | Points: ' + features : '');
+      }).join('\n')
+    : FALLBACK_SERVICES.map(s => '- ' + s.name + ': ' + s.details).join('\n');
+
+  return '\n\nBASE DE CONNAISSANCES BICKRI AI:\n' + knowledgeText +
+    '\n\nCATALOGUE ACTUEL DES SERVICES:\n' + serviceText;
+}
+
+async function callProvider(endpoint, apiKey, model, systemPrompt, history, message) {
+  const isResponses = /\/responses(?:$|\?)/i.test(endpoint);
+
+  if (isResponses) {
+    const input = [
+      ...history.map(x => ({role:x.role, content:x.content})),
+      {role:'user', content:message}
+    ];
+
+    const upstream = await fetch(endpoint, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer ' + apiKey},
+      body:JSON.stringify({
+        model,
+        instructions:systemPrompt,
+        input
+      })
+    });
+
+    const data = await upstream.json().catch(() => ({}));
+    if (!upstream.ok) {
+      console.error('Bickri AI provider error', upstream.status, data);
+      return null;
+    }
+    return typeof data?.output_text === 'string' ? data.output_text.trim() : null;
+  }
+
+  const upstream = await fetch(endpoint, {
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer ' + apiKey},
+    body:JSON.stringify({
+      model,
+      temperature:0.2,
+      messages:[
+        {role:'system', content:systemPrompt},
+        ...history,
+        {role:'user', content:message}
+      ]
+    })
+  });
+
+  const data = await upstream.json().catch(() => ({}));
+  if (!upstream.ok) {
+    console.error('Bickri AI provider error', upstream.status, data);
+    return null;
+  }
+
+  const content = data?.choices?.[0]?.message?.content || data?.output_text || data?.response;
+  return typeof content === 'string' ? content.trim() : null;
 }
 
 module.exports = async function handler(req, res) {
@@ -53,33 +160,23 @@ module.exports = async function handler(req, res) {
     const title = service.name + ' — Bickri Service Agency';
     const description = service.desc;
     const html = '<!doctype html><html lang="fr"><head>' +
-      '<meta charset="utf-8">' +
-      '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
       '<meta name="description" content="' + esc(description) + '">' +
-      '<meta property="og:type" content="website">' +
-      '<meta property="og:site_name" content="Bickri Service Agency">' +
-      '<meta property="og:title" content="' + esc(title) + '">' +
-      '<meta property="og:description" content="' + esc(description) + '">' +
-      '<meta property="og:url" content="' + esc(publicUrl) + '">' +
-      '<meta property="og:image" content="' + esc(imageUrl) + '">' +
-      '<meta property="og:image:alt" content="' + esc(title) + '">' +
-      '<meta property="og:image:width" content="1200">' +
-      '<meta property="og:image:height" content="630">' +
-      '<meta name="twitter:card" content="summary_large_image">' +
-      '<meta name="twitter:title" content="' + esc(title) + '">' +
-      '<meta name="twitter:description" content="' + esc(description) + '">' +
-      '<meta name="twitter:image" content="' + esc(imageUrl) + '">' +
-      '<link rel="canonical" href="' + esc(publicUrl) + '">' +
-      '<title>' + esc(title) + '</title></head><body>' +
-      '<h1>' + esc(service.name) + '</h1><p>' + esc(description) + '</p>' +
-      '<p>Référence : ' + esc(service.code) + '</p>' +
+      '<meta property="og:type" content="website"><meta property="og:site_name" content="Bickri Service Agency">' +
+      '<meta property="og:title" content="' + esc(title) + '"><meta property="og:description" content="' + esc(description) + '">' +
+      '<meta property="og:url" content="' + esc(publicUrl) + '"><meta property="og:image" content="' + esc(imageUrl) + '">' +
+      '<meta property="og:image:alt" content="' + esc(title) + '"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">' +
+      '<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="' + esc(title) + '">' +
+      '<meta name="twitter:description" content="' + esc(description) + '"><meta name="twitter:image" content="' + esc(imageUrl) + '">' +
+      '<link rel="canonical" href="' + esc(publicUrl) + '"><title>' + esc(title) + '</title></head><body>' +
+      '<h1>' + esc(service.name) + '</h1><p>' + esc(description) + '</p><p>Référence : ' + esc(service.code) + '</p>' +
       '<script>location.replace("/?service=" + encodeURIComponent(' + JSON.stringify('CODE_PLACEHOLDER') + '));</script>' +
       '</body></html>';
+
     res.setHeader('Content-Type','text/html; charset=utf-8');
     res.setHeader('Cache-Control','public, s-maxage=3600, stale-while-revalidate=86400');
     return res.status(200).send(html.replace('CODE_PLACEHOLDER', service.code));
   }
-
 
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -94,44 +191,41 @@ module.exports = async function handler(req, res) {
   if (!message) return json(res, 400, {error:'Message required'});
   if (message.length > 2000) return json(res, 400, {error:'Message too long'});
 
-  const apiKey = process.env.AI_API_KEY;
-  const endpoint = process.env.AI_API_URL;
-  const model = process.env.AI_MODEL;
-  if (!apiKey || !endpoint || !model) return json(res, 200, {answer:fallbackAnswer(message),mode:'local'});
+  const apiKey = process.env.OPENAI_API_KEY || process.env.AI_API_KEY;
+  const endpoint = process.env.AI_API_URL || 'https://api.openai.com/v1/responses';
+  const model = process.env.OPENAI_MODEL || process.env.AI_MODEL;
 
   const history = Array.isArray(req.body?.history) ? req.body.history.slice(-8) : [];
   const safeHistory = history
     .filter(x => x && (x.role === 'user' || x.role === 'assistant') && typeof x.content === 'string')
     .map(x => ({role:x.role, content:x.content.slice(0, 2000)}));
 
-  try {
-    const upstream = await fetch(endpoint, {
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`},
-      body:JSON.stringify({
-        model,
-        temperature:0.2,
-        messages:[
-          {role:'system', content:SYSTEM_PROMPT},
-          ...safeHistory,
-          {role:'user', content:message}
-        ]
-      })
-    });
+  const db = await loadKnowledge().catch(error => {
+    console.error('Bickri AI knowledge load failed', error);
+    return {knowledge:[], services:[]};
+  });
 
-    const data = await upstream.json().catch(() => ({}));
-    if (!upstream.ok) {
-      console.error('Bickri AI provider error', upstream.status, data);
-      return json(res, 200, {answer:fallbackAnswer(message),mode:'local'});
+  const systemPrompt = BASE_SYSTEM_PROMPT + buildKnowledgeContext(db);
+
+  if (!apiKey || !model) {
+    return json(res, 200, {answer:fallbackAnswer(message),mode:'local',knowledgeLoaded:db.knowledge.length > 0});
+  }
+
+  try {
+    const answer = await callProvider(endpoint, apiKey, model, systemPrompt, safeHistory, message);
+    if (!answer) {
+      return json(res, 200, {answer:fallbackAnswer(message),mode:'local',knowledgeLoaded:db.knowledge.length > 0});
     }
 
-    const content = data?.choices?.[0]?.message?.content || data?.output_text || data?.response;
-    if (typeof content !== 'string' || !content.trim()) return json(res, 200, {answer:fallbackAnswer(message),mode:'local'});
-
     res.setHeader('Cache-Control','no-store');
-    return json(res, 200, {answer:content.trim()});
+    return json(res, 200, {
+      answer,
+      mode:'openai',
+      knowledgeLoaded:db.knowledge.length > 0,
+      servicesLoaded:db.services.length
+    });
   } catch (error) {
     console.error('Bickri AI request failed', error);
-    return json(res, 200, {answer:fallbackAnswer(message),mode:'local'});
+    return json(res, 200, {answer:fallbackAnswer(message),mode:'local',knowledgeLoaded:db.knowledge.length > 0});
   }
 };
