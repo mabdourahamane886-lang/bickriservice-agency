@@ -51,7 +51,7 @@ textarea{flex:1;border:0;outline:0;resize:none;max-height:160px;min-height:35px;
 <div class="app">
 <aside class="sidebar" id="sidebar">
   <a class="brand" href="/" aria-label="Bickri Service Agency">
-    <img src="/assets/bickri-whatsapp-ai.svg" alt="Bickri AI">
+    <img src="/assets/bickri-ai-logo.svg" alt="Bickri AI">
     <span><b>Bickri AI</b><small>SERVICE AGENCY</small></span>
   </a>
   <button class="new" id="newChat">
@@ -123,7 +123,7 @@ function renderChat(){
  messages.innerHTML='';
  if(!current.messages.length){
    const empty=document.createElement('div');empty.className='empty';
-   empty.innerHTML='<img class="aiLogo" src="/assets/bickri-whatsapp-ai.svg" alt="Bickri AI"><h1>Bonjour, je suis <span>Bickri AI</span>.</h1><p>Comment puis-je vous aider avec Bickri Service Agency ?</p><div class="quick"><button>Quels services proposez-vous ?</button><button>Comment obtenir un devis ?</button><button>Quel est votre numéro WhatsApp ?</button><button>Qui a créé Bickri Service Agency ?</button></div>';
+   empty.innerHTML='<img class="aiLogo" src="/assets/bickri-ai-logo.svg" alt="Bickri AI"><h1>Bonjour, je suis <span>Bickri AI</span>.</h1><p>Comment puis-je vous aider avec Bickri Service Agency ?</p><div class="quick"><button>Quels services proposez-vous ?</button><button>Comment obtenir un devis ?</button><button>Quel est votre numéro WhatsApp ?</button><button>Qui a créé Bickri Service Agency ?</button></div>';
    messages.appendChild(empty);
    empty.querySelectorAll('.quick button').forEach(b=>b.onclick=()=>ask(b.textContent));
    return;
@@ -133,7 +133,7 @@ function renderChat(){
 }
 function addMessage(text,role,scroll=true){
  const row=document.createElement('div');row.className='row '+(role==='user'?'user':'ai');
- if(role==='assistant'){const img=document.createElement('img');img.className='miniLogo';img.src='/assets/bickri-whatsapp-ai.svg';img.alt='';row.appendChild(img)}
+ if(role==='assistant'){const img=document.createElement('img');img.className='miniLogo';img.src='/assets/bickri-ai-logo.svg';img.alt='';row.appendChild(img)}
  const bubble=document.createElement('div');bubble.className='bubble';bubble.textContent=text;row.appendChild(bubble);messages.appendChild(row);
  if(scroll)scrollBottom();
 }
