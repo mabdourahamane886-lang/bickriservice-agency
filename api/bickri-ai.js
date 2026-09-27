@@ -254,7 +254,13 @@ module.exports = async function handler(req, res) {
   const apiKey = process.env.OPENAI_API_KEY || process.env.AI_API_KEY;
   const endpoint = process.env.AI_API_URL || 'https://api.openai.com/v1/responses';
   const model = process.env.OPENAI_MODEL || process.env.AI_MODEL;
-  const sessionId = cleanSessionId(req.body?.sessionId);
+  const cookie = String(req.headers.cookie || '');
+  const cookieMatch = cookie.match(/(?:^|;\\s*)bickri_ai_session=([a-zA-Z0-9_-]{16,80})/);
+  let sessionId = cleanSessionId(req.body?.sessionId) || cleanSessionId(cookieMatch?.[1]);
+  if (!sessionId) {
+    sessionId = 'bsa_' + (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID().replace(/-/g,'') : (Date.now().toString(36) + Math.random().toString(36).slice(2))).slice(0,60);
+    res.setHeader('Set-Cookie','bickri_ai_session=' + sessionId + '; Path=/; Max-Age=31536000; HttpOnly; Secure; SameSite=Lax');
+  }
 
   const history = Array.isArray(req.body?.history) ? req.body.history.slice(-8) : [];
   const safeHistory = history
