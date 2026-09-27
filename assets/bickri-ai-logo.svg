@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Bickri AI">
+<rect width="64" height="64" rx="18" fill="#fff"/>
+<g fill="none" stroke="#202123" stroke-width="4" stroke-linecap="round">
+<path d="M32 11c7 0 12 5 12 12 0 4-2 7-5 9"/>
+<path d="M53 25c0 7-5 12-12 12-4 0-7-2-9-5"/>
+<path d="M43 53c-7 0-12-5-12-12 0-4 2-7 5-9"/>
+<path d="M11 39c0-7 5-12 12-12 4 0 7 2 9 5"/>
+</g>
+<path d="M26 21h9c5 0 8 3 8 7 0 3-2 5-5 6 4 1 6 3 6 7 0 5-4 8-10 8h-8V21Zm7 11c3 0 5-1 5-3s-2-3-5-3h-2v6h2Zm1 11c3 0 5-1 5-4s-2-4-5-4h-3v8h3Z" fill="#d9a441"/>
+<circle cx="32" cy="32" r="3" fill="#202123"/>
+</svg>
