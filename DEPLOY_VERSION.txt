@@ -1,3 +1,2 @@
-Bickri Service Agency production deployment
-Version: 2026-09-17
-Custom domain: bickriservice-agency.bickriserviceagency.dev
+BSA services UX — direct service pages — no modal — image + details + next steps
+Updated: 2026-09-28
