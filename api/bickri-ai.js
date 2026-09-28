@@ -188,7 +188,10 @@ async function callProvider(endpoint, apiKey, model, systemPrompt, history, mess
     const data = await upstream.json().catch(() => ({}));
     if (!upstream.ok) {
       console.error('Bickri AI provider error', upstream.status, data);
-      return null;
+      const err = new Error('OpenAI provider error');
+      err.providerStatus = upstream.status;
+      err.providerCode = data?.error?.code || data?.error?.type || null;
+      throw err;
     }
     return typeof data?.output_text === 'string' ? data.output_text.trim() : (Array.isArray(data?.output) ? data.output.flatMap(item => Array.isArray(item?.content) ? item.content : []).map(item => item?.text || '').filter(Boolean).join('\n').trim() : null);
   }
@@ -209,9 +212,12 @@ async function callProvider(endpoint, apiKey, model, systemPrompt, history, mess
 
   const data = await upstream.json().catch(() => ({}));
   if (!upstream.ok) {
-    console.error('Bickri AI provider error', upstream.status, data);
-    return null;
-  }
+      console.error('Bickri AI provider error', upstream.status, data);
+      const err = new Error('OpenAI provider error');
+      err.providerStatus = upstream.status;
+      err.providerCode = data?.error?.code || data?.error?.type || null;
+      throw err;
+    }
 
   const content = data?.choices?.[0]?.message?.content || data?.output_text || data?.response;
   return typeof content === 'string' ? content.trim() : null;
@@ -301,7 +307,7 @@ module.exports = async function handler(req, res) {
   try {
     const answer = await callProvider(endpoint, apiKey, model, systemPrompt, safeHistory, message);
     if (!answer) {
-      return json(res, 200, {answer:fallbackAnswer(message),mode:'local',knowledgeLoaded:db.knowledge.length > 0});
+      return json(res, 200, {answer:fallbackAnswer(message),mode:'local',providerAvailable:false,providerError:'empty_response',knowledgeLoaded:db.knowledge.length > 0});
     }
 
     res.setHeader('Cache-Control','no-store');
