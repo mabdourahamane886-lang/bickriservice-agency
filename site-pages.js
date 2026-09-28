@@ -42,7 +42,7 @@
     if(!location.pathname.startsWith('/services/'))return;
     const slug=location.pathname.split('/').filter(Boolean)[1];
     if(!slug)return;
-    const hero=document.querySelector('.hero');
+    const hero=document.querySelector('.pageHero,.hero');
     if(!hero||hero.querySelector('.servicePageImage'))return;
     fetch('/services-share.json',{cache:'no-store'})
       .then(r=>r.ok?r.json():[])
@@ -66,7 +66,7 @@
     const slug=location.pathname.split('/').filter(Boolean)[1];
     if(!slug)return;
     const main=document.querySelector('main');
-    const hero=main?.querySelector('.hero');
+    const hero=main?.querySelector('.pageHero,.hero');
     if(!main||!hero||main.querySelector('.serviceLongDetails'))return;
     Promise.all([
       fetch('/services-share.json',{cache:'no-store'}).then(r=>r.ok?r.json():[]),
