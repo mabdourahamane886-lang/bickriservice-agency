@@ -77,14 +77,16 @@
       if(!service)return;
       const d=details[slug]||[service.what||'',service.get||'',service.why||''];
       const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+      const image=esc(service.img||'');
       const section=document.createElement('section');
       section.className='section serviceLongDetails';
-      section.innerHTML='<div class="wrap"><div class="eyebrow">Fiche détaillée</div><h2 class="title">'+esc(service.name)+'</h2><p class="serviceDetailLead">'+esc(service.desc)+' Bickri Service Agency adapte cette prestation à votre activité, vos objectifs et vos contraintes.</p><div class="serviceDetailGrid">'+
-        '<article class="card"><span class="tag">Ce que nous réalisons</span><h3>Une prestation structurée</h3><p>'+esc(d[0])+'</p></article>'+
-        '<article class="card"><span class="tag">Ce que vous obtenez</span><h3>Des livrables concrets</h3><p>'+esc(d[1])+'</p></article>'+
-        '<article class="card"><span class="tag">Pourquoi ce service</span><h3>Un objectif clair</h3><p>'+esc(d[2])+'</p></article>'+
-        '<article class="card"><span class="tag">Pour votre activité</span><h3>Une approche sur mesure</h3><p>'+esc(service.who||'Entrepreneurs, entreprises, créateurs et organisations.')+'</p></article>'+
-      '</div><div class="serviceDetailLong"><div><span class="tag">Prestations incluses</span><h3>Ce qui peut être réalisé</h3><ul><li>'+esc(service.what||d[0])+'</li><li>'+esc(d[0])+'</li><li>'+esc(d[1])+'</li></ul></div><div><span class="tag">Méthode Bickri</span><h3>De l’idée à la livraison</h3><div class="serviceProcess"><span><b>01</b> Échange & cadrage</span><span><b>02</b> Conception</span><span><b>03</b> Production</span><span><b>04</b> Tests & ajustements</span><span><b>05</b> Livraison & accompagnement</span></div></div></div><div class="serviceDetailCta"><div><strong>Vous souhaitez ce service ?</strong><span>Demandez un devis adapté à votre projet.</span></div><a class="cta" href="/rendez-vous/">Demander un devis →</a></div></div>';
+      section.innerHTML='<div class="wrap">'+
+        '<div class="eyebrow">Fiche complète du service</div><h2 class="title">'+esc(service.name)+'</h2>'+
+        '<p class="serviceDetailLead">'+esc(service.desc)+' Bickri Service Agency adapte cette prestation à votre activité, vos objectifs et vos contraintes.</p>'+
+        '<div class="serviceDetailHero"><img src="'+image+'" alt="'+esc(service.name)+' — Bickri Service Agency" loading="lazy" decoding="async"><div><span class="tag">Pourquoi cette prestation ?</span><h3>Une solution pensée pour votre projet</h3><p>'+esc(d[2])+'</p><p class="serviceDetailMeta"><strong>Référence :</strong> '+esc(service.code||'')+'</p></div></div>'+
+        '<div class="serviceDetailGrid"><article class="card"><span class="tag">Ce que nous réalisons</span><h3>Une prestation structurée</h3><p>'+esc(d[0])+'</p></article><article class="card"><span class="tag">Ce que vous obtenez</span><h3>Des livrables concrets</h3><p>'+esc(d[1])+'</p></article><article class="card"><span class="tag">Pour qui ?</span><h3>Une approche adaptée</h3><p>'+esc(service.who||'Entrepreneurs, entreprises, créateurs et organisations.')+'</p></article><article class="card"><span class="tag">Pourquoi maintenant ?</span><h3>Passer de l’idée à l’action</h3><p>'+esc(d[2])+'</p></article></div>'+
+        '<div class="serviceDetailLong"><div><span class="tag">Prestations incluses</span><h3>Ce qui peut être réalisé</h3><ul><li>'+esc(service.what||d[0])+'</li><li>'+esc(d[0])+'</li><li>'+esc(d[1])+'</li></ul></div><div><span class="tag">Prochaines étapes</span><h3>Ce que nous vous conseillons de faire</h3><div class="serviceProcess"><span><b>01</b> Définir votre objectif et votre besoin</span><span><b>02</b> Nous transmettre les informations utiles</span><span><b>03</b> Recevoir une proposition adaptée</span><span><b>04</b> Valider le périmètre et démarrer le projet</span><span><b>05</b> Suivre la réalisation, les tests et la livraison</span></div></div></div>'+
+        '<div class="serviceDetailCta"><div><strong>Prêt à démarrer ?</strong><span>Expliquez-nous votre projet et nous vous orienterons vers la prochaine étape.</span></div><a class="cta" href="/rendez-vous/">Demander ce service →</a></div></div>';
       hero.insertAdjacentElement('afterend',section);
     }).catch(()=>{});
   }
