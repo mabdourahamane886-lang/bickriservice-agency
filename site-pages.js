@@ -43,8 +43,7 @@
     const slug=location.pathname.split('/').filter(Boolean)[1];
     if(!slug)return;
     const hero=document.querySelector('.hero');
-    const heroGrid=document.querySelector('.heroGrid');
-    if(!hero||!heroGrid||hero.querySelector('.servicePageImage'))return;
+    if(!hero||hero.querySelector('.servicePageImage'))return;
     fetch('/services-share.json',{cache:'no-store'})
       .then(r=>r.ok?r.json():[])
       .then(items=>{
@@ -58,7 +57,7 @@
         img.decoding='async';
         img.addEventListener('error',()=>img.remove());
         const wrap=hero.querySelector('.wrap');
-        if(wrap)wrap.insertBefore(img,heroGrid);
+        if(wrap)wrap.insertBefore(img,wrap.firstChild);
       })
       .catch(()=>{});
   }
