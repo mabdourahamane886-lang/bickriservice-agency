@@ -1,0 +1,187 @@
+{
+  "creation-sites-web": [
+    "Arborescence des pages, design responsive, formulaires, sections commerciales, optimisation mobile et préparation du déploiement.",
+    "Pages structurées, interface responsive, formulaires et éléments nécessaires à la présentation de votre activité.",
+    "Nous transformons votre idée en une présence web claire, professionnelle et évolutive."
+  ],
+  "e-commerce": [
+    "Catalogue, fiches produits, panier, parcours de commande, configuration des moyens de paiement disponibles et gestion des contenus.",
+    "Boutique responsive, catalogue organisé, parcours d’achat et structure prête à évoluer avec votre activité.",
+    "L’objectif est de rendre l’achat en ligne simple pour vos clients et facile à administrer pour vous."
+  ],
+  "reseaux-sociaux": [
+    "Optimisation des profils, ligne éditoriale, calendrier de publication, concepts de contenus et formats adaptés à chaque plateforme.",
+    "Calendrier éditorial, idées de contenus, textes et visuels selon la formule choisie.",
+    "Votre communication devient plus régulière, reconnaissable et cohérente avec votre marque."
+  ],
+  "intelligence-artificielle": [
+    "Identification des tâches pouvant être assistées par l’IA, conception de prompts, workflows, assistants et intégrations adaptées.",
+    "Prompts personnalisés, workflows, assistants ou intégrations selon le projet.",
+    "Nous cherchons des usages concrets de l’IA qui répondent à vos besoins professionnels, plutôt qu’un simple effet de mode."
+  ],
+  "branding-design": [
+    "Logo, palette de couleurs, typographies, règles graphiques et déclinaisons pour vos supports numériques.",
+    "Identité visuelle, fichiers du logo et éléments graphiques prêts pour vos supports.",
+    "Votre marque dispose d’un système visuel cohérent qui peut être réutilisé sur le web, les réseaux et vos documents."
+  ],
+  "publicite-digitale": [
+    "Définition de l’objectif, audience, message, formats créatifs, structure de campagne et indicateurs à suivre.",
+    "Annonces, textes publicitaires, visuels et structure de campagne selon le périmètre.",
+    "La campagne est organisée autour d’un objectif mesurable et d’un suivi permettant d’identifier les ajustements nécessaires."
+  ],
+  "formation-coaching": [
+    "Programme adapté au niveau, démonstrations, exercices pratiques, corrections et feuille de route.",
+    "Supports pédagogiques, exercices et ressources utilisables après les sessions.",
+    "L’accompagnement vise l’autonomie : comprendre, pratiquer, corriger puis appliquer sur vos propres projets."
+  ],
+  "seo-referencement": [
+    "Audit des pages, structure des titres, métadonnées, contenus, liens internes, indexation et recommandations de visibilité locale.",
+    "Rapport SEO, priorités techniques et recommandations de contenus.",
+    "Nous améliorons la compréhension de votre site par les moteurs de recherche sans promettre artificiellement une position précise."
+  ],
+  "creation-contenu": [
+    "Recherche d’idées, angles éditoriaux, scripts, textes, carrousels, publications et déclinaisons pour vos plateformes.",
+    "Calendrier éditorial, textes, scripts et créations prévues dans la formule.",
+    "Chaque contenu doit servir un objectif : informer, démontrer votre expertise, présenter une offre ou créer de l’engagement."
+  ],
+  "montage-video": [
+    "Sélection des rushes, découpage, rythme, transitions, sous-titres, habillage sonore et exports adaptés aux plateformes.",
+    "Vidéo finale, formats verticaux ou horizontaux et versions nécessaires selon le projet.",
+    "Le montage transforme vos rushes en contenu lisible, dynamique et adapté à l’usage prévu."
+  ],
+  "applications-mobiles": [
+    "Conception des parcours, interfaces, authentification, données, fonctionnalités métier et intégrations nécessaires.",
+    "Prototype ou application fonctionnelle selon le cahier des charges, avec configuration des services nécessaires.",
+    "Chaque fonctionnalité est pensée autour du parcours réel de l’utilisateur et du besoin métier."
+  ],
+  "chatbots-assistants-ia": [
+    "Scénarios conversationnels, base de connaissances, règles de réponse, interface de chat et connexions aux outils utiles.",
+    "Assistant conversationnel, scénarios et configuration des sources d’information prévues.",
+    "L’assistant peut prendre en charge les questions répétitives et orienter les utilisateurs vers les bonnes ressources."
+  ],
+  "automatisation-digitale": [
+    "Cartographie des tâches répétitives, déclencheurs, notifications, synchronisation et circulation des données entre outils.",
+    "Workflows automatisés, documentation et contrôles nécessaires.",
+    "Nous cherchons à supprimer les manipulations répétitives tout en conservant des points de contrôle lorsque cela est nécessaire."
+  ],
+  "email-marketing": [
+    "Segmentation, newsletters, séquences automatisées, modèles d’emails, formulaires et indicateurs de campagne.",
+    "Modèles, séquences ou campagnes et structure de suivi.",
+    "L’email devient un canal organisé pour informer, relancer et fidéliser votre audience."
+  ],
+  "google-business-profile": [
+    "Catégorie, description, coordonnées, horaires, photos, liens, publications et bonnes pratiques de gestion locale.",
+    "Fiche optimisée et guide de mise à jour des informations.",
+    "Une fiche locale complète aide les personnes qui recherchent votre activité à comprendre rapidement ce que vous proposez."
+  ],
+  "reputation-en-ligne": [
+    "Analyse des informations visibles, cohérence des profils, avis, réponses et plan de communication.",
+    "Rapport, recommandations et modèles de réponses selon la mission.",
+    "La réputation se travaille avec une présence cohérente, des informations exactes et des réponses professionnelles."
+  ],
+  "community-management": [
+    "Calendrier, publications, programmation, réponses, modération, veille et reporting.",
+    "Planning éditorial, animation de communauté et rapport selon la formule.",
+    "Votre communauté bénéficie d’une présence régulière et d’un cadre clair pour les échanges."
+  ],
+  "influence-partenariats": [
+    "Recherche de profils pertinents, brief, proposition de collaboration, coordination des contenus et suivi.",
+    "Sélection de profils, brief de campagne et coordination selon le projet.",
+    "Les partenariats sont construits autour de la cohérence entre le créateur, l’audience et votre offre."
+  ],
+  "produits-numeriques": [
+    "Structuration, rédaction, mise en page, design et préparation de guides, e-books, templates ou ressources.",
+    "Produit numérique finalisé et éléments de présentation selon le projet.",
+    "Nous transformons votre expertise en une ressource claire, présentable et exploitable en ligne."
+  ],
+  "landing-pages": [
+    "Proposition de valeur, structure persuasive, preuve, bénéfices, formulaire, appels à l’action et responsive.",
+    "Landing page responsive avec les éléments de conversion prévus.",
+    "La page est construite autour d’une action principale afin d’éviter de disperser l’attention du visiteur."
+  ],
+  "audit-digital": [
+    "Analyse du site, réseaux, visibilité, contenus, parcours utilisateur, image de marque et points techniques selon le périmètre.",
+    "Rapport d’audit, priorités et feuille de route.",
+    "Vous obtenez une vision structurée de ce qui doit être corrigé, amélioré ou développé en priorité."
+  ],
+  "cybersecurite": [
+    "Vérification des accès, mots de passe, authentification renforcée, sauvegardes, permissions et configurations courantes.",
+    "Checklist de sécurité, corrections convenues et recommandations.",
+    "Il s’agit d’une sécurisation de base et de bonnes pratiques, pas d’un audit de cybersécurité avancé ou d’une garantie absolue."
+  ],
+  "maintenance-web": [
+    "Mises à jour, corrections, sauvegardes, surveillance des erreurs et petites améliorations selon le contrat.",
+    "Interventions réalisées et compte rendu selon la formule.",
+    "La maintenance permet d’éviter que les petits problèmes techniques s’accumulent et deviennent plus difficiles à résoudre."
+  ],
+  "hebergement-domaines": [
+    "Configuration du domaine, DNS, HTTPS, hébergement, déploiement et vérification de l’accessibilité du site.",
+    "Domaine relié, DNS configuré et déploiement vérifié selon le projet.",
+    "Nous faisons le lien entre votre nom de domaine, votre hébergement et votre application pour une mise en ligne propre."
+  ],
+  "analytics-reporting": [
+    "Configuration des événements, conversions, indicateurs clés, tableaux de bord et rapports de performance.",
+    "Suivi analytics, tableau de bord et rapport selon le périmètre.",
+    "Les données servent à comprendre les comportements et à orienter les prochaines décisions, pas seulement à afficher des chiffres."
+  ],
+  "marketing-whatsapp": [
+    "Catalogue, liens directs, messages commerciaux, segmentation, scénarios de suivi et organisation des conversations.",
+    "Messages types, catalogue ou parcours d’acquisition selon la mission.",
+    "WhatsApp peut devenir un véritable canal commercial lorsqu’il est organisé autour d’un parcours clair."
+  ],
+  "creation-podcasts": [
+    "Concept, format des épisodes, structure, scripts, habillage sonore, montage et préparation à la diffusion.",
+    "Structure d’émission, habillage et épisodes selon la formule.",
+    "Le podcast peut installer une relation régulière avec une audience autour de votre expertise ou de votre marque."
+  ],
+  "production-photo": [
+    "Préparation visuelle, cadrage, sélection, retouche, recadrage et déclinaison des photos pour les supports digitaux.",
+    "Photos finalisées et formats adaptés aux usages convenus.",
+    "Des visuels cohérents permettent de mieux présenter vos produits, votre équipe, vos événements ou votre univers de marque."
+  ],
+  "motion-design": [
+    "Storyboard, composition graphique, typographie animée, transitions, éléments visuels et exports.",
+    "Animation finalisée et formats adaptés aux canaux de diffusion.",
+    "Le motion design permet d’expliquer une idée, présenter une offre ou dynamiser une campagne avec des éléments animés."
+  ],
+  "design-ui-ux": [
+    "Architecture de l’information, parcours, wireframes, composants, hiérarchie visuelle et adaptation responsive.",
+    "Maquettes, système de composants et prototype selon le périmètre.",
+    "L’interface est conçue pour que l’utilisateur comprenne rapidement où il se trouve et quelle action effectuer."
+  ],
+  "prototypage-digital": [
+    "Définition des écrans, parcours, interactions et scénarios avant le développement complet.",
+    "Prototype navigable et documentation des parcours principaux.",
+    "Le prototype permet de visualiser une idée, recueillir des retours et détecter des problèmes avant d’engager tout le développement."
+  ],
+  "transformation-digitale": [
+    "Analyse des processus, priorités, outils, automatisations, organisation des données et feuille de route.",
+    "Diagnostic, recommandations et plan d’action progressif.",
+    "La transformation digitale est abordée étape par étape afin de relier les outils aux vrais besoins de l’organisation."
+  ],
+  "crm-gestion-clients": [
+    "Organisation des fiches, pipeline commercial, étapes de vente, rappels, segmentation et automatisations.",
+    "CRM configuré, pipeline, champs et automatisations selon l’outil choisi.",
+    "Vous disposez d’une vue structurée de vos prospects et clients au lieu de disperser les informations dans plusieurs outils."
+  ],
+  "solutions-reservation": [
+    "Calendrier, disponibilités, formulaire, choix du créneau, confirmations et notifications selon le projet.",
+    "Parcours de réservation et éléments de gestion prévus dans le périmètre.",
+    "Le client peut réserver plus facilement tandis que l’équipe dispose d’une organisation plus claire des demandes."
+  ],
+  "billetterie-en-ligne": [
+    "Page événement, catégories de billets, inscription, paiement disponible, confirmation et gestion des participants.",
+    "Parcours de billetterie et outils de gestion prévus par le projet.",
+    "Le parcours est conçu pour réduire les étapes inutiles entre la découverte de l’événement et l’inscription."
+  ],
+  "plateformes-web": [
+    "Architecture, comptes utilisateurs, rôles, tableaux de bord, recherche, données, formulaires et intégrations.",
+    "Plateforme fonctionnelle avec les espaces et fonctionnalités définis dans le cahier des charges.",
+    "Une plateforme web permet de réunir plusieurs opérations dans un environnement unique et évolutif."
+  ],
+  "integration-api": [
+    "Analyse de la documentation, authentification, endpoints, gestion des erreurs, tests, sécurité des secrets et documentation.",
+    "Connexion fonctionnelle entre vos systèmes avec les secrets conservés côté serveur lorsque nécessaire.",
+    "L’intégration permet à plusieurs services de communiquer et d’éviter certaines ressaisies manuelles."
+  ]
+}
