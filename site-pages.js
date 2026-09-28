@@ -78,6 +78,6 @@
     initServicePhoto();
     initServiceDetailScroll();
   }
-  function boot(){addScript('/_vercel/insights/script.js','bickri-vercel-analytics');addScript('/_vercel/speed-insights/script.js','bickri-vercel-speed');enhanceSEO();addArabicLink();initUI()}
+  function boot(){addScript('/service-experience.js','bickri-service-experience');addScript('/_vercel/insights/script.js','bickri-vercel-analytics');addScript('/_vercel/speed-insights/script.js','bickri-vercel-speed');enhanceSEO();addArabicLink();initUI()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
