@@ -6,6 +6,19 @@ const OPENAI_URL=()=>process.env.AI_API_URL||'https://api.openai.com/v1/response
 const OPENAI_MODEL=()=>process.env.OPENAI_MODEL||process.env.AI_MODEL||'gpt-5.6-luna';
 function session(req,res){const raw=String(req.headers.cookie||'');const m=raw.match(/(?:^|;\s*)bickri_legal_session=([a-zA-Z0-9_-]{16,100})/);if(m)return m[1];const id='legal_'+(typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID().replace(/-/g,''):Date.now().toString(36)+Math.random().toString(36).slice(2));res.setHeader('Set-Cookie','bickri_legal_session='+id+'; Path=/; Max-Age=31536000; HttpOnly; Secure; SameSite=Lax');return id;}
 function sbHeaders(){const k=SUPABASE_KEY();return {apikey:k,Authorization:'Bearer '+k,'Content-Type':'application/json',Accept:'application/json'};}
+async function requireAdmin(req){
+  const auth=String(req.headers.authorization||'');
+  if(!/^Bearer\s+/i.test(auth)) return null;
+  const token=auth.replace(/^Bearer\s+/i,'').trim();
+  const r=await fetch(SUPABASE_URL()+'/auth/v1/user',{headers:{apikey:token,Authorization:'Bearer '+token}});
+  if(!r.ok)return null;
+  const user=await r.json().catch(()=>null);
+  if(!user?.id)return null;
+  const pr=await sb('/rest/v1/profiles?id=eq.'+encodeURIComponent(user.id)+'&select=role&limit=1');
+  const rows=await pr.json().catch(()=>[]);
+  if(!pr.ok||rows[0]?.role!=='admin')return null;
+  return user;
+}
 async function sb(path,opts={}){const k=SUPABASE_KEY();if(!k)throw new Error('SUPABASE_SERVICE_ROLE_KEY manquante');return fetch(SUPABASE_URL()+path,{...opts,headers:{...sbHeaders(),...(opts.headers||{})}});}
 function chunks(text,size=6000){const out=[];for(let i=0;i<text.length;i+=size)out.push(text.slice(i,i+size));return out;}
 function extractJson(text){try{return JSON.parse(text)}catch{}const a=String(text).indexOf('{'),b=String(text).lastIndexOf('}');if(a>=0&&b>a)try{return JSON.parse(text.slice(a,b+1))}catch{}return null;}
@@ -19,6 +32,8 @@ async function relevant(documentId,query){const q=String(query||'').trim().repla
 module.exports=async function handler(req,res){
 if(req.method==='OPTIONS'){res.setHeader('Access-Control-Allow-Origin','*');res.setHeader('Access-Control-Allow-Methods','POST,OPTIONS');res.setHeader('Access-Control-Allow-Headers','Content-Type');return res.status(204).end();}
 if(req.method!=='POST')return json(res,405,{error:'Method not allowed'});
+const adminUser=await requireAdmin(req);
+if(!adminUser)return json(res,401,{error:'Accès administrateur requis.'});
 const sid=session(req,res),body=req.body||{},action=String(body.action||'').trim();
 try{
 if(action==='upload'){const text=typeof body.text==='string'?body.text.trim():'';if(!text)return json(res,400,{error:'Le texte du document est vide.'});if(text.length>160000)return json(res,400,{error:'Document trop volumineux. Limite: 160 000 caractères.'});const doc=await createDocument(sid,String(body.title||body.fileName||'Document juridique').slice(0,200),String(body.fileName||'').slice(0,200),String(body.mimeType||'').slice(0,100),text);await saveChunks(doc.id,text);return json(res,200,{document:{id:doc.id,title:doc.title,file_name:doc.file_name,characters:text.length}});}
