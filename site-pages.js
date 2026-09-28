@@ -62,6 +62,33 @@
       })
       .catch(()=>{});
   }
+  function initServiceDetailContent(){
+    if(!location.pathname.startsWith('/services/'))return;
+    const slug=location.pathname.split('/').filter(Boolean)[1];
+    if(!slug)return;
+    const main=document.querySelector('main');
+    const hero=main?.querySelector('.hero');
+    if(!main||!hero||main.querySelector('.serviceLongDetails'))return;
+    Promise.all([
+      fetch('/services-share.json',{cache:'no-store'}).then(r=>r.ok?r.json():[]),
+      fetch('/service-details.json',{cache:'no-store'}).then(r=>r.ok?r.json():{})
+    ]).then(([items,details])=>{
+      const service=items.find(x=>x.slug===slug);
+      if(!service)return;
+      const d=details[slug]||[service.what||'',service.get||'',service.why||''];
+      const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+      const section=document.createElement('section');
+      section.className='section serviceLongDetails';
+      section.innerHTML='<div class="wrap"><div class="eyebrow">Fiche détaillée</div><h2 class="title">'+esc(service.name)+'</h2><p class="serviceDetailLead">'+esc(service.desc)+' Bickri Service Agency adapte cette prestation à votre activité, vos objectifs et vos contraintes.</p><div class="serviceDetailGrid">'+
+        '<article class="card"><span class="tag">Ce que nous réalisons</span><h3>Une prestation structurée</h3><p>'+esc(d[0])+'</p></article>'+
+        '<article class="card"><span class="tag">Ce que vous obtenez</span><h3>Des livrables concrets</h3><p>'+esc(d[1])+'</p></article>'+
+        '<article class="card"><span class="tag">Pourquoi ce service</span><h3>Un objectif clair</h3><p>'+esc(d[2])+'</p></article>'+
+        '<article class="card"><span class="tag">Pour votre activité</span><h3>Une approche sur mesure</h3><p>'+esc(service.who||'Entrepreneurs, entreprises, créateurs et organisations.')+'</p></article>'+
+      '</div><div class="serviceDetailLong"><div><span class="tag">Prestations incluses</span><h3>Ce qui peut être réalisé</h3><ul><li>'+esc(service.what||d[0])+'</li><li>'+esc(d[0])+'</li><li>'+esc(d[1])+'</li></ul></div><div><span class="tag">Méthode Bickri</span><h3>De l’idée à la livraison</h3><div class="serviceProcess"><span><b>01</b> Échange & cadrage</span><span><b>02</b> Conception</span><span><b>03</b> Production</span><span><b>04</b> Tests & ajustements</span><span><b>05</b> Livraison & accompagnement</span></div></div></div><div class="serviceDetailCta"><div><strong>Vous souhaitez ce service ?</strong><span>Demandez un devis adapté à votre projet.</span></div><a class="cta" href="/rendez-vous/">Demander un devis →</a></div></div>';
+      hero.insertAdjacentElement('afterend',section);
+    }).catch(()=>{});
+  }
+
   function initServiceDetailScroll(){
     if(!location.pathname.startsWith('/services/'))return;
     document.body.classList.add('service-detail-mode');
@@ -76,6 +103,7 @@
     const y=document.querySelector('[data-year]');if(y)y.textContent=new Date().getFullYear();
     initPortfolioFilters();
     initServicePhoto();
+    initServiceDetailContent();
     initServiceDetailScroll();
   }
   function boot(){addScript('/service-experience.js','bickri-service-experience');addScript('/_vercel/insights/script.js','bickri-vercel-analytics');addScript('/_vercel/speed-insights/script.js','bickri-vercel-speed');enhanceSEO();addArabicLink();initUI()}
