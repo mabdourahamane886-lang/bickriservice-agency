@@ -3,174 +3,79 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Bickri AI — assistant officiel de Bickri Service Agency.">
-<meta name="theme-color" content="#ffffff">
-<title>Bickri AI — Bickri Service Agency</title>
+<meta name="theme-color" content="#08101f">
+<meta name="description" content="Bickri AI — assistant local de Bickri Service Agency. Intelligence artificielle exécutée directement dans votre navigateur, sans clé API.">
+<title>Bickri AI — IA locale | Bickri Service Agency</title>
 <style>
-:root{--bg:#fff;--side:#f7f7f8;--soft:#ececf1;--ink:#202123;--muted:#6e6e73;--gold:#d9a441;--navy:#08101f;--green:#25d366}
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
-button,textarea{font:inherit}
-button{cursor:pointer}
-.app{height:100dvh;display:flex;background:#fff}
-.sidebar{width:272px;flex:0 0 272px;background:var(--side);display:flex;flex-direction:column;padding:13px 10px;border-right:1px solid #e9e9ec;z-index:30}
-.brand{display:flex;align-items:center;gap:10px;padding:5px 8px 18px;text-decoration:none;color:var(--ink)}
-.brand img{width:38px;height:38px}.brand b{font-size:15px;letter-spacing:.02em}.brand small{display:block;font-size:9px;color:#8a8a90;letter-spacing:.13em;margin-top:2px;font-weight:700}
-.new{width:100%;border:1px solid #dedee3;background:#fff;border-radius:10px;padding:11px 12px;text-align:left;font-weight:700;color:#303036;display:flex;align-items:center;gap:10px;box-shadow:0 1px 2px #00000008}
-.new svg{width:18px;height:18px}
-.section{font-size:11px;color:#8a8a90;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:22px 10px 8px}
-.history{overflow:auto;flex:1}.history button{display:block;width:100%;border:0;background:transparent;text-align:left;padding:10px 11px;border-radius:8px;color:#3e3e43;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px;margin-bottom:2px}.history button:hover{background:#e9e9eb}
-.sideBottom{border-top:1px solid #e5e5e8;padding-top:10px}.contact{display:flex;align-items:center;gap:10px;padding:10px;border-radius:9px;color:#404046;text-decoration:none;font-size:12px}.contact:hover{background:#e9e9eb}.avatar{width:28px;height:28px;border-radius:50%;background:var(--navy);display:grid;place-items:center;color:#f3cf78;font-size:11px;font-weight:900}
-.main{min-width:0;flex:1;height:100%;display:flex;flex-direction:column;position:relative;background:#fff}
-.topbar{height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid #f0f0f2;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);z-index:10}
-.topTitle{font-weight:700;font-size:15px}.topTitle span{color:var(--gold)}
-.iconBtn{width:38px;height:38px;border:0;background:transparent;border-radius:9px;display:grid;place-items:center;color:#444}.iconBtn:hover{background:#f3f3f5}.mobileOnly{display:none}
-.chat{flex:1;min-height:0;display:flex;flex-direction:column}
-.messages{flex:1;overflow:auto;padding:34px 18px 150px;scroll-behavior:smooth}
-.empty{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px 0 80px}
-.aiLogo{width:66px;height:66px;margin-bottom:18px;border-radius:20px;background:#d9a441;color:#08101f;display:grid;place-items:center;font-size:42px;font-weight:900;box-shadow:0 10px 28px rgba(217,164,65,.22)}
-.empty h1{font-size:31px;line-height:1.15;margin:0 0 10px;letter-spacing:-.035em;font-weight:700}.empty h1 span{color:var(--gold)}
-.empty p{margin:0;color:var(--muted);font-size:14px}
-.quick{display:grid;grid-template-columns:repeat(2,minmax(220px,1fr));gap:10px;max-width:690px;width:100%;margin-top:28px}.quick button{background:#fff;border:1px solid #dedee3;border-radius:12px;text-align:left;padding:13px 14px;color:#3b3b40;font-size:13px;line-height:1.35}.quick button:hover{background:#f7f7f8}
-.row{width:100%;max-width:800px;margin:0 auto 28px;display:flex;gap:14px;align-items:flex-start}.row.user{justify-content:flex-end}.bubble{max-width:78%;font-size:15px;line-height:1.65;white-space:pre-wrap}.user .bubble{background:#f1f1f3;border-radius:18px;padding:11px 15px}.ai .bubble{padding:2px 0}.miniLogo{width:28px;height:28px;flex:0 0 28px;margin-top:2px;border-radius:9px;background:#d9a441;color:#08101f;display:grid;place-items:center;font-size:17px;font-weight:900}
-.composerWrap{position:absolute;left:0;right:0;bottom:0;padding:14px 18px 18px;background:linear-gradient(transparent,#fff 26%,#fff)}
-.composer{max-width:800px;margin:auto;border:1px solid #d9d9de;background:#fff;border-radius:24px;min-height:52px;display:flex;align-items:flex-end;padding:7px 8px 7px 14px;box-shadow:0 2px 12px #0000000a}
-textarea{flex:1;border:0;outline:0;resize:none;max-height:160px;min-height:35px;padding:8px 4px;background:transparent;color:var(--ink);line-height:1.45}.composer textarea::placeholder{color:#8a8a91}
-.plus,.send{width:35px;height:35px;border:0;border-radius:50%;display:grid;place-items:center;flex:0 0 35px}.plus{background:transparent;color:#555}.plus:hover{background:#f1f1f3}.send{background:#202123;color:#fff}.send:disabled{background:#d6d6d8;color:#fff;cursor:default}
-.disclaimer{text-align:center;color:#9a9aa0;font-size:10px;margin-top:7px}
-.overlay{display:none}
-@media(max-width:760px){
-.sidebar{position:fixed;left:-290px;top:0;bottom:0;transition:left .2s ease;box-shadow:12px 0 35px #0002}.sidebar.open{left:0}.mobileOnly{display:grid}.quick{grid-template-columns:1fr;max-width:520px}.messages{padding-left:14px;padding-right:14px}.row{max-width:100%}.bubble{max-width:84%}.empty h1{font-size:28px}
-.overlay.show{display:block;position:fixed;inset:0;background:#0005;z-index:20}.topbar{padding:0 10px}.composerWrap{padding:10px 10px 12px}
-}
-@media(max-width:430px){.quick button{font-size:12px}.empty p{font-size:13px}.empty{padding-bottom:40px}.messages{padding-bottom:130px}.topTitle{font-size:14px}}
+:root{--navy:#08101f;--navy2:#101c32;--gold:#d9a441;--gold2:#b9852d;--bg:#f6f8fb;--card:#fff;--ink:#111827;--muted:#667289;--line:#e2e7ef;--green:#18a957;--soft:#fff5dc}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden}body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial;color:var(--ink);background:var(--bg)}button,textarea,select{font:inherit}button{cursor:pointer}
+.app{height:100dvh;display:flex}.side{width:285px;flex:0 0 285px;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:14px;z-index:40}.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);padding:7px 5px 20px}.brand img{width:42px;height:42px}.brand b{font-size:16px}.brand small{display:block;font-size:9px;color:#7b8493;letter-spacing:.15em;margin-top:3px;font-weight:800}
+.status{padding:13px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(135deg,#fff,#f8fafc);margin-bottom:12px}.statusTop{display:flex;justify-content:space-between;gap:10px;align-items:center}.dot{width:9px;height:9px;border-radius:50%;background:#a4adba;display:inline-block;margin-right:6px}.dot.ok{background:var(--green);box-shadow:0 0 0 4px #18a95716}.status strong{font-size:12px}.status small{display:block;color:var(--muted);font-size:10px;line-height:1.5;margin-top:7px}.load{width:100%;height:7px;border-radius:20px;background:#e9edf2;overflow:hidden;margin-top:10px}.load i{display:block;width:0;height:100%;background:linear-gradient(90deg,var(--gold),#f0c967);transition:width .25s}
+.new{width:100%;border:1px solid #d8dee8;background:#fff;border-radius:12px;padding:12px;text-align:left;font-weight:800;color:#303846;display:flex;align-items:center;gap:9px}.new:hover{background:#f6f8fb}.historyTitle{font-size:10px;color:#8992a0;font-weight:900;text-transform:uppercase;letter-spacing:.1em;padding:20px 7px 8px}.history{overflow:auto;flex:1}.history button{display:block;width:100%;border:0;background:transparent;text-align:left;padding:9px 10px;border-radius:9px;color:#3f4754;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}.history button:hover{background:#eef1f5}.sideFoot{border-top:1px solid var(--line);padding-top:11px;margin-top:8px}.privacy{font-size:10px;color:#748094;line-height:1.5}.privacy b{color:#1d8f4f}
+.main{min-width:0;flex:1;height:100%;display:flex;flex-direction:column;background:var(--bg);position:relative}.top{height:62px;background:rgba(255,255,255,.93);backdrop-filter:blur(15px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:10}.title{font-weight:900}.title span{color:var(--gold2)}.actions{display:flex;gap:7px}.icon{width:37px;height:37px;border:1px solid transparent;background:transparent;border-radius:10px;display:grid;place-items:center;color:#505b6b}.icon:hover{background:#eef1f5}.mobile{display:none}
+.chat{flex:1;min-height:0;overflow:auto;padding:32px 18px 160px}.empty{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px 0 70px}.logo{width:72px;height:72px;border-radius:22px;background:linear-gradient(135deg,var(--gold),#f1cb70);display:grid;place-items:center;color:var(--navy);font-size:43px;font-weight:1000;box-shadow:0 18px 45px #d9a44133}.empty h1{font-size:34px;letter-spacing:-.04em;margin:18px 0 8px}.empty h1 span{color:var(--gold2)}.empty p{max-width:650px;color:var(--muted);font-size:14px;margin:0}.badges{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin:16px 0}.badge{padding:6px 9px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:10px;font-weight:900;color:#556173}.quick{display:grid;grid-template-columns:repeat(2,minmax(220px,1fr));gap:10px;max-width:720px;width:100%;margin-top:18px}.quick button{border:1px solid var(--line);background:#fff;border-radius:14px;text-align:left;padding:13px;color:#354052;font-size:12px;line-height:1.45}.quick button:hover{border-color:#d9a441;background:#fffaf0}
+.row{max-width:850px;margin:0 auto 26px;display:flex;gap:12px;align-items:flex-start}.row.user{justify-content:flex-end}.avatar{width:29px;height:29px;flex:0 0 29px;border-radius:9px;background:linear-gradient(135deg,var(--gold),#f2cd78);display:grid;place-items:center;color:var(--navy);font-weight:1000;font-size:16px}.bubble{max-width:80%;font-size:14px;line-height:1.7;white-space:pre-wrap}.user .bubble{background:#e9edf3;border-radius:17px;padding:10px 14px}.ai .bubble{padding:2px 0}.meta{font-size:9px;color:#929baa;margin-top:5px}.copy{border:1px solid var(--line);background:#fff;border-radius:8px;padding:4px 7px;font-size:9px;color:#677285;margin-top:7px}
+.composerWrap{position:absolute;left:0;right:0;bottom:0;padding:14px 18px 18px;background:linear-gradient(transparent,var(--bg) 27%,var(--bg))}.composer{max-width:850px;margin:auto;border:1px solid #cfd6e1;background:#fff;border-radius:22px;min-height:56px;padding:7px 8px 7px 14px;display:flex;align-items:flex-end;box-shadow:0 10px 35px #08101f0b}.composer textarea{flex:1;border:0;outline:0;resize:none;min-height:38px;max-height:170px;padding:8px 4px;color:var(--ink);line-height:1.45;background:transparent}.composer textarea::placeholder{color:#8a94a3}.send{width:39px;height:39px;border:0;border-radius:12px;background:var(--navy);color:#fff;display:grid;place-items:center}.send:disabled{background:#d8dde5}.under{max-width:850px;margin:7px auto 0;text-align:center;color:#929baa;font-size:9px}
+.drawer{display:none}
+@media(max-width:800px){.side{position:fixed;top:0;bottom:0;left:-305px;transition:left .2s;box-shadow:15px 0 45px #0002}.side.open{left:0}.mobile{display:grid}.quick{grid-template-columns:1fr}.chat{padding-left:12px;padding-right:12px}.top{padding:0 10px}.composerWrap{padding:10px}.bubble{max-width:86%}.empty h1{font-size:28px}}
+@media(max-width:480px){.empty p{font-size:12px}.empty{padding-bottom:30px}.badges{max-width:330px}.chat{padding-bottom:135px}}
 </style>
 </head>
 <body>
 <div class="app">
-<aside class="sidebar" id="sidebar">
-  <a class="brand" href="/" aria-label="Bickri Service Agency">
-    <img src="/assets/bickri-ai-logo.svg" alt="Bickri AI">
-    <span><b>Bickri AI</b><small>SERVICE AGENCY</small></span>
-  </a>
-  <button class="new" id="newChat">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-    Nouvelle discussion
-  </button>
-  <div class="section">Historique</div>
-  <div class="history" id="history"></div>
-  <div class="sideBottom">
-    <a class="contact" href="https://wa.me/22788376133?text=Bonjour%20Bickri%20Service%20Agency%2C%20je%20viens%20de%20Bickri%20AI." target="_blank" rel="noopener">
-      <span class="avatar">MB</span><span>Mohamed Bickri Jr<br><small style="color:#8a8a90">+227 88 37 61 33</small></span>
-    </a>
-  </div>
+<aside class="side" id="side">
+<a class="brand" href="/" aria-label="Retour à Bickri Service Agency"><img src="/assets/bickri-ai-logo.svg" alt="Bickri AI"><span><b>Bickri AI</b><small>SERVICE AGENCY</small></span></a>
+<div class="status">
+<div class="statusTop"><strong><span class="dot" id="dot"></span><span id="statusText">IA locale non chargée</span></strong><button class="icon" id="loadBtn" title="Charger l'IA">↻</button></div>
+<small id="statusDetail">Le modèle s’exécute sur votre appareil. Aucune clé API n’est nécessaire.</small><div class="load"><i id="progress"></i></div>
+</div>
+<button class="new" id="newChat">＋ &nbsp; Nouvelle discussion</button>
+<div class="historyTitle">Historique local</div><div class="history" id="history"></div>
+<div class="sideFoot"><div class="privacy">🔒 <b>Confidentiel</b> — vos conversations restent dans le navigateur. Bickri AI utilise un modèle local WebGPU.</div></div>
 </aside>
-<div class="overlay" id="overlay"></div>
-
 <main class="main">
-  <header class="topbar">
-    <button class="iconBtn mobileOnly" id="menu" aria-label="Ouvrir le menu">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-    </button>
-    <div class="topTitle">Bickri <span>AI</span></div>
-    <a class="iconBtn" href="/" aria-label="Retour au site" title="Retour au site">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/><path d="M9 12h10"/></svg>
-    </a>
-  </header>
-
-  <section class="chat">
-    <div class="messages" id="messages" aria-live="polite"></div>
-  </section>
-
-  <div class="composerWrap">
-    <form class="composer" id="form">
-      <button class="plus" type="button" aria-label="Ajouter" title="Ajouter">
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-      </button>
-      <textarea id="input" rows="1" maxlength="2000" placeholder="Demandez quelque chose à Bickri AI…" aria-label="Message"></textarea>
-      <button class="send" id="send" type="submit" disabled aria-label="Envoyer">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m5 12 14-7-3 14-4-6-7-1Z"/><path d="m12 13 7-8"/></svg>
-      </button>
-    </form>
-    <div class="disclaimer">Bickri AI peut faire des erreurs. Pour un devis ou une information contractuelle, contactez directement Bickri Service Agency.</div>
-  </div>
+<header class="top"><button class="icon mobile" id="menu">☰</button><div class="title">Bickri <span>AI</span> <small style="font-size:9px;color:#7b8493">LOCAL</small></div><div class="actions"><button class="icon" id="export" title="Exporter">⇩</button><a class="icon" href="/" title="Retour">↩</a></div></header>
+<section class="chat" id="chat"></section>
+<div class="composerWrap"><form class="composer" id="form"><textarea id="input" rows="1" maxlength="4000" placeholder="Demandez quelque chose à Bickri AI…"></textarea><button class="send" id="send" disabled aria-label="Envoyer">➤</button></form><div class="under">Bickri AI exécute le modèle sur votre appareil • aucune clé API • première activation : téléchargement du modèle</div></div>
 </main>
 </div>
+<script type="module">
+import {CreateMLCEngine} from "https://esm.run/@mlc-ai/web-llm";
+const MODEL="Llama-3.2-1B-Instruct-q4f16_1-MLC";
+const STORAGE="bickri_local_ai_v1";
+const $=id=>document.getElementById(id);
+const chat=$("chat"),input=$("input"),send=$("send"),historyEl=$("history"),side=$("side");
+let engine=null,loading=false;
+let chats=JSON.parse(localStorage.getItem(STORAGE)||"[]");
+let current={id:Date.now(),title:"Nouvelle discussion",messages:[]};
 
-<script>
-const messages=document.getElementById('messages');
-const input=document.getElementById('input');
-const form=document.getElementById('form');
-const send=document.getElementById('send');
-const historyEl=document.getElementById('history');
-const sidebar=document.getElementById('sidebar');
-const overlay=document.getElementById('overlay');
-const STORAGE='bickri_ai_chats_v2';
-let chats=JSON.parse(localStorage.getItem(STORAGE)||'[]');
-let sessionId=localStorage.getItem('bickri_ai_session_id');
-if(!sessionId){sessionId='bsa_'+crypto.randomUUID().replace(/-/g,'');localStorage.setItem('bickri_ai_session_id',sessionId)}
-let current={id:Date.now(),title:'Nouvelle discussion',messages:[]};
+const KNOWLEDGE=`
+Tu es Bickri AI, l’assistant officiel de Bickri Service Agency, agence digitale basée à Niamey, Niger.
+Réponds en français sauf demande explicite dans une autre langue. Sois professionnel, précis, chaleureux et concis.
+Tu connais l’agence et ses services : création de sites web, e-commerce, réseaux sociaux, intelligence artificielle, branding & design, publicité digitale, formation & coaching, SEO, création de contenu, montage vidéo, applications mobiles, chatbots, automatisation, email marketing, Google Business Profile, réputation en ligne, community management, influence & partenariats, produits numériques, landing pages, audit digital, cybersécurité de base, maintenance web, hébergement & domaines, analytics & reporting, marketing WhatsApp, podcasts, production photo, motion design, UI/UX, prototypage, transformation digitale, CRM, réservation, billetterie, plateformes web et intégration d’API.
+Bickri Service Agency propose des solutions adaptées au Niger et à l’Afrique, avec accompagnement professionnel.
+Contact officiel : bickriserviceagency@gmail.com ; WhatsApp : +227 88 37 61 33 ; localisation : Niamey, Niger.
+Règles : ne fabrique jamais un prix, un client, une garantie, un délai ou une information interne. Si le tarif exact n’est pas connu, indique que le devis est personnalisé. Pour un projet, pose les questions utiles : objectif, public cible, fonctionnalités, contenu, budget indicatif et délai souhaité. Ne révèle jamais de secrets ou de clés. Si une question est totalement hors du domaine Bickri/marketing digital, indique brièvement que tu es spécialisé dans ces domaines.
+`;
 
-const escTitle=s=>s.replace(/\s+/g,' ').trim().slice(0,42)||'Nouvelle discussion';
 function save(){localStorage.setItem(STORAGE,JSON.stringify(chats.slice(-30)))}
-function renderHistory(){
- historyEl.innerHTML='';
- [...chats].reverse().forEach(c=>{
-   const b=document.createElement('button');b.textContent=c.title;b.title=c.title;
-   b.onclick=()=>{current=JSON.parse(JSON.stringify(c));renderChat();closeMenu()};historyEl.appendChild(b);
- });
-}
-function renderChat(){
- messages.innerHTML='';
- if(!current.messages.length){
-   const empty=document.createElement('div');empty.className='empty';
-   empty.innerHTML='<div class="aiLogo">B</div><h1>Bonjour, je suis <span>Bickri AI</span>.</h1><p>Comment puis-je vous aider avec Bickri Service Agency ?</p><div class="quick"><button>Quels services proposez-vous ?</button><button>Comment obtenir un devis ?</button><button>Quel est votre numéro WhatsApp ?</button><button>Qui a créé Bickri Service Agency ?</button></div>';
-   messages.appendChild(empty);
-   empty.querySelectorAll('.quick button').forEach(b=>b.onclick=()=>ask(b.textContent));
-   return;
- }
- current.messages.forEach(m=>addMessage(m.content,m.role,false));
- scrollBottom();
-}
-function addMessage(text,role,scroll=true){
- const row=document.createElement('div');row.className='row '+(role==='user'?'user':'ai');
- if(role==='assistant'){const img=document.createElement('img');img.className='miniLogo';img.src='/assets/bickri-ai-logo.svg';img.alt='';row.appendChild(img)}
- const bubble=document.createElement('div');bubble.className='bubble';bubble.textContent=text;row.appendChild(bubble);messages.appendChild(row);
- if(scroll)scrollBottom();
-}
-function scrollBottom(){messages.scrollTop=messages.scrollHeight}
-function autoSize(){input.style.height='auto';input.style.height=Math.min(input.scrollHeight,160)+'px';send.disabled=!input.value.trim()}
-async function ask(q){
- const text=q.trim();if(!text)return;
- if(!current.messages.length){current.title=escTitle(text)}
- current.messages.push({role:'user',content:text});
- messages.querySelector('.empty')?.remove();
- addMessage(text,'user');
- input.value='';autoSize();
- const waiting={role:'assistant',content:'…'};addMessage('…','assistant');current.messages.push(waiting);
- try{
-   const res=await fetch('/api/bickri-ai',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({message:text,sessionId,history:current.messages.slice(-9,-1)})});
-   const data=await res.json().catch(()=>({}));
-   const answer=res.ok&&data.answer?data.answer:'Je rencontre un problème temporaire. Contactez Bickri Service Agency sur WhatsApp au +227 88 37 61 33.';
-   current.messages[current.messages.length-1].content=answer;
-   const last=messages.lastElementChild?.querySelector('.bubble');if(last)last.textContent=answer;
- }catch(e){
-   const answer='Je rencontre un problème temporaire. Contactez Bickri Service Agency sur WhatsApp au +227 88 37 61 33.';
-   current.messages[current.messages.length-1].content=answer;
-   const last=messages.lastElementChild?.querySelector('.bubble');if(last)last.textContent=answer;
- }
- chats=chats.filter(c=>c.id!==current.id);chats.push(JSON.parse(JSON.stringify(current)));save();renderHistory();scrollBottom();
-}
-function newChat(){if(current.messages.length){chats=chats.filter(c=>c.id!==current.id);chats.push(JSON.parse(JSON.stringify(current)));save();renderHistory()}current={id:Date.now(),title:'Nouvelle discussion',messages:[]};renderChat();closeMenu()}
-function closeMenu(){sidebar.classList.remove('open');overlay.classList.remove('show')}
-document.getElementById('newChat').onclick=newChat;
-document.getElementById('menu').onclick=()=>{sidebar.classList.add('open');overlay.classList.add('show')};
-overlay.onclick=closeMenu;
-form.onsubmit=e=>{e.preventDefault();ask(input.value)};
-input.addEventListener('input',autoSize);
-input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ask(input.value)}});
-renderHistory();renderChat();autoSize();
+function title(s){return s.replace(/\s+/g," ").trim().slice(0,42)||"Nouvelle discussion"}
+function renderHistory(){historyEl.innerHTML="";[...chats].reverse().forEach(c=>{const b=document.createElement("button");b.textContent=c.title;b.onclick=()=>{current=JSON.parse(JSON.stringify(c));render();side.classList.remove("open")};historyEl.appendChild(b)})}
+function esc(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
+function add(text,role){const row=document.createElement("div");row.className="row "+(role==="user"?"user":"ai");if(role==="assistant"){const a=document.createElement("div");a.className="avatar";a.textContent="B";row.appendChild(a)}const wrap=document.createElement("div");wrap.style.maxWidth="80%";const b=document.createElement("div");b.className="bubble";b.textContent=text;wrap.appendChild(b);if(role==="assistant"&&text&&text!=="…"){const cp=document.createElement("button");cp.className="copy";cp.textContent="Copier";cp.onclick=()=>navigator.clipboard?.writeText(text);wrap.appendChild(cp)}row.appendChild(wrap);chat.appendChild(row);chat.scrollTop=chat.scrollHeight;return b}
+function render(){chat.innerHTML="";if(!current.messages.length){const e=document.createElement("div");e.className="empty";e.innerHTML='<div class="logo">B</div><h1>Bonjour, je suis <span>Bickri AI</span>.</h1><p>Une intelligence artificielle locale pour vous accompagner dans vos projets digitaux.</p><div class="badges"><span class="badge">⚡ WebGPU</span><span class="badge">🔒 Privé</span><span class="badge">🚫 Sans API</span><span class="badge">🇳🇪 Bickri Service Agency</span></div><div class="quick"><button>Quels services propose Bickri Service Agency ?</button><button>Comment préparer mon projet de site web ?</button><button>Comment obtenir un devis ?</button><button>Quelle stratégie pour développer mes réseaux sociaux ?</button></div>';chat.appendChild(e);e.querySelectorAll(".quick button").forEach(b=>b.onclick=()=>ask(b.textContent));return}current.messages.forEach(m=>add(m.content,m.role))}
+function setStatus(t,d,ok=false,p=0){$("statusText").textContent=t;$("statusDetail").textContent=d;$("dot").className="dot"+(ok?" ok":"");$("progress").style.width=Math.max(0,Math.min(100,p))+"%"}
+async function loadAI(){if(engine||loading)return;if(!("gpu" in navigator)){setStatus("WebGPU indisponible","Utilisez une version récente de Chrome ou Edge avec l’accélération matérielle.",false,0);return}loading=true;$("loadBtn").disabled=true;setStatus("Chargement du moteur…","Le modèle local sera téléchargé une seule fois puis mis en cache.",false,2);try{engine=await CreateMLCEngine(MODEL,{initProgressCallback:r=>{const p=Math.round((r.progress||0)*100);setStatus(p>=100?"IA locale prête":"Téléchargement du modèle…",r.text||("Progression "+p+" %"),p>=100,p)}});setStatus("IA locale prête","Modèle chargé sur cet appareil. Aucune requête IA externe.",true,100)}catch(e){console.error(e);engine=null;setStatus("Échec du chargement","Le navigateur ou l’appareil ne peut pas charger ce modèle. Essayez Chrome/Edge et activez l’accélération matérielle.",false,0)}finally{loading=false;$("loadBtn").disabled=false}}
+async function ask(q){q=q.trim();if(!q||loading)return;if(!current.messages.length)current.title=title(q);current.messages.push({role:"user",content:q});chat.querySelector(".empty")?.remove();add(q,"user");input.value="";resize();if(!engine){await loadAI()}if(!engine){const ans="Je ne peux pas démarrer le moteur IA local sur cet appareil. Vérifiez que WebGPU est disponible dans votre navigateur.";current.messages.push({role:"assistant",content:ans});add(ans,"assistant");save();renderHistory();return}
+const placeholder=add("…","assistant");send.disabled=true;
+try{const history=[{role:"system",content:KNOWLEDGE},...current.messages.slice(-10)];const stream=await engine.chat.completions.create({messages:history,temperature:.35,max_tokens:700,stream:true});let answer="";for await(const chunk of stream){const delta=chunk.choices?.[0]?.delta?.content||"";if(delta){answer+=delta;placeholder.textContent=answer;chat.scrollTop=chat.scrollHeight}}if(!answer)answer="Je n’ai pas pu générer une réponse. Reformulez votre demande.";placeholder.textContent=answer;current.messages.push({role:"assistant",content:answer})}catch(e){console.error(e);const ans="Une erreur locale est survenue pendant la génération. Essayez de relancer l’IA ou de réduire la longueur de votre demande.";placeholder.textContent=ans;current.messages.push({role:"assistant",content:ans})}
+chats=chats.filter(c=>c.id!==current.id);chats.push(JSON.parse(JSON.stringify(current)));save();renderHistory();send.disabled=!input.value.trim()}
+function resize(){input.style.height="auto";input.style.height=Math.min(input.scrollHeight,170)+"px";send.disabled=!input.value.trim()||loading}
+$("loadBtn").onclick=loadAI;$("newChat").onclick=()=>{if(current.messages.length){chats=chats.filter(c=>c.id!==current.id);chats.push(JSON.parse(JSON.stringify(current)));save()}current={id:Date.now(),title:"Nouvelle discussion",messages:[]};render();renderHistory()};
+$("menu").onclick=()=>side.classList.toggle("open");
+$("export").onclick=()=>{const blob=new Blob([JSON.stringify(current,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="bickri-ai-conversation.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+$("form").onsubmit=e=>{e.preventDefault();ask(input.value)};input.addEventListener("input",resize);input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();ask(input.value)}});
+renderHistory();render();resize();setStatus("IA locale prête à être chargée","Cliquez sur ↻ pour télécharger le modèle sur cet appareil.",false,0);
 </script>
 </body>
 </html>
