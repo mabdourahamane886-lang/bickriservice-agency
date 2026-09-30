@@ -48,7 +48,39 @@ html,body{width:100%;height:100%;overflow:hidden}
 .suggestions button{padding:12px;font-size:12px}
 }
 </style>
-</head>
+<style id="android-layout-fix">
+@media (max-width:800px) and (orientation:portrait){
+html,body{width:100%;height:100%;min-height:100%;overflow:hidden}
+body{margin:0}
+.app{width:100%;height:100dvh;min-height:100dvh;max-height:100dvh;display:flex;overflow:hidden}
+.sidebar{width:82vw;max-width:300px;height:100dvh;min-height:100dvh;position:fixed;top:0;bottom:0;left:-100vw;z-index:100;overflow:hidden;transition:left .2s}
+.sidebar.open{left:0}
+.main{width:100%;min-width:0;height:100dvh;min-height:0;max-height:100dvh;overflow:hidden}
+.top{height:56px;min-height:56px;flex:0 0 56px;padding:0 10px}
+.chat{width:100%;min-width:0;flex:1 1 auto;height:auto;min-height:0;overflow-y:auto;overflow-x:hidden;padding:18px 10px 145px;-webkit-overflow-scrolling:touch}
+.message{width:100%;max-width:850px;margin-left:auto;margin-right:auto}
+.content{max-width:88%;min-width:0}
+.bubble{overflow-wrap:anywhere;word-break:break-word}
+.welcome{width:100%;min-height:100%;padding:20px 4px 35px}
+.welcome h1{font-size:25px;line-height:1.2}
+.welcome p{max-width:94%;font-size:13px}
+.suggestions{width:100%;grid-template-columns:1fr;gap:9px}
+.suggestions button{width:100%;font-size:12px;padding:12px}
+.composerArea{left:0;right:0;bottom:0;width:100%;z-index:20;padding:8px 9px calc(8px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--bg) 25%,var(--bg))}
+.composer{width:100%;min-height:52px;margin:0;border-radius:18px}
+.composer textarea{width:100%;min-width:0;font-size:16px;line-height:1.4;max-height:115px}
+.send{flex:0 0 40px}
+.hint{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.heroMark{width:68px;height:68px;font-size:40px}
+}
+@media (max-width:480px) and (orientation:portrait){
+.chat{padding-left:8px;padding-right:8px;padding-bottom:140px}
+.message{gap:8px}
+.avatar{width:28px;height:28px;flex-basis:28px}
+.content{max-width:89%}
+.user .bubble{padding:9px 12px}
+}
+</style></head>
 <body>
 <div class="app">
 <aside class="sidebar" id="sidebar">
