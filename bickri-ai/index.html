@@ -25,27 +25,21 @@
 <div class="app">
 <aside class="side" id="side">
 <a class="brand" href="/" aria-label="Retour à Bickri Service Agency"><img src="/assets/bickri-ai-logo.svg" alt="Bickri AI"><span><b>Bickri AI</b><small>SERVICE AGENCY</small></span></a>
-<div class="status">
-<div class="statusTop"><strong><span class="dot" id="dot"></span><span id="statusText">IA locale non chargée</span></strong><button class="icon" id="loadBtn" title="Charger l'IA">↻</button></div>
-<small id="statusDetail">Le modèle s’exécute sur votre appareil. Aucune clé API n’est nécessaire.</small><div class="load"><i id="progress"></i></div>
-</div>
-<button class="new" id="newChat">＋ &nbsp; Nouvelle discussion</button>
+<div class="status"><div class="statusTop"><strong>● Bickri AI</strong></div><small>Assistant intégré au site. Fonctionne directement, sans clé API et sans téléchargement de modèle.</small></div><button class="new" id="newChat">＋ &nbsp; Nouvelle discussion</button>
 <div class="historyTitle">Historique local</div><div class="history" id="history"></div>
 <div class="sideFoot"><div class="privacy">🔒 <b>Confidentiel</b> — vos conversations restent dans le navigateur. Bickri AI utilise un modèle local WebGPU.</div></div>
 </aside>
 <main class="main">
 <header class="top"><button class="icon mobile" id="menu">☰</button><div class="title">Bickri <span>AI</span> <small style="font-size:9px;color:#7b8493">LOCAL</small></div><div class="actions"><button class="icon" id="export" title="Exporter">⇩</button><a class="icon" href="/" title="Retour">↩</a></div></header>
 <section class="chat" id="chat"></section>
-<div class="composerWrap"><form class="composer" id="form"><textarea id="input" rows="1" maxlength="4000" placeholder="Demandez quelque chose à Bickri AI…"></textarea><button class="send" id="send" disabled aria-label="Envoyer">➤</button></form><div class="under">Bickri AI exécute le modèle sur votre appareil • aucune clé API • première activation : téléchargement du modèle</div></div>
+<div class="composerWrap"><form class="composer" id="form"><textarea id="input" rows="1" maxlength="4000" placeholder="Demandez quelque chose à Bickri AI…"></textarea><button class="send" id="send" disabled aria-label="Envoyer">➤</button></form><div class="under">Bickri AI fonctionne directement dans cette page, sans clé API et sans téléchargement de modèle.</div></div>
 </main>
 </div>
 <script type="module">
-import {CreateMLCEngine} from "https://esm.run/@mlc-ai/web-llm";
-const MODEL="Llama-3.2-1B-Instruct-q4f16_1-MLC";
 const STORAGE="bickri_local_ai_v1";
 const $=id=>document.getElementById(id);
 const chat=$("chat"),input=$("input"),send=$("send"),historyEl=$("history"),side=$("side");
-let engine=null,loading=false;
+let engine=true,loading=false;
 let chats=JSON.parse(localStorage.getItem(STORAGE)||"[]");
 let current={id:Date.now(),title:"Nouvelle discussion",messages:[]};
 
@@ -63,7 +57,7 @@ function title(s){return s.replace(/\s+/g," ").trim().slice(0,42)||"Nouvelle dis
 function renderHistory(){historyEl.innerHTML="";[...chats].reverse().forEach(c=>{const b=document.createElement("button");b.textContent=c.title;b.onclick=()=>{current=JSON.parse(JSON.stringify(c));render();side.classList.remove("open")};historyEl.appendChild(b)})}
 function esc(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
 function add(text,role){const row=document.createElement("div");row.className="row "+(role==="user"?"user":"ai");if(role==="assistant"){const a=document.createElement("div");a.className="avatar";a.textContent="B";row.appendChild(a)}const wrap=document.createElement("div");wrap.style.maxWidth="80%";const b=document.createElement("div");b.className="bubble";b.textContent=text;wrap.appendChild(b);if(role==="assistant"&&text&&text!=="…"){const cp=document.createElement("button");cp.className="copy";cp.textContent="Copier";cp.onclick=()=>navigator.clipboard?.writeText(text);wrap.appendChild(cp)}row.appendChild(wrap);chat.appendChild(row);chat.scrollTop=chat.scrollHeight;return b}
-function render(){chat.innerHTML="";if(!current.messages.length){const e=document.createElement("div");e.className="empty";e.innerHTML='<div class="logo">B</div><h1>Bonjour, je suis <span>Bickri AI</span>.</h1><p>Une intelligence artificielle locale pour vous accompagner dans vos projets digitaux.</p><div class="badges"><span class="badge">⚡ WebGPU</span><span class="badge">🔒 Privé</span><span class="badge">🚫 Sans API</span><span class="badge">🇳🇪 Bickri Service Agency</span></div><div class="quick"><button>Quels services propose Bickri Service Agency ?</button><button>Comment préparer mon projet de site web ?</button><button>Comment obtenir un devis ?</button><button>Quelle stratégie pour développer mes réseaux sociaux ?</button></div>';chat.appendChild(e);e.querySelectorAll(".quick button").forEach(b=>b.onclick=()=>ask(b.textContent));return}current.messages.forEach(m=>add(m.content,m.role))}
+function render(){chat.innerHTML="";if(!current.messages.length){const e=document.createElement("div");e.className="empty";e.innerHTML='<div class="logo">B</div><h1>Bonjour, je suis <span>Bickri AI</span>.</h1><p>Une intelligence artificielle locale pour vous accompagner dans vos projets digitaux.</p><div class="quick"><button>Quels services propose Bickri Service Agency ?</button><button>Comment préparer mon projet de site web ?</button><button>Comment obtenir un devis ?</button><button>Quelle stratégie pour développer mes réseaux sociaux ?</button></div>';chat.appendChild(e);e.querySelectorAll(".quick button").forEach(b=>b.onclick=()=>ask(b.textContent));return}current.messages.forEach(m=>add(m.content,m.role))}
 function setStatus(t,d,ok=false,p=0){$("statusText").textContent=t;$("statusDetail").textContent=d;$("dot").className="dot"+(ok?" ok":"");$("progress").style.width=Math.max(0,Math.min(100,p))+"%"}
 async function loadAI(){if(engine||loading)return;if(!("gpu" in navigator)){setStatus("WebGPU indisponible","Utilisez une version récente de Chrome ou Edge avec l’accélération matérielle.",false,0);return}loading=true;$("loadBtn").disabled=true;setStatus("Chargement du moteur…","Le modèle local sera téléchargé une seule fois puis mis en cache.",false,2);try{engine=await CreateMLCEngine(MODEL,{initProgressCallback:r=>{const p=Math.round((r.progress||0)*100);setStatus(p>=100?"IA locale prête":"Téléchargement du modèle…",r.text||("Progression "+p+" %"),p>=100,p)}});setStatus("IA locale prête","Modèle chargé sur cet appareil. Aucune requête IA externe.",true,100)}catch(e){console.error(e);engine=null;setStatus("Échec du chargement","Le navigateur ou l’appareil ne peut pas charger ce modèle. Essayez Chrome/Edge et activez l’accélération matérielle.",false,0)}finally{loading=false;$("loadBtn").disabled=false}}
 async function ask(q){q=q.trim();if(!q||loading)return;if(!current.messages.length)current.title=title(q);current.messages.push({role:"user",content:q});chat.querySelector(".empty")?.remove();add(q,"user");input.value="";resize();if(!engine){await loadAI()}if(!engine){const ans="Je ne peux pas démarrer le moteur IA local sur cet appareil. Vérifiez que WebGPU est disponible dans votre navigateur.";current.messages.push({role:"assistant",content:ans});add(ans,"assistant");save();renderHistory();return}
@@ -75,7 +69,7 @@ $("loadBtn").onclick=loadAI;$("newChat").onclick=()=>{if(current.messages.length
 $("menu").onclick=()=>side.classList.toggle("open");
 $("export").onclick=()=>{const blob=new Blob([JSON.stringify(current,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="bickri-ai-conversation.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
 $("form").onsubmit=e=>{e.preventDefault();ask(input.value)};input.addEventListener("input",resize);input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();ask(input.value)}});
-renderHistory();render();resize();setStatus("IA locale prête à être chargée","Cliquez sur ↻ pour télécharger le modèle sur cet appareil.",false,0);
+renderHistory();render();resize();
 </script>
 </body>
 </html>
