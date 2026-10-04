@@ -1,4 +1,4 @@
-name: Mobile Flutter
+name: Mobile Flutter Build
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  analyze:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -33,3 +33,33 @@ jobs:
       - name: Analyze
         working-directory: mobile
         run: flutter analyze
+
+      - name: Build APK
+        working-directory: mobile
+        env:
+          SUPABASE_URL: https://okdohokhlkxrmxpevees.supabase.co
+          SUPABASE_PUBLISHABLE_KEY: sb_publishable_EiTruyR5fwwHpS_PzO5_iA_d1i4iMCP
+        run: flutter build apk --release --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY
+
+      - name: Build AAB
+        working-directory: mobile
+        env:
+          SUPABASE_URL: https://okdohokhlkxrmxpevees.supabase.co
+          SUPABASE_PUBLISHABLE_KEY: sb_publishable_EiTruyR5fwwHpS_PzO5_iA_d1i4iMCP
+        run: flutter build appbundle --release --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: bickri-service-agency-apk
+          path: mobile/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: bickri-service-agency-aab
+          path: mobile/build/app/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 14
