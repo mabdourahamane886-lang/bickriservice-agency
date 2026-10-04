@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../core/config/app_config.dart';
 import '../features/auth/auth_gate.dart';
 import '../features/home/home_page.dart';
 import '../features/auth/login_page.dart';
@@ -12,9 +13,9 @@ class BickriServiceAgencyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Bickri Service Agency',
+      title: AppConfig.brandName,
       debugShowCheckedModeBanner: false,
-      theme: Theme.of(context),
+      theme: AppConfig.theme,
       initialRoute: AppRoutes.auth,
       routes: {
         AppRoutes.auth: (_) => const AuthGate(),
