@@ -1,0 +1,115 @@
+name: Mobile Play Store Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  playstore:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Generate Android project
+        working-directory: mobile
+        run: flutter create . --platforms=android --org com.bickriservice --project-name bickri_service_agency
+
+      - name: Configure Play Store release
+        working-directory: mobile
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          test -n "$KEYSTORE_B64" || (echo "Missing ANDROID_KEYSTORE_BASE64 secret" && exit 1)
+          test -n "$STORE_PASSWORD" || (echo "Missing ANDROID_KEYSTORE_PASSWORD secret" && exit 1)
+          test -n "$KEY_PASSWORD" || (echo "Missing ANDROID_KEY_PASSWORD secret" && exit 1)
+          test -n "$KEY_ALIAS" || (echo "Missing ANDROID_KEY_ALIAS secret" && exit 1)
+
+          echo "$KEYSTORE_B64" | base64 --decode > android/upload-keystore.jks
+          cat > android/key.properties <<EOF
+          storePassword=$STORE_PASSWORD
+          keyPassword=$KEY_PASSWORD
+          keyAlias=$KEY_ALIAS
+          storeFile=upload-keystore.jks
+          EOF
+
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("android/app/build.gradle.kts")
+          s = p.read_text()
+          if 'import java.util.Properties' not in s:
+              s = 'import java.util.Properties\nimport java.io.FileInputStream\n\n' + s
+          marker = 'android {'
+          loader = '''val keystoreProperties = Properties()
+          val keystorePropertiesFile = rootProject.file("key.properties")
+          if (keystorePropertiesFile.exists()) {
+              keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+          }
+
+          '''
+          if 'val keystoreProperties = Properties()' not in s:
+              s = s.replace(marker, loader + marker, 1)
+          s = s.replace('applicationId = "com.example.bickri_service_agency"', 'applicationId = "com.bickriservice.bickri_service_agency"')
+          s = s.replace('targetSdk = flutter.targetSdkVersion', 'targetSdk = 36')
+          signing = '''signingConfigs {
+              create("release") {
+                  keyAlias = keystoreProperties.getProperty("keyAlias")
+                  keyPassword = keystoreProperties.getProperty("keyPassword")
+                  storeFile = keystoreProperties.getProperty("storeFile")?.let { file(it) }
+                  storePassword = keystoreProperties.getProperty("storePassword")
+              }
+          }
+          '''
+          if 'create("release")' not in s:
+              s = s.replace('buildTypes {', signing + 'buildTypes {', 1)
+          s = s.replace('signingConfig = signingConfigs.getByName("debug")', 'signingConfig = signingConfigs.getByName("release")')
+          p.write_text(s)
+          PY
+
+      - name: Install dependencies
+        working-directory: mobile
+        run: flutter pub get
+
+      - name: Analyze
+        working-directory: mobile
+        run: flutter analyze
+
+      - name: Build signed AAB
+        working-directory: mobile
+        env:
+          SUPABASE_URL: https://okdohokhlkxrmxpevees.supabase.co
+          SUPABASE_PUBLISHABLE_KEY: sb_publishable_EiTruyR5fwwHpS_PzO5_iA_d1i4iMCP
+        run: flutter build appbundle --release --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY
+
+      - name: Build signed APK
+        working-directory: mobile
+        env:
+          SUPABASE_URL: https://okdohokhlkxrmxpevees.supabase.co
+          SUPABASE_PUBLISHABLE_KEY: sb_publishable_EiTruyR5fwwHpS_PzO5_iA_d1i4iMCP
+        run: flutter build apk --release --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY
+
+      - name: Upload signed AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: bickri-service-agency-playstore-aab
+          path: mobile/build/app/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload signed APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: bickri-service-agency-playstore-apk
+          path: mobile/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+          retention-days: 30
