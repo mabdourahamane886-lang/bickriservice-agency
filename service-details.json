@@ -1,38 +1,45 @@
 {
   "creation-sites-web": [
-    "Arborescence des pages, design responsive, formulaires, sections commerciales, optimisation mobile et préparation du déploiement.",
-    "Pages structurées, interface responsive, formulaires et éléments nécessaires à la présentation de votre activité.",
-    "Nous transformons votre idée en une présence web claire, professionnelle et évolutive."
+    "Nous concevons des sites web professionnels qui présentent clairement votre activité, renforcent votre crédibilité et facilitent le passage à l’action. La structure est pensée pour être lisible sur ordinateur comme sur smartphone et pour pouvoir évoluer avec votre entreprise.",
+    "Nous pouvons travailler sur la structure des pages, l’identité visuelle, les formulaires, les appels à l’action, les contenus, l’optimisation mobile et la préparation de la mise en ligne.",
+    "Ce service convient aux entrepreneurs, entreprises, associations, créateurs et organisations qui souhaitent disposer d’une présence digitale professionnelle et durable.",
+    "Le projet commence par la compréhension de votre activité et de vos objectifs, puis se poursuit par la conception, le développement, les tests et la mise en ligne."
   ],
   "e-commerce": [
-    "Catalogue, fiches produits, panier, parcours de commande, configuration des moyens de paiement disponibles et gestion des contenus.",
-    "Boutique responsive, catalogue organisé, parcours d’achat et structure prête à évoluer avec votre activité.",
-    "L’objectif est de rendre l’achat en ligne simple pour vos clients et facile à administrer pour vous."
+    "Nous créons des boutiques en ligne structurées pour présenter vos produits ou services et guider vos visiteurs vers l’achat. L’expérience doit rester simple, rapide et compréhensible.",
+    "Le travail peut couvrir le catalogue, les fiches produits, le panier, le parcours de commande, les moyens de paiement disponibles, les contenus commerciaux et l’organisation des commandes.",
+    "La solution est adaptée aux commerçants, marques, entrepreneurs et entreprises qui souhaitent développer une activité de vente en ligne.",
+    "Nous définissons d’abord le parcours d’achat, organisons les contenus et fonctionnalités, puis testons les principales étapes avant la mise en ligne."
   ],
   "reseaux-sociaux": [
-    "Optimisation des profils, ligne éditoriale, calendrier de publication, concepts de contenus et formats adaptés à chaque plateforme.",
-    "Calendrier éditorial, idées de contenus, textes et visuels selon la formule choisie.",
-    "Votre communication devient plus régulière, reconnaissable et cohérente avec votre marque."
+    "Nous vous aidons à construire une présence cohérente sur les réseaux sociaux avec une stratégie adaptée à votre activité, votre audience et vos objectifs. L’objectif n’est pas seulement de publier, mais de publier avec une intention précise.",
+    "La prestation peut comprendre l’optimisation des profils, la ligne éditoriale, le calendrier de contenu, les concepts de publications, les textes, les visuels et les formats adaptés à chaque plateforme.",
+    "Elle s’adresse aux entrepreneurs, marques, créateurs, associations et organisations qui veulent structurer leur communication digitale.",
+    "Nous définissons les priorités, construisons les piliers de contenu, préparons les publications et mettons en place un cadre permettant de suivre les résultats et d’améliorer progressivement la stratégie."
   ],
   "intelligence-artificielle": [
-    "Identification des tâches pouvant être assistées par l’IA, conception de prompts, workflows, assistants et intégrations adaptées.",
-    "Prompts personnalisés, workflows, assistants ou intégrations selon le projet.",
-    "Nous cherchons des usages concrets de l’IA qui répondent à vos besoins professionnels, plutôt qu’un simple effet de mode."
+    "Nous intégrons l’intelligence artificielle dans des usages concrets : création de contenu, assistance, recherche, automatisation, traitement d’informations ou amélioration de processus. L’approche reste centrée sur votre besoin réel.",
+    "Nous pouvons identifier les tâches répétitives, concevoir des prompts, créer des workflows, intégrer des assistants et connecter des outils d’IA aux processus existants.",
+    "Ce service convient aux entrepreneurs, équipes, créateurs et organisations qui souhaitent gagner du temps ou améliorer certains processus grâce à l’IA.",
+    "Nous commençons par identifier le problème à résoudre, puis choisissons une approche adaptée, construisons la solution et vérifions son fonctionnement avant son utilisation."
   ],
   "branding-design": [
-    "Logo, palette de couleurs, typographies, règles graphiques et déclinaisons pour vos supports numériques.",
-    "Identité visuelle, fichiers du logo et éléments graphiques prêts pour vos supports.",
-    "Votre marque dispose d’un système visuel cohérent qui peut être réutilisé sur le web, les réseaux et vos documents."
+    "Nous construisons une identité visuelle cohérente qui permet à votre marque d’être reconnue et présentée de manière professionnelle sur ses différents supports.",
+    "La prestation peut inclure logo, palette de couleurs, typographies, règles graphiques, déclinaisons pour les réseaux sociaux, documents commerciaux et supports numériques.",
+    "Elle convient aux nouvelles marques comme aux entreprises qui souhaitent professionnaliser ou harmoniser leur image.",
+    "Nous partons de votre positionnement et de votre univers pour définir une direction artistique, créer les éléments visuels puis préparer les fichiers nécessaires à leur utilisation."
   ],
   "publicite-digitale": [
-    "Définition de l’objectif, audience, message, formats créatifs, structure de campagne et indicateurs à suivre.",
-    "Annonces, textes publicitaires, visuels et structure de campagne selon le périmètre.",
-    "La campagne est organisée autour d’un objectif mesurable et d’un suivi permettant d’identifier les ajustements nécessaires."
+    "Nous concevons des campagnes publicitaires digitales structurées autour d’un objectif précis : visibilité, acquisition, promotion d’une offre, génération de contacts ou autre objectif défini ensemble.",
+    "La prestation peut comprendre l’analyse de l’audience, le message, les formats créatifs, les textes publicitaires, la structure de campagne et les indicateurs à surveiller.",
+    "Elle s’adresse aux entreprises, marques et projets qui souhaitent mieux organiser leurs actions d’acquisition digitale.",
+    "Après définition de l’objectif, nous préparons la campagne, mettons en place les éléments nécessaires et analysons les données disponibles afin d’identifier les ajustements utiles."
   ],
   "formation-coaching": [
-    "Programme adapté au niveau, démonstrations, exercices pratiques, corrections et feuille de route.",
-    "Supports pédagogiques, exercices et ressources utilisables après les sessions.",
-    "L’accompagnement vise l’autonomie : comprendre, pratiquer, corriger puis appliquer sur vos propres projets."
+    "Nous proposons un accompagnement pratique pour vous permettre de comprendre les outils numériques, de développer vos compétences et surtout de les appliquer à vos propres projets.",
+    "Selon le besoin, les sessions peuvent porter sur l’IA, le marketing digital, les réseaux sociaux, l’entrepreneuriat, le design ou d’autres compétences numériques.",
+    "La formation s’adresse aux débutants comme aux personnes souhaitant structurer ou approfondir leurs compétences.",
+    "Le parcours combine explications, démonstrations, exercices, corrections et feuille de route afin de favoriser une progression concrète vers l’autonomie."
   ],
   "seo-referencement": [
     "Audit des pages, structure des titres, métadonnées, contenus, liens internes, indexation et recommandations de visibilité locale.",
