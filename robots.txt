@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://bickriservice-agency.vercel.app/sitemap.xml
+Sitemap: https://bickriservice-agency.org/sitemap.xml
