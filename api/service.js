@@ -16,16 +16,33 @@ function absoluteImage(src) {
 }
 
 async function getService(code) {
-  const url = SUPABASE_URL + '/rest/v1/agency_services?select=slug,name,short_description,description,image_url,reference_code,share_url,og_title,og_description,og_image&reference_code=eq.' + encodeURIComponent(code) + '&active=eq.true&limit=1';
-  const response = await fetch(url, {
-    headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: 'Bearer ' + SUPABASE_KEY
-    }
+  // Source principale : services-share.json, afin que les 37 liens courts
+  // utilisent exactement les mêmes services, slugs et images que le site.
+  const catalogResponse = await fetch(SITE + '/services-share.json', {
+    headers: { 'Cache-Control': 'no-cache' }
   });
-  if (!response.ok) throw new Error('Supabase returned ' + response.status);
-  const rows = await response.json();
-  return rows[0] || null;
+  if (!catalogResponse.ok) throw new Error('Service catalog returned ' + catalogResponse.status);
+  const catalog = await catalogResponse.json();
+  const item = Array.isArray(catalog)
+    ? catalog.find(function (service) {
+        return String(service.code || '').trim().toUpperCase() === code;
+      })
+    : null;
+
+  if (!item) return null;
+
+  return {
+    slug: item.slug,
+    name: item.name,
+    short_description: item.desc || '',
+    description: item.desc || '',
+    image_url: item.img || '',
+    reference_code: item.code,
+    share_url: SITE + '/s/' + encodeURIComponent(item.code),
+    og_title: item.name + ' — Bickri Service Agency',
+    og_description: item.desc || '',
+    og_image: item.img || ''
+  };
 }
 
 module.exports = async function (req, res) {
