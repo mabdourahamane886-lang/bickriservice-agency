@@ -1,0 +1,18 @@
+body.bickriVerifiedOpen{overflow:hidden}
+.bickriVerifiedModal{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:18px;opacity:0;transition:opacity .18s ease}
+.bickriVerifiedModal.is-open{opacity:1}
+.bickriVerifiedBackdrop{position:absolute;inset:0;background:rgba(5,9,20,.62);backdrop-filter:blur(8px)}
+.bickriVerifiedDialog{position:relative;width:min(430px,100%);background:#fff;border:1px solid #e4e8ef;border-radius:28px;padding:34px 28px 26px;text-align:center;box-shadow:0 30px 90px rgba(0,0,0,.24);transform:translateY(10px) scale(.98);transition:transform .18s ease}
+.bickriVerifiedModal.is-open .bickriVerifiedDialog{transform:translateY(0) scale(1)}
+.bickriVerifiedClose{position:absolute;right:13px;top:11px;width:38px;height:38px;border:0;border-radius:50%;background:#f3f5f8;color:#536077;font-size:25px;line-height:1;cursor:pointer}
+.bickriVerifiedIcon{width:74px;height:74px;margin:2px auto 14px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#18c96d,#078c49);border:4px solid #fff;box-shadow:0 8px 25px rgba(8,145,75,.25),0 0 0 1px #dfe8e2}
+.bickriVerifiedIcon span{color:#fff;font-size:42px;font-weight:1000;line-height:1}
+.bickriVerifiedKicker{font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:900;color:#0b9850}
+.bickriVerifiedDialog h2{font:800 26px/1.15 Manrope,DM Sans,sans-serif;color:#08101f;margin:7px 0 5px}
+.bickriVerifiedName{font-weight:900;color:#273449;margin:0 0 12px}
+.bickriVerifiedText{font-size:14px;line-height:1.65;color:#667289;margin:0 auto;max-width:340px}
+.bickriVerifiedTrust{display:flex;align-items:flex-start;text-align:left;gap:11px;margin-top:22px;padding:13px 14px;border:1px solid #dcefe4;background:#f5fbf7;border-radius:15px}
+.bickriVerifiedTrust>span{width:23px;height:23px;flex:none;border-radius:50%;display:grid;place-items:center;background:#19a85b;color:#fff;font-size:14px;font-weight:1000}
+.bickriVerifiedTrust strong{display:block;color:#173125;font-size:12px}
+.bickriVerifiedTrust small{display:block;margin-top:2px;color:#6a7b71;font-size:10px;line-height:1.45}
+@media(max-width:520px){.bickriVerifiedDialog{padding:30px 20px 22px;border-radius:24px}.bickriVerifiedIcon{width:66px;height:66px}.bickriVerifiedIcon span{font-size:37px}.bickriVerifiedDialog h2{font-size:23px}}
