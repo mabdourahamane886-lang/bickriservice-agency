@@ -189,10 +189,29 @@
           </div></section>
         </main>
         <footer class="siteFooter"><div class="siteWrap">© ${new Date().getFullYear()} Bickri Service Agency — Niamey, Niger</div></footer>`;
+      initBackButton();
       const copy=document.querySelector('[data-copy-service-link]');
       if(copy)copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(location.href);copy.textContent='Lien copié ✓'}catch(e){copy.textContent='Copiez le lien ci-dessus'}})
     }).catch(()=>{});
     return true;
+  }
+
+  function initBackButton(){
+    if(document.getElementById('bickri-back-button'))return;
+    const path=location.pathname.replace(/\\/+$/,'')||'/';
+    if(path==='/'||path==='/index.html')return;
+    const btn=document.createElement('button');
+    btn.id='bickri-back-button';
+    btn.type='button';
+    btn.setAttribute('aria-label','Retour à la page précédente');
+    btn.innerHTML='<span aria-hidden="true">←</span> Retour';
+    btn.style.cssText='position:fixed;left:16px;bottom:18px;z-index:9999;display:inline-flex;align-items:center;gap:8px;padding:11px 15px;border:1px solid rgba(8,16,31,.12);border-radius:999px;background:rgba(255,255,255,.96);color:#08101f;font:800 13px/1 "DM Sans",sans-serif;box-shadow:0 10px 30px rgba(8,16,31,.16);backdrop-filter:blur(12px);cursor:pointer;';
+    btn.addEventListener('click',()=>{
+      if(window.history.length>1){window.history.back();}
+      else if(path.startsWith('/services/')){window.location.href='/services/';}
+      else{window.location.href='/';}
+    });
+    document.body.appendChild(btn);
   }
 
   function initUI(){
@@ -206,6 +225,6 @@
     initServiceDetailContent();
     initServiceDetailScroll();
   }
-  function boot(){addScript('/service-experience.js','bickri-service-experience');addScript('/_vercel/insights/script.js','bickri-vercel-analytics');addScript('/_vercel/speed-insights/script.js','bickri-vercel-speed');enhanceSEO();addArabicLink();if(initServiceReferenceLayout())return;initUI()}
+  function boot(){addScript('/service-experience.js','bickri-service-experience');addScript('/_vercel/insights/script.js','bickri-vercel-analytics');addScript('/_vercel/speed-insights/script.js','bickri-vercel-speed');enhanceSEO();addArabicLink();if(initServiceReferenceLayout())return;initUI();initBackButton()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
