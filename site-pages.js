@@ -134,8 +134,10 @@
       .service-reference-mode .serviceCta span{display:block;color:#c8d2e2;line-height:1.6}
       .service-reference-mode .serviceCta .btn{white-space:nowrap;background:#d9a441;border-color:#d9a441}
       .service-reference-mode .shareBox{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-      .service-reference-mode .shareBox code{display:block;flex:1 1 500px;padding:14px 16px;border:1px solid #e3e8f0;border-radius:12px;background:#f7f9fc;color:#52627a;overflow-wrap:anywhere}
-      .service-reference-mode .shareBox button{min-height:46px;padding:0 16px;border:1px solid #d9a441;border-radius:12px;background:#fff4d9;color:#775b1f;font-weight:900;cursor:pointer}
+      .service-reference-mode .shareBox input{display:block;flex:1 1 500px;min-width:0;height:50px;padding:0 16px;border:1px solid #d9dfe8;border-radius:12px;background:#f7f9fc;color:#26344a;font:700 14px/1 "DM Sans",sans-serif;outline:none}
+      .service-reference-mode .shareBox input:focus{border-color:#d9a441;box-shadow:0 0 0 3px rgba(217,164,65,.15)}
+      .service-reference-mode .shareBox button{min-height:50px;padding:0 18px;border:1px solid #d9a441;border-radius:12px;background:#fff4d9;color:#775b1f;font-weight:900;cursor:pointer}
+      .service-reference-mode .shareHint{display:block;margin-top:10px;color:#7a879b;font-size:13px;line-height:1.5}
       .service-reference-mode .siteFooter{padding:28px 0;background:#08101f;color:#c8d2e2}
       @media(max-width:700px){
         .service-reference-mode .siteHeader .siteWrap{min-height:64px}
@@ -163,7 +165,7 @@
       if(!service)return;
       const d=details[slug]||[service.what||'',service.get||'',service.why||''];
       const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-      const url=location.href.split('#')[0];
+      const url=new URL('/services/'+slug+'/',location.origin).href;
       document.body.className='service-reference-mode';
       document.body.innerHTML=`
         <header class="siteHeader">
@@ -191,13 +193,25 @@
             <div class="serviceCta"><div><strong>Prêt à démarrer ?</strong><span>Expliquez-nous votre projet et nous vous orienterons vers la prochaine étape.</span></div><a class="btn" href="/rendez-vous/">Demander ce service →</a></div>
             <article class="contentCard"><h2>Ce que nous proposons</h2><p>${esc(service.desc)}</p><p>${esc(d[0]||service.what||'Nous adaptons la prestation à votre activité, vos objectifs et votre public afin de construire une solution digitale professionnelle et cohérente.')}</p></article>
             <article class="contentCard"><h2>Pour qui ?</h2><p>${esc(service.who||'Entrepreneurs, entreprises, créateurs, associations et organisations qui souhaitent développer leur activité grâce au numérique.')}</p></article>
-            <article class="contentCard"><h2>Votre lien partageable</h2><div class="shareBox"><code>${esc(url)}</code><button type="button" data-copy-service-link>Copier le lien</button></div></article>
+            <article class="contentCard"><h2>Votre lien partageable</h2><p>Un lien propre, stable et prêt à être copié ou partagé sur WhatsApp, Facebook, Instagram et autres réseaux.</p><div class="shareBox"><input type="text" value="${esc(url)}" readonly aria-label="Lien propre du service"><button type="button" data-copy-service-link>Copier le lien</button></div><span class="shareHint">URL officielle du service — sans paramètres ni éléments inutiles.</span></article>
           </div></section>
         </main>
         <footer class="siteFooter"><div class="siteWrap">© ${new Date().getFullYear()} Bickri Service Agency — Niamey, Niger</div></footer>`;
       initBackButton();
       const copy=document.querySelector('[data-copy-service-link]');
-      if(copy)copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(location.href);copy.textContent='Lien copié ✓'}catch(e){copy.textContent='Copiez le lien ci-dessus'}})
+      const linkField=document.querySelector('.shareBox input');
+      if(copy)copy.addEventListener('click',async()=>{
+        const cleanUrl=new URL('/services/'+slug+'/',location.origin).href;
+        try{
+          await navigator.clipboard.writeText(cleanUrl);
+          copy.textContent='Lien copié ✓';
+          if(linkField){linkField.focus();linkField.select();}
+          setTimeout(()=>{copy.textContent='Copier le lien'},1800);
+        }catch(e){
+          if(linkField){linkField.focus();linkField.select();}
+          copy.textContent='Lien sélectionné';
+        }
+      })
     }).catch(()=>{});
     return true;
   }
