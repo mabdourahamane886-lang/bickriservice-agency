@@ -28,7 +28,7 @@
 .partnerShare h3{font:800 22px Manrope;margin:0 0 8px}.partnerShare p{margin:0 0 14px;color:var(--muted)}
 .partnerShareRow{display:flex;gap:10px}.partnerShareRow input{flex:1;min-width:0;height:48px;border:1px solid var(--line);border-radius:11px;padding:0 13px;background:#f7f9fc;color:#52627a;font-size:13px}.partnerShareRow button{height:48px;border:1px solid var(--gold);border-radius:11px;background:var(--soft);color:#775b1f;padding:0 17px;font-weight:900;cursor:pointer}
 @media(max-width:600px){.partnerShareRow{flex-direction:column}.partnerShareRow button{width:100%}}
-</style></head>
+</style><link rel="stylesheet" href="/bickri-verified.css"></head>
 <body>
 <header class="header">
 <div class="wrap nav">
@@ -74,14 +74,14 @@
 </div>
 </footer>
 
-<script src="/site-pages.js" defer></script>
+<script src="/site-pages.js" defer></script>\n<script src="/bickri-verified.js" defer></script>
 <script>
 const partners = [{logo:'/assets/partners/impact-afriq.svg',name:'Impact Afriq',slug:'impact-afriq',description:'Innovating · Inspiring · Transforming Africa'}];
 const root=document.getElementById('partners');
 if(!partners.length){
  root.innerHTML='<div class="empty"><strong>Nos partenaires arrivent bientôt</strong><span>Cette section est prête à accueillir nos prochaines collaborations.</span></div>';
 }else{
- root.innerHTML=partners.map(p=>{const slug=p.slug||p.name.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');const link='/partenaires/'+slug+'/';return '<article class="partner"><img class="partnerLogo" src="'+p.logo+'" alt="'+p.name+'" loading="lazy"><h2>'+p.name+'<img class="verifiedBadge" src="/assets/partners/badge-verified-green.svg" alt="Partenaire vérifié" title="Partenaire vérifié"></h2><p>'+ (p.description||'Partenaire de Bickri Service Agency') +'</p><div class="partnerActions"><a href="'+link+'">Voir le partenaire</a><button type="button" data-copy-partner="'+link+'">Copier le lien</button></div></article>'}).join('');
+ root.innerHTML=partners.map(p=>{const slug=p.slug||p.name.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');const link='/partenaires/'+slug+'/';return '<article class="partner"><img class="partnerLogo" src="'+p.logo+'" alt="'+p.name+'" loading="lazy"><h2>'+p.name+'<img class="verifiedBadge" src="/assets/partners/badge-verified-green.svg" alt="Partenaire vérifié" title="Partenaire vérifié" data-bickri-verified></h2><p>'+ (p.description||'Partenaire de Bickri Service Agency') +'</p><div class="partnerActions"><a href="'+link+'">Voir le partenaire</a><button type="button" data-copy-partner="'+link+'">Copier le lien</button></div></article>'}).join('');
 }
 document.getElementById('year').textContent=new Date().getFullYear();
 const menu=document.getElementById('menu'),mobile=document.getElementById('mobile');
