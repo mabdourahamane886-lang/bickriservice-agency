@@ -55,7 +55,7 @@
 <div class="sectionHead">
 <span class="eyebrow">Partenariats</span>
 <h2 class="title">Ils nous font confiance</h2>
-<p class="muted">Les partenaires seront présentés ici avec leur identité visuelle et les informations utiles.</p>
+<p class="muted">Découvrez les partenaires et collaborations de Bickri Service Agency.</p>
 </div>
 <div class="partnerGrid" id="partners"></div>
 </div>
@@ -69,11 +69,12 @@
 </div>
 </footer>
 
+<script src="/site-pages.js" defer></script>
 <script>
-const partners = [];
+const partners = [{logo:'/assets/partners/impact-afriq.svg',name:'Impact Afriq',description:'Innovating · Inspiring · Transforming Africa'}];
 const root=document.getElementById('partners');
 if(!partners.length){
- root.innerHTML='<div class="empty"><strong>Nos partenaires arrivent bientôt</strong><span>Cette section est prête. Le premier partenaire sera ajouté dès que son logo et ses informations seront fournis.</span></div>';
+ root.innerHTML='<div class="empty"><strong>Nos partenaires arrivent bientôt</strong><span>Cette section est prête à accueillir nos prochaines collaborations.</span></div>';
 }else{
  root.innerHTML=partners.map(p=>'<article class="partner"><img class="partnerLogo" src="'+p.logo+'" alt="'+p.name+'" loading="lazy"><h2>'+p.name+'</h2><p>'+ (p.description||'Partenaire de Bickri Service Agency') +'</p></article>').join('');
 }
