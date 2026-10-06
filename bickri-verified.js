@@ -31,8 +31,8 @@ function openModal(trigger){
       '<div class="bickriVerifiedKicker">Bickri Verified</div>'+
       '<h2 id="bickriVerifiedTitle">'+esc(title)+'</h2>'+
       '<p class="bickriVerifiedName">'+esc(name)+'</p>'+
-      '<p class="bickriVerifiedText">'+esc(text)+'</p>'+
-      '<div class="bickriVerifiedTrust"><span>✓</span><div><strong>Vérification officielle</strong><small>Identité du profil confirmée par Bickri Verified.</small></div></div>'+
+      '<p class="bickriVerifiedText"><strong>Vérifié par Bickri Verified</strong><br>'+esc(text)+'</p>'+
+      '<div class="bickriVerifiedTrust"><span>✓</span><div><strong>Vérification officielle</strong><small>« Bickri Verified confirme que ce profil appartient bien à l’entreprise indiquée et répond aux critères de vérification. »</small></div></div>'+
     '</section>';
   document.body.appendChild(modal);
   document.body.classList.add("bickriVerifiedOpen");
