@@ -27,7 +27,7 @@ function openModal(trigger){
   modal.innerHTML='<div class="bickriVerifiedBackdrop" data-verified-close></div>'+
     '<section class="bickriVerifiedDialog" role="dialog" aria-modal="true" aria-labelledby="bickriVerifiedTitle">'+
       '<button class="bickriVerifiedClose" type="button" aria-label="Fermer" data-verified-close>×</button>'+
-      '<div class="bickriVerifiedIcon" aria-hidden="true"><span>✓</span></div>'+
+      '<div class="bickriVerifiedIcon" aria-hidden="true"><img src="/assets/partners/badge-verified-green.svg" alt=""></div>'+
       '<div class="bickriVerifiedKicker">Bickri Verified</div>'+
       '<h2 id="bickriVerifiedTitle">'+esc(title)+'</h2>'+
       '<p class="bickriVerifiedName">'+esc(name)+'</p>'+
