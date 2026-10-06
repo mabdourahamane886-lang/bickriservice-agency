@@ -117,6 +117,8 @@
       .service-reference-mode .eyebrow{display:inline-flex;padding:8px 12px;border-radius:999px;background:#fff4d9;color:#775b1f;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em}
       .service-reference-mode .pageHero h1{font:800 clamp(2.5rem,6vw,4.7rem)/1.02 Manrope,sans-serif;letter-spacing:-.05em;margin:24px 0 20px;color:#08101f}
       .service-reference-mode .pageHero>div>p{font-size:clamp(1.05rem,2vw,1.35rem);line-height:1.8;color:#52627a;max-width:850px;margin:0}
+      .service-reference-mode .serviceHeroImage{display:block;width:100%;max-width:1100px;height:min(52vw,460px);min-height:240px;object-fit:cover;border-radius:28px;margin:34px auto 0;box-shadow:0 24px 70px rgba(8,16,31,.16);background:#e9edf3}
+      .service-reference-mode .serviceHeroImageFallback{display:none;margin:12px 0 0;color:#7a879b;font-size:13px}
       .service-reference-mode .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
       .service-reference-mode .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 20px;border-radius:13px;border:1px solid #e3e8f0;background:#fff;font-weight:900}
       .service-reference-mode .btn.primary{background:linear-gradient(135deg,#d9a441,#b9852d);border-color:#d9a441;color:#08101f}
@@ -139,6 +141,7 @@
         .service-reference-mode .siteHeader .siteWrap{min-height:64px}
         .service-reference-mode .siteHeader nav{gap:12px;font-size:12px}
         .service-reference-mode .pageHero{padding:52px 0 44px}
+        .service-reference-mode .serviceHeroImage{height:330px;min-height:0;border-radius:20px;margin-top:28px}
         .service-reference-mode .pageSection{padding:52px 0 72px}
         .service-reference-mode .serviceFullCard img{height:330px;min-height:0;border-radius:20px}
         .service-reference-mode .serviceCta{align-items:flex-start;flex-direction:column;padding:24px}
@@ -147,6 +150,7 @@
       @media(max-width:480px){
         .service-reference-mode .siteHeader nav{display:none}
         .service-reference-mode .siteBrand{font-size:15px}
+        .service-reference-mode .serviceHeroImage{height:250px}
         .service-reference-mode .serviceFullCard img{height:260px}
       }
     `;
@@ -173,6 +177,8 @@
             <span class="eyebrow">Service digital</span>
             <h1>${esc(service.name)}</h1>
             <p>${esc(service.desc)}</p>
+            <img class="serviceHeroImage" src="${esc(service.img)}" alt="${esc(service.name)} — Bickri Service Agency" loading="eager" decoding="async" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <div class="serviceHeroImageFallback">L’image de présentation de ce service n’a pas pu être chargée.</div>
             <div class="actions"><a class="btn primary" href="/rendez-vous/">Demander ce service</a><a class="btn" href="/services/">Tous les services</a></div>
           </div></section>
           <section class="pageSection"><div class="siteWrap contentGrid">
