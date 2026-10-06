@@ -5,7 +5,7 @@
 .service-detail-mode .hero{padding-bottom:35px}
 .service-detail-mode .heroGrid{display:block;max-width:1100px}
 .service-detail-mode .heroGrid>.heroCard{display:none!important}
-.service-detail-mode .servicePageImage{display:block;width:100%;max-width:1100px;height:min(58vw,520px);min-height:280px;object-fit:cover;margin:28px auto 42px;border-radius:28px;box-shadow:0 24px 70px rgba(8,16,31,.20)}
+.service-detail-mode .servicePageImage{display:block;width:100%;max-width:1100px;height:auto;min-height:0;object-fit:contain;margin:28px auto 42px;border-radius:28px;box-shadow:0 24px 70px rgba(8,16,31,.20)}
 .service-detail-mode .serviceLongDetails{padding-top:35px}
 .service-detail-mode .serviceLongDetails>.wrap{max-width:1100px}
 .service-detail-mode .serviceLongDetails .title{max-width:950px;font-size:clamp(2rem,4vw,4rem);line-height:1.05;margin-bottom:18px}
@@ -30,6 +30,6 @@
 .service-detail-mode .serviceDetailCta strong{display:block;font-size:1.35rem;margin-bottom:5px}
 .service-detail-mode .serviceDetailCta span{display:block;color:#c8d2e2}
 .service-detail-mode .serviceDetailCta .cta{white-space:nowrap}
-@media(max-width:800px){.service-detail-mode .servicePageImage{height:330px;margin-top:20px;border-radius:20px}.service-detail-mode .serviceDetailHero,.service-detail-mode .serviceDetailGrid,.service-detail-mode .serviceDetailLong{grid-template-columns:1fr}.service-detail-mode .serviceDetailHero img{min-height:260px}.service-detail-mode .serviceDetailLong{padding:24px}.service-detail-mode .serviceDetailCta{align-items:flex-start;flex-direction:column}.service-detail-mode .serviceDetailCta .cta{width:100%;text-align:center}}
+@media(max-width:800px){.service-detail-mode .servicePageImage{height:auto;margin-top:20px;border-radius:20px}.service-detail-mode .serviceDetailHero,.service-detail-mode .serviceDetailGrid,.service-detail-mode .serviceDetailLong{grid-template-columns:1fr}.service-detail-mode .serviceDetailHero img{min-height:auto}.service-detail-mode .serviceDetailLong{padding:24px}.service-detail-mode .serviceDetailCta{align-items:flex-start;flex-direction:column}.service-detail-mode .serviceDetailCta .cta{width:100%;text-align:center}}
 @media(max-width:520px){.service-detail-mode .servicePageImage{height:260px}.service-detail-mode .serviceDetailGrid .card,.service-detail-mode .serviceDetailHero>div{padding:22px}}
 `;document.head.appendChild(s)}function installNoModalNavigation(){if(window.__bickriNoModalNavigation)return;window.__bickriNoModalNavigation=1;document.addEventListener('click',e=>{const card=e.target.closest('.service');if(!card)return;const slug=card.dataset.serviceSlug;if(!slug)return;if(e.target.closest('.copyCode,.modalShare,a[href],button:not(.serviceBtn)'))return;e.preventDefault();e.stopImmediatePropagation();go(slug)},true)}function boot(){styles();installNoModalNavigation();load().then(home)}document.readyState==='loading'?document.addEventListener('DOMContentLoaded',boot):boot()})();
