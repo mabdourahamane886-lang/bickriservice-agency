@@ -38,3 +38,5 @@ jobs:
             exit 1
           fi
           echo "No production environment file is tracked."
+
+# Deployment trigger: push to main to trigger connected hosting deployments.
