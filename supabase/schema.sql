@@ -65,7 +65,8 @@ alter table public.agency_testimonials enable row level security;
 alter table public.agency_leads enable row level security;
 
 drop policy if exists agency_settings_public_read on public.agency_settings;
-create policy agency_settings_public_read on public.agency_settings for select to anon, authenticated using (true);
+revoke all on table public.agency_settings from anon, authenticated;
+
 drop policy if exists agency_services_public_read on public.agency_services;
 create policy agency_services_public_read on public.agency_services for select to anon, authenticated using (active = true);
 drop policy if exists agency_projects_public_read on public.agency_projects;
@@ -74,10 +75,9 @@ drop policy if exists agency_faqs_public_read on public.agency_faqs;
 create policy agency_faqs_public_read on public.agency_faqs for select to anon, authenticated using (active = true);
 drop policy if exists agency_testimonials_public_read on public.agency_testimonials;
 create policy agency_testimonials_public_read on public.agency_testimonials for select to anon, authenticated using (active = true);
-drop policy if exists agency_leads_public_insert on public.agency_leads;
-create policy agency_leads_public_insert on public.agency_leads for insert to anon, authenticated with check (length(trim(message)) >= 5);
 
-grant select on public.agency_settings, public.agency_services, public.agency_projects, public.agency_faqs, public.agency_testimonials to anon, authenticated;
+revoke all on public.agency_settings from anon, authenticated;
+grant select on public.agency_services, public.agency_projects, public.agency_faqs, public.agency_testimonials to anon, authenticated;
 grant insert on public.agency_leads to anon, authenticated;
 
 
@@ -119,8 +119,4 @@ alter table public.bickri_ai_memory enable row level security;
 alter table public.bickri_ai_conversations enable row level security;
 
 drop policy if exists bickri_ai_knowledge_public_read on public.bickri_ai_knowledge;
-create policy bickri_ai_knowledge_public_read on public.bickri_ai_knowledge
-  for select to anon, authenticated using (active = true);
-
-revoke all on public.bickri_ai_memory, public.bickri_ai_conversations from anon, authenticated;
-grant select on public.bickri_ai_knowledge to anon, authenticated;
+revoke all on public.bickri_ai_knowledge from anon, authenticated;
