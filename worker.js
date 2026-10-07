@@ -68,6 +68,45 @@ export default {async fetch(request,env,ctx){
   if(url.pathname==='/api/site-version')return json({version:SITE_VERSION,assets:ASSET_VERSION,platform:'Cloudflare Workers'});
   const response=await env.ASSETS.fetch(request);
   const headers=new Headers(response.headers);
+  if(response.ok && request.method==='GET' && /^\/services\/[^/]+\/?$/.test(url.pathname)){
+    try{
+      const slug=url.pathname.split('/').filter(Boolean)[1];
+      const catalogResponse=await env.ASSETS.fetch(new Request(new URL('/services-share.json',url.origin)));
+      const catalog=await catalogResponse.json().catch(()=>[]);
+      const service=Array.isArray(catalog)?catalog.find(x=>x&&x.slug===slug):null;
+      if(service && typeof service.img==='string' && service.img){
+        const source=await response.text();
+        if(source.includes('<head')){
+          const safe=(v)=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+          const title=safe((service.name||'Service')+' — Bickri Service Agency');
+          const description=safe(service.desc||'Découvrez ce service de Bickri Service Agency à Niamey, Niger.');
+          const image=safe(service.img);
+          const canonical=safe(new URL('/services/'+slug+'/',url.origin).href);
+          const meta=[
+            '<meta name="description" content="'+description+'">',
+            '<link rel="canonical" href="'+canonical+'">',
+            '<meta property="og:type" content="website">',
+            '<meta property="og:site_name" content="Bickri Service Agency">',
+            '<meta property="og:title" content="'+title+'">',
+            '<meta property="og:description" content="'+description+'">',
+            '<meta property="og:url" content="'+canonical+'">',
+            '<meta property="og:image" content="'+image+'">',
+            '<meta property="og:image:width" content="1600">',
+            '<meta property="og:image:height" content="900">',
+            '<meta property="og:image:alt" content="'+title+'">',
+            '<meta name="twitter:card" content="summary_large_image">',
+            '<meta name="twitter:title" content="'+title+'">',
+            '<meta name="twitter:description" content="'+description+'">',
+            '<meta name="twitter:image" content="'+image+'">'
+          ].join('');
+          const replaced=source.replace(/<title>[\\s\\S]*?<\\/title>/i,'<title>'+title+'</title>').replace(/<head>/i,'<head>'+meta);
+          headers.set('Content-Type','text/html; charset=utf-8');
+          headers.set('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+          return new Response(replaced,{status:response.status,statusText:response.statusText,headers});
+        }
+      }
+    }catch(e){console.error('Service OG metadata failed',e)}
+  }
   if(url.pathname==='/'||url.pathname==='/index.html'){
     headers.set('Content-Type','text/html; charset=utf-8');
     headers.set('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
