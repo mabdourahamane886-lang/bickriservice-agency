@@ -66,8 +66,6 @@ function json(res, status, body) {
   return res.status(status).json(body);
 }
 
-const rateBuckets = globalThis.__bickriAIRateBuckets || new Map();
-globalThis.__bickriAIRateBuckets = rateBuckets;
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const RATE_LIMIT_MAX = 10;
 
