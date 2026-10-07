@@ -3,18 +3,40 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Services — Bickri Service Agency</title>
-<meta name="robots" content="noindex,follow">
-<link rel="canonical" href="https://bickriservice-agency.org/#services">
+<title>Nos services — Bickri Service Agency</title>
+<meta name="description" content="Découvrez les 37 services de Bickri Service Agency.">
 <link rel="icon" href="/assets/bickri-b-logo.svg">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f8fb;color:#08101f;font-family:Arial,sans-serif}
+header{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid #e5e9f0}
+.wrap{width:min(1180px,calc(100% - 28px));margin:auto}
+.head{min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{font-weight:900;letter-spacing:.04em}.back{display:inline-flex;padding:11px 16px;border-radius:12px;background:#d9a441;color:#08101f;text-decoration:none;font-weight:800}
+main{padding:42px 0 70px}.eyebrow{font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#8a681f}
+h1{font-size:clamp(2rem,5vw,3.5rem);margin:12px 0}.lead{color:#5c687c;font-size:1.05rem;line-height:1.7;max-width:760px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:34px}
+.card{background:#fff;border:1px solid #e4e9f0;border-radius:20px;overflow:hidden;box-shadow:0 8px 28px rgba(8,16,31,.06)}
+.card img{width:100%;height:190px;object-fit:cover;display:block}.body{padding:18px}.no{font-size:11px;color:#92702a;font-weight:900}.body h2{font-size:20px;margin:7px 0}.body p{color:#667287;line-height:1.6;margin:0 0 15px}.btn{display:inline-flex;padding:10px 13px;border-radius:10px;background:#08101f;color:#fff;text-decoration:none;font-weight:800;font-size:13px}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.grid{grid-template-columns:1fr}.card img{height:210px}.head{min-height:64px}.brand{font-size:14px}}
+</style>
+</head>
+<body>
+<header><div class="wrap head"><div class="brand">BICKRI SERVICE AGENCY</div><a class="back" href="/#services">Accueil</a></div></header>
+<main class="wrap"><div class="eyebrow">01 — Nos services</div><h1>Découvrez nos 37 services</h1><p class="lead">Choisissez un service pour consulter sa fiche complète. Lorsque vous revenez, vous retrouverez directement le service que vous aviez sélectionné.</p><div class="grid" id="serviceGrid"></div></main>
 <script>
-(function(){
-  var target="/#services";
-  if(location.pathname==="/services/" || location.pathname==="/services"){
-    location.replace(target);
-  }
+(async function(){
+ const grid=document.getElementById('serviceGrid');
+ try{
+  const items=await fetch('/services-share.json',{cache:'no-store'}).then(r=>r.json());
+  items.forEach((s,i)=>{
+   const card=document.createElement('article'); card.className='card'; card.id='service-'+s.slug;
+   card.innerHTML='<img src="'+s.img+'" alt="'+s.name+'" loading="lazy"><div class="body"><span class="no">'+String(i+1).padStart(2,'0')+'</span><h2>'+s.name+'</h2><p>'+s.desc+'</p><a class="btn" href="/services/'+s.slug+'/">Voir la fiche →</a></div>';
+   grid.appendChild(card);
+  });
+  const hash=decodeURIComponent(location.hash||'');
+  if(hash.startsWith('#service-')){const el=document.getElementById(hash.slice(1));if(el)setTimeout(()=>el.scrollIntoView({behavior:'instant',block:'center'}),80);}
+ }catch(e){grid.innerHTML='<p>Impossible de charger les services.</p>'}
 })();
 </script>
-</head>
-<body></body>
+</body>
 </html>
