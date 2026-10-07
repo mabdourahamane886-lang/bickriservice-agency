@@ -14,25 +14,30 @@ function getName(el){
   }
   return el.dataset.verifiedName||"Cette entreprise";
 }
+function getBadgeConfig(trigger){
+  const category=trigger?.dataset?.badgeCategory||"green";
+  return {green:{file:"badge-verified-green.svg",label:"Partenaire vérifié",title:"Partenaire vérifié",color:"#159447"},blue:{file:"badge-verified-blue.svg",label:"Partenaire certifié",title:"Partenaire certifié",color:"#2563eb"},gold:{file:"badge-verified-gold.svg",label:"Partenaire Premium",title:"Partenaire Premium",color:"#b88918"}}[category]||{file:"badge-verified-green.svg",label:"Partenaire vérifié",title:"Partenaire vérifié",color:"#159447"};
+}
 function openModal(trigger){
   closeModal();
   const name=getName(trigger);
+  const badge=getBadgeConfig(trigger);
   const isProfile=/Bickri Verified/i.test(name);
-  const title=isProfile?"Profil vérifié":"Entreprise vérifiée";
+  const title=isProfile?"Profil vérifié":badge.title;
   const text=isProfile
     ?"Ce profil est vérifié par Bickri Verified."
-    :"Cette entreprise est vérifiée par Bickri Verified.";
+    :"Cette entreprise bénéficie du statut « "+badge.label+" » de Bickri Verified.";
   const modal=document.createElement("div");
   modal.className="bickriVerifiedModal";
   modal.innerHTML='<div class="bickriVerifiedBackdrop" data-verified-close></div>'+
     '<section class="bickriVerifiedDialog" role="dialog" aria-modal="true" aria-labelledby="bickriVerifiedTitle">'+
       '<button class="bickriVerifiedClose" type="button" aria-label="Fermer" data-verified-close>×</button>'+
-      '<div class="bickriVerifiedIcon" aria-hidden="true"><img src="/assets/partners/badge-verified-green.svg" alt=""></div>'+
-      '<div class="bickriVerifiedKicker">Bickri Verified</div>'+
+      '<div class="bickriVerifiedIcon" aria-hidden="true"><img src="/assets/partners/'+badge.file+'" alt=""></div>'+
+      '<div class="bickriVerifiedKicker" style="color:'+badge.color+'">Bickri Verified · '+esc(badge.label)+'</div>'+
       '<h2 id="bickriVerifiedTitle">'+esc(title)+'</h2>'+
       '<p class="bickriVerifiedName">'+esc(name)+'</p>'+
       '<p class="bickriVerifiedText"><strong>Vérifié par Bickri Verified</strong><br>'+esc(text)+'</p>'+
-      '<div class="bickriVerifiedTrust"><span class="bickriVerifiedTrustBadge"><img src="/assets/partners/badge-verified-green.svg" alt=""></span><div><strong>Vérification officielle</strong><small>« Bickri Verified confirme que ce profil appartient bien à l’entreprise indiquée et répond aux critères de vérification. »</small></div></div>'+
+      '<div class="bickriVerifiedTrust"><span class="bickriVerifiedTrustBadge"><img src="/assets/partners/'+badge.file+'" alt=""></span><div><strong>Vérification officielle</strong><small>« Bickri Verified confirme que ce profil appartient bien à l’entreprise indiquée et répond aux critères de vérification. »</small></div></div>'+
     '</section>';
   document.body.appendChild(modal);
   document.body.classList.add("bickriVerifiedOpen");
