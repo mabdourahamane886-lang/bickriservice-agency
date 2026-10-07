@@ -16,7 +16,7 @@ function getName(el){
 }
 function getBadgeConfig(trigger){
   const category=trigger?.dataset?.badgeCategory||"green";
-  return {green:{file:"badge-verified-green.svg",label:"Partenaire vérifié",title:"Partenaire vérifié",color:"#159447"},blue:{file:"badge-verified-blue.svg",label:"Partenaire certifié",title:"Partenaire certifié",color:"#2563eb"},gold:{file:"badge-verified-gold.svg",label:"Partenaire Premium",title:"Partenaire Premium",color:"#b88918"}}[category]||{file:"badge-verified-green.svg",label:"Partenaire vérifié",title:"Partenaire vérifié",color:"#159447"};
+  return {green:{file:"badge-verified-green.svg",label:"Partenaire vérifié",title:"Partenaire vérifié",color:"#159447"},blue:{file:"badge-verified-blue.svg",label:"Partenaire certifié",title:"Partenaire certifié",color:"#2563eb"},gold:{file:"badge-verified-gold.svg",label:"Partenaire Premium",title:"Partenaire Premium",color:"#b88918"},construction:{file:"badge-construction.svg",label:"Partenaire BTP",title:"Partenaire BTP · Construction",color:"#b88918"}}[category]||{file:"badge-verified-green.svg",label:"Partenaire vérifié",title:"Partenaire vérifié",color:"#159447"};
 }
 function openModal(trigger){
   closeModal();
