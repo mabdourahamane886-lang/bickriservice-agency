@@ -67,7 +67,7 @@ export default {async fetch(request,env,ctx){
   }
   if(url.pathname==='/api/site-version')return json({version:SITE_VERSION,assets:ASSET_VERSION,platform:'Cloudflare Workers'});
   // Short service links: /s/<code> -> canonical service page
-  if (request.method === 'GET' && /^\\/s\\/[^/]+\\/?$/.test(url.pathname)) {
+  if (request.method === 'GET' && /^\/s\/[^/]+\/?$/.test(url.pathname)) {
     try {
       const code = decodeURIComponent(url.pathname.split('/').filter(Boolean)[1] || '').trim().toUpperCase();
       const catalogResponse = await env.ASSETS.fetch(new Request(new URL('/services-share.json', url.origin)));
