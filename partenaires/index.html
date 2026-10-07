@@ -93,13 +93,50 @@ const configs={green:{file:'badge-verified-green.svg',label:'Partenaire vérifi�
 document.getElementById('statPartners').textContent=String(partners.length).padStart(2,'0');
 document.getElementById('statVerified').textContent=String(partners.filter(p=>(p.badge||'green')==='green').length).padStart(2,'0');
 if(!partners.length){root.innerHTML='<div class="empty"><strong>Nos partenaires arrivent bientôt</strong><span>Cette section est prête à accueillir nos prochaines collaborations.</span></div>'}else{
-root.innerHTML=partners.map(p=>{const slug=p.slug||p.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');const link='/partenaires/'+slug+'/';const badge=p.badge||'green';const cfg=configs[badge]||configs.green;return '<article class="partner"><img class="partnerLogo" src="'+esc(p.logo)+'" alt="'+esc(p.name)+'" loading="lazy"><h2>'+esc(p.name)+'<img class="verifiedBadge" src="/assets/partners/'+cfg.file+'" alt="'+esc(cfg.label)+'" title="'+esc(cfg.title)+'" data-bickri-verified data-badge-category="'+esc(badge)+'"></h2><p>'+esc(p.description||'Partenaire de Bickri Service Agency')+'</p><div class="partnerActions"><a href="'+link+'">Voir le partenaire</a><button type="button" data-copy-partner="'+link+'">Copier le lien</button></div></article>''}).join('');
+root.innerHTML=partners.map(p=>{const slug=p.slug||p.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');const link='/partenaires/'+slug+'/';const badge=p.badge||'green';const cfg=configs[badge]||configs.green;return '<article class="partner"><img class="partnerLogo" src="'+esc(p.logo)+'" alt="'+esc(p.name)+'" loading="lazy"><h2>'+esc(p.name)+'<img class="verifiedBadge" src="/assets/partners/'+cfg.file+'" alt="'+esc(cfg.label)+'" title="'+esc(cfg.title)+'" data-bickri-verified data-badge-category="'+esc(badge)+'"></h2><p>'+esc(p.description||'Partenaire de Bickri Service Agency')+'</p><div class="partnerActions"><a href="'+link+'">Voir le partenaire</a><button type="button" data-copy-partner="'+link+'">Copier le lien</button></div></article>'}).join('');
 }
 document.getElementById('year').textContent=new Date().getFullYear();
-const menu=document.getElementById('menu'),mobile=document.getElementById('mobile');menu.addEventListener('click',()=>{mobile.classList.toggle('open');menu.setAttribute('aria-expanded',mobile.classList.contains('open')?'true':'false')});
+
+function copyText(text){
+  if(navigator.clipboard && window.isSecureContext){
+    return navigator.clipboard.writeText(text);
+  }
+  return new Promise((resolve,reject)=>{
+    const ta=document.createElement('textarea');
+    ta.value=text; ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    try{const ok=document.execCommand('copy'); document.body.removeChild(ta); ok?resolve():reject(new Error('copy failed'))}
+    catch(e){document.body.removeChild(ta);reject(e)}
+  });
+}
+
+const menu=document.getElementById('menu'),mobile=document.getElementById('mobile');
+menu?.addEventListener('click',e=>{
+  e.preventDefault();
+  const open=mobile.classList.toggle('open');
+  menu.setAttribute('aria-expanded',open?'true':'false');
+  menu.setAttribute('aria-label',open?'Fermer le menu':'Ouvrir le menu');
+});
+mobile?.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{mobile.classList.remove('open');menu?.setAttribute('aria-expanded','false');menu?.setAttribute('aria-label','Ouvrir le menu')}));
+document.addEventListener('click',e=>{
+  if(!mobile?.classList.contains('open')) return;
+  if(!mobile.contains(e.target) && !menu.contains(e.target)){mobile.classList.remove('open');menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label','Ouvrir le menu')}
+});
+
 const partnerLink=document.getElementById('partnersShareLink'),partnerCopy=document.getElementById('copyPartnersLink');
-partnerCopy?.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(partnerLink.value);partnerCopy.textContent='Lien copié ✓';setTimeout(()=>partnerCopy.textContent='Copier le lien',1600)}catch(e){partnerLink.focus();partnerLink.select();partnerCopy.textContent='Sélectionné';setTimeout(()=>partnerCopy.textContent='Copier le lien',1600)}});
-document.querySelectorAll('[data-copy-partner]').forEach(btn=>btn.addEventListener('click',async()=>{const url=new URL(btn.dataset.copyPartner,location.origin).href;try{await navigator.clipboard.writeText(url);btn.textContent='Lien copié ✓';setTimeout(()=>btn.textContent='Copier le lien',1600)}catch(e){prompt('Copiez ce lien :',url)}}));
+partnerCopy?.addEventListener('click',async()=>{
+  const original=partnerCopy.textContent;
+  try{await copyText(partnerLink.value);partnerCopy.textContent='Lien copié ✓';}
+  catch(e){partnerLink.focus();partnerLink.select();partnerCopy.textContent='Sélectionnez et copiez';}
+  setTimeout(()=>partnerCopy.textContent=original,1800);
+});
+document.querySelectorAll('[data-copy-partner]').forEach(btn=>btn.addEventListener('click',async()=>{
+  const url=new URL(btn.dataset.copyPartner,location.origin).href;
+  const original=btn.textContent;
+  try{await copyText(url);btn.textContent='Lien copié ✓';}
+  catch(e){btn.textContent='Sélectionnez le lien';window.prompt('Copiez ce lien :',url);}
+  setTimeout(()=>btn.textContent=original,1800);
+}));
 </script>
 </body>
 </html>
