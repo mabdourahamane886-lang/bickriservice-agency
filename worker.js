@@ -117,7 +117,9 @@ export default {async fetch(request,env,ctx){
             '<meta name="twitter:description" content="'+description+'">',
             '<meta name="twitter:image" content="'+image+'">'
           ].join('');
-          const replaced=source.replace(/<title>[\\s\\S]*?<\\/title>/i,'<title>'+title+'</title>').replace(/<head>/i,'<head>'+meta);
+          const shortLink=safe(new URL('/s/'+encodeURIComponent(String(service.code||'').trim()),url.origin).href);
+          const serviceLinkBlock='<div style="margin:32px 18px 0;padding:18px 20px;border:1px solid #e5e7eb;border-radius:18px;background:#fff;text-align:center;font-family:inherit"><div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8a6a2f;margin-bottom:8px">Lien du service</div><a href="'+shortLink+'" style="display:inline-block;max-width:100%;overflow-wrap:anywhere;color:#111827;font-weight:700;text-decoration:underline">'+shortLink+'</a></div>';
+          const replaced=source.replace(/<title>[\s\S]*?<\/title>/i,'<title>'+title+'</title>').replace(/<head>/i,'<head>'+meta).replace(/<\/body>/i,serviceLinkBlock+'</body>');
           headers.set('Content-Type','text/html; charset=utf-8');
           headers.set('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
           return new Response(replaced,{status:response.status,statusText:response.statusText,headers});
