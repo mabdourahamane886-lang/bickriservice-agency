@@ -61,7 +61,7 @@ async function ask(q){
   console.error("Bickri AI error:",error);
   const fallback="Je rencontre temporairement un problème avec le service IA. Vérifiez la configuration OpenAI côté serveur ou réessayez dans quelques instants.";
   out.textContent=fallback;
-  current.messages.push({role:"assistant",content:fallback});
+  current.messages.push({role:"assistant",content:fallback});resetTurnstile();
  }
  saved=saved.filter(c=>c.id!==current.id);saved.push(JSON.parse(JSON.stringify(current)));persist();history();send.disabled=!input.value.trim()
 }
@@ -74,4 +74,5 @@ document.getElementById("clear").onclick=()=>{current=blank();render()};
 document.getElementById("export").onclick=()=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(current,null,2)],{type:"application/json"}));a.download="bickri-ai.json";a.click()};
 history();render();resize();
 </script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=initBickriTurnstile" async defer></script>
 </body></html>
