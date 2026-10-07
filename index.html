@@ -118,7 +118,35 @@ window.si=window.si||function(){(window.siq=window.siq||[]).push(arguments)};
 <script defer src="/_vercel/insights/script.js"></script>
 <script defer src="/_vercel/speed-insights/script.js"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Quels projets pouvez-vous créer ?","acceptedAnswer":{"@type":"Answer","text":"Sites web, e-commerce, plateformes digitales, identité visuelle, publicité, contenu, automatisation, IA et formations."}},{"@type":"Question","name":"Comment demander un devis ?","acceptedAnswer":{"@type":"Answer","text":"Choisissez un service ou utilisez la page rendez-vous pour préparer votre demande de devis directement avec l’agence."}},{"@type":"Question","name":"Travaillez-vous avec des clients au Niger ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Bickri Service Agency est basée à Niamey et accompagne également des projets à distance."}},{"@type":"Question","name":"Proposez-vous du coaching ?","acceptedAnswer":{"@type":"Answer","text":"Oui : entrepreneuriat, réseaux sociaux, IA et stratégie digitale."}}]}</script>
-</head>
+<style id="bsa-services-navigation">
+#serviceModal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(4,9,18,.78);backdrop-filter:blur(8px)}
+#serviceModal.open{display:flex}
+#serviceModal .serviceModalCard{width:min(900px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:28px;box-shadow:0 30px 100px rgba(0,0,0,.3);position:relative}
+#serviceModal .serviceModalTop{display:grid;grid-template-columns:minmax(280px,.9fr) 1.1fr;gap:26px;padding:24px}
+#serviceModal .serviceModalImage{width:100%;height:300px;object-fit:cover;border-radius:20px}
+#serviceModal .serviceModalNo{display:inline-flex;padding:6px 10px;border-radius:999px;background:#fff4d9;color:#76581a;font-size:10px;font-weight:900;letter-spacing:.1em}
+#serviceModal h2{font:800 clamp(1.9rem,4vw,3rem)/1.05 Manrope;margin:12px 0;color:#08101f}
+#serviceModal .serviceModalDesc{color:#667289;margin:0 0 18px;font-size:15px}
+#serviceModal .serviceModalGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#serviceModal .serviceModalItem{padding:14px;border:1px solid #e3e8f0;border-radius:14px;background:#f8fafc}
+#serviceModal .serviceModalItem strong{display:block;font-size:11px;color:#8a6416;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+#serviceModal .serviceModalItem span{display:block;font-size:13px;color:#52627a;line-height:1.55}
+#serviceModal .serviceModalActions{display:flex;gap:10px;flex-wrap:wrap;padding:0 24px 24px}
+#serviceModal .serviceModalActions a,#serviceModal .serviceModalActions button{min-height:46px;padding:0 17px;border-radius:12px;border:1px solid #e3e8f0;font-weight:900;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+#serviceModal .serviceModalActions .primary{background:linear-gradient(135deg,#d9a441,#b9852d);border-color:#d9a441;color:#08101f}
+#serviceModal .serviceModalActions .secondary{background:#fff;color:#263248}
+#serviceModal .serviceModalClose{position:absolute;right:18px;top:18px;z-index:2;width:42px;height:42px;border:0;border-radius:12px;background:rgba(255,255,255,.94);font-size:24px;cursor:pointer;box-shadow:0 8px 25px rgba(8,16,31,.14)}
+#serviceModal .serviceModalNav{display:flex;gap:8px;margin-left:auto}
+#serviceModal .serviceModalNav button{background:#f1f4f8;color:#08101f}
+@media(max-width:700px){
+  #serviceModal{padding:10px}
+  #serviceModal .serviceModalTop{grid-template-columns:1fr;padding:18px;gap:16px}
+  #serviceModal .serviceModalImage{height:220px}
+  #serviceModal .serviceModalGrid{grid-template-columns:1fr}
+  #serviceModal .serviceModalActions{padding:0 18px 18px}
+  #serviceModal .serviceModalActions a,#serviceModal .serviceModalActions button{flex:1}
+}
+</style></head>
 <body>
 <header class="header">
   <div class="wrap nav">
@@ -169,7 +197,33 @@ window.si=window.si||function(){(window.siq=window.siq||[]).push(arguments)};
 
 <footer class="footer"><div class="wrap"><div class="footerGrid"><div><div class="footerTitle">BICKRI SERVICE AGENCY</div><p style="font-size:13px;max-width:450px">Création digitale, stratégie, IA, réseaux sociaux, design, publicité, e-commerce et formation.</p></div><div><div class="footerTitle">Navigation</div><a class="footerLink" href="#services">Services</a><a class="footerLink" href="#solutions">Solutions</a><a class="footerLink" href="#coaching">Coaching</a><a class="footerLink" href="#portfolio">Portfolio</a><a class="footerLink" href="#faq">FAQ</a></div><div><div class="footerTitle">Contact</div><a class="footerLink" href="mailto:bickriserviceagency@gmail.com">bickriserviceagency@gmail.com</a><span class="footerLink">Niamey, Niger</span></div></div><div class="copy"><div>© 2026 Bickri Service Agency. Tous droits réservés.</div><div>Innover et réussir.</div></div></div></footer>
 
-<div class="floatingWrap">
+<div id="serviceModal" aria-hidden="true">
+  <div class="serviceModalCard" role="dialog" aria-modal="true" aria-labelledby="serviceModalTitle">
+    <button class="serviceModalClose" type="button" aria-label="Fermer">×</button>
+    <div class="serviceModalTop">
+      <img class="serviceModalImage" src="" alt="">
+      <div>
+        <span class="serviceModalNo"></span>
+        <h2 id="serviceModalTitle"></h2>
+        <p class="serviceModalDesc"></p>
+        <div class="serviceModalGrid">
+          <div class="serviceModalItem"><strong>Ce que nous réalisons</strong><span data-field="what"></span></div>
+          <div class="serviceModalItem"><strong>Pour qui ?</strong><span data-field="who"></span></div>
+          <div class="serviceModalItem"><strong>Ce que vous obtenez</strong><span data-field="get"></span></div>
+          <div class="serviceModalItem"><strong>Pourquoi ce service ?</strong><span data-field="why"></span></div>
+        </div>
+      </div>
+    </div>
+    <div class="serviceModalActions">
+      <a class="primary" data-request href="/rendez-vous/">Demander ce service →</a>
+      <button class="secondary" type="button" data-share>Partager</button>
+      <div class="serviceModalNav">
+        <button type="button" data-prev>← Précédent</button>
+        <button type="button" data-next>Suivant →</button>
+      </div>
+    </div>
+  </div>
+</div><div class="floatingWrap">
   <button class="waButton" id="waButton" aria-label="WhatsApp"><img src="/assets/whatsapp-clean.svg" alt="WhatsApp"></button>
 </div>
 
@@ -236,15 +290,67 @@ function renderServices(){
     el.className='service';
     el.id='service-'+s.slug;
     el.style.setProperty('--service-index',i);
-    el.setAttribute('role','link');
+    el.setAttribute('role','button');
     el.setAttribute('tabindex','0');
-    el.setAttribute('aria-label','Ouvrir la fiche complète de '+s.name);
-    el.innerHTML='<a class="serviceVisualLink" href="/services/'+s.slug+'/" aria-label="Voir la fiche de '+s.name+'"><div class="serviceVisual"><img src="'+s.img+'" alt="'+s.name+' — contexte professionnel africain" loading="lazy"><span class="serviceLocale">NIAMEY · NIGER · AFRIQUE</span><span class="serviceNo">'+String(i+1).padStart(2,'0')+'</span></div></a><div class="serviceBody"><h3><a href="/services/'+s.slug+'/">'+s.name+'</a></h3><p>'+s.desc+'</p><a class="serviceBtn" href="/services/'+s.slug+'/">Voir la fiche complète →</a><div class="serviceCardLink"><span class="serviceCode"><span>Réf.</span><a class="codeLink" href="'+servicePublicUrl(s)+'">'+s.code+'</a><button class="copyCode" type="button" data-code="'+s.code+'">Copier</button><a class="shareCode" href="https://wa.me/?text='+encodeURIComponent('Découvrez '+s.name+' — '+servicePublicUrl(s))+'" target="_blank" rel="noopener">WhatsApp</a></span></div></div>';
-    el.addEventListener('click',e=>{if(!e.target.closest('a,button'))location.href='/services/'+s.slug+'/'});
-    el.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.target.closest('a,button')){e.preventDefault();location.href='/services/'+s.slug+'/'}})
+    el.setAttribute('aria-label','Découvrir la fiche de '+s.name);
+    el.innerHTML='<div class="serviceVisual"><img src="'+s.img+'" alt="'+s.name+' — contexte professionnel africain" loading="lazy"><span class="serviceLocale">NIAMEY · NIGER · AFRIQUE</span><span class="serviceNo">'+String(i+1).padStart(2,'0')+'</span></div><div class="serviceBody"><h3>'+s.name+'</h3><p>'+s.desc+'</p><button class="serviceBtn" type="button" data-service-index="'+i+'">Voir les détails →</button><div class="serviceCardLink"><span class="serviceCode"><span>Réf.</span><a class="codeLink" href="'+servicePublicUrl(s)+'">'+s.code+'</a><button class="copyCode" type="button" data-code="'+s.code+'">Copier</button><a class="shareCode" href="https://wa.me/?text='+encodeURIComponent('Découvrez '+s.name+' — '+servicePublicUrl(s))+'" target="_blank" rel="noopener">WhatsApp</a></span></div></div>';
+    el.addEventListener('click',e=>{
+      if(e.target.closest('.copyCode,.shareCode,.codeLink'))return;
+      openServiceModal(i);
+    });
+    el.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();openServiceModal(i)}
+    });
     grid.appendChild(el);
   });
 }
+function openServiceModal(index, updateHash=true){
+  const s=services[index];
+  if(!s)return;
+  const modal=document.getElementById('serviceModal');
+  if(!modal)return;
+  modal.querySelector('.serviceModalImage').src=s.img;
+  modal.querySelector('.serviceModalImage').alt=s.name+' — Bickri Service Agency';
+  modal.querySelector('.serviceModalNo').textContent=String(index+1).padStart(2,'0')+' / 37';
+  modal.querySelector('#serviceModalTitle').textContent=s.name;
+  modal.querySelector('.serviceModalDesc').textContent=s.desc;
+  ['what','who','get','why'].forEach(k=>modal.querySelector('[data-field="'+k+'"]').textContent=s[k]||'');
+  modal.querySelector('[data-request]').href='/rendez-vous/?service='+encodeURIComponent(s.slug);
+  modal.querySelector('[data-prev]').disabled=index===0;
+  modal.querySelector('[data-next]').disabled=index===services.length-1;
+  modal.dataset.index=String(index);
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden';
+  if(updateHash)history.replaceState(null,'','#service-'+encodeURIComponent(s.slug));
+}
+function closeServiceModal(){
+  const modal=document.getElementById('serviceModal');
+  if(!modal)return;
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden','true');
+  document.body.style.overflow='';
+  if(location.hash.startsWith('#service-'))history.replaceState(null,'',location.pathname+location.search);
+}
+(function initServiceModal(){
+  const modal=document.getElementById('serviceModal');
+  if(!modal)return;
+  modal.querySelector('.serviceModalClose').onclick=closeServiceModal;
+  modal.addEventListener('click',e=>{if(e.target===modal)closeServiceModal()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))closeServiceModal()});
+  modal.querySelector('[data-prev]').onclick=()=>{const i=Number(modal.dataset.index||0);if(i>0)openServiceModal(i-1)};
+  modal.querySelector('[data-next]').onclick=()=>{const i=Number(modal.dataset.index||0);if(i<services.length-1)openServiceModal(i+1)};
+  modal.querySelector('[data-share]').onclick=async()=>{
+    const i=Number(modal.dataset.index||0),s=services[i],url=location.origin+'/services/'+s.slug+'/';
+    try{await navigator.clipboard.writeText(url);modal.querySelector('[data-share]').textContent='Lien copié ✓';setTimeout(()=>modal.querySelector('[data-share]').textContent='Partager',1500)}
+    catch(e){window.prompt('Copiez ce lien :',url)}
+  };
+  const hash=decodeURIComponent(location.hash||'');
+  if(hash.startsWith('#service-')){
+    const slug=hash.slice('#service-'.length),i=services.findIndex(s=>s.slug===slug);
+    if(i>=0)setTimeout(()=>openServiceModal(i,false),120);
+  }
+})();
 renderServices();
 (function restoreSelectedService(){
   const hash=decodeURIComponent(location.hash||'');
