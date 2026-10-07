@@ -1,29 +1,20 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Services — Bickri Service Agency</title><meta name="description" content="Découvrez les services de Bickri Service Agency : web, e-commerce, réseaux sociaux, IA, branding, publicité, formation et coaching."><meta property="og:type" content="website"><meta property="og:image" content="https://images.pexels.com/photos/7869725/pexels-photo-7869725.jpeg?auto=compress&cs=tinysrgb&w=1600"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://images.pexels.com/photos/7869725/pexels-photo-7869725.jpeg?auto=compress&cs=tinysrgb&w=1600"><meta property="og:title" content="Services — Bickri Service Agency"><meta property="og:description" content="Découvrez les services de Bickri Service Agency : web, e-commerce, réseaux sociaux, IA, branding, publicité, formation et coaching."><link rel="canonical" href="https://bickriservice-agency.org/services/"><link rel="icon" href="/assets/bickri-b-logo.svg"><link rel="stylesheet" href="/site-pages.css"><script defer src="/site-pages.js"></script><style>.serviceGrid{align-items:stretch}.serviceCard{overflow:hidden;padding:0;display:flex;flex-direction:column}.serviceCard>img{width:100%;height:210px;display:block;object-fit:contain}.serviceCardBody{padding:24px;display:flex;flex:1;flex-direction:column}.serviceCardBody p{flex:1}.serviceCardBody .cta{align-self:flex-start;margin-top:14px}@media(max-width:700px){.serviceCard>img{height:190px}}.serviceVisual{position:relative;height:210px;overflow:hidden;background:linear-gradient(135deg,#0b1730,#d9a441)}.serviceVisual:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,16,31,.04),rgba(8,16,31,.48))}.serviceVisual img{width:100%;height:100%;object-fit:contain;display:block}.serviceLocale{position:absolute;left:12px;top:12px;z-index:2;background:rgba(8,16,31,.82);color:#fff;padding:6px 9px;border-radius:999px;font-size:9px;font-weight:900}.serviceNo{position:absolute;right:12px;bottom:10px;z-index:2;color:#fff;font:800 24px Manrope;text-shadow:0 2px 14px rgba(0,0,0,.35)}</style><style>
-.serviceLinksSection{margin-top:22px}
-.serviceLinksIntro{margin-bottom:24px}
-.serviceLinksGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.serviceLinkCard{display:grid;grid-template-columns:110px 1fr;gap:14px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px;box-shadow:0 8px 28px rgba(8,16,31,.05)}
-.serviceLinkCard img{width:110px;height:82px;object-fit:contain;border-radius:12px;background:#eef2f7}
-.serviceLinkCard h3{font:800 16px Manrope;margin:0 0 7px}
-.serviceLinkRow{display:flex;gap:7px}
-.serviceLinkRow input{min-width:0;flex:1;height:38px;border:1px solid var(--line);border-radius:9px;padding:0 9px;background:#f7f9fc;color:#52627a;font-size:11px}
-.serviceLinkRow button{height:38px;border:1px solid var(--gold);border-radius:9px;background:var(--soft);color:#775b1f;padding:0 11px;font-weight:900;font-size:11px;cursor:pointer;white-space:nowrap}
-@media(max-width:700px){.serviceLinksGrid{grid-template-columns:1fr}.serviceLinkCard{grid-template-columns:92px 1fr}.serviceLinkCard img{width:92px;height:76px}.serviceLinkRow{flex-direction:column}.serviceLinkRow button{width:100%}}
-</style></head><body><header class="top"><div class="wrap nav"><a class="brand" href="/"><img src="/assets/bickri-b-logo.svg" alt="Bickri Service Agency"><span><b>BICKRI</b><small>SERVICE AGENCY</small></span></a><nav class="links"><a href="/">Accueil</a><a href="/services/">Services</a><a href="/tarifs/">Tarifs</a><a href="/portfolio/">Portfolio</a><a href="/formations/">Formations</a><a href="/coaching/">Coaching</a><a href="/blog/">Blog</a><a href="/a-propos/">À propos</a><a href="/faq/">FAQ</a></nav><button class="menu">☰</button><a class="cta" href="/rendez-vous/">Devis</a></div><div class="mobile"><a href="/">Accueil</a><a href="/services/">Services</a><a href="/tarifs/">Tarifs</a><a href="/portfolio/">Portfolio</a><a href="/formations/">Formations</a><a href="/coaching/">Coaching</a><a href="/blog/">Blog</a><a href="/faq/">FAQ</a><a href="/rendez-vous/">Rendez-vous</a></div></header><main></main><footer class="footer"><div class="wrap"><div class="footerGrid"><div><h4>BICKRI SERVICE AGENCY</h4><p>Solutions digitales, stratégie, IA, design, publicité et formation.</p></div><div><h4>Explorer</h4><a href="/services/">Services</a><a href="/tarifs/">Tarifs</a><a href="/portfolio/">Portfolio</a><a href="/formations/">Formations</a><a href="/coaching/">Coaching</a></div><div><h4>Contact</h4><a href="mailto:bickriserviceagency@gmail.com">bickriserviceagency@gmail.com</a><a href="#" data-wa="Bonjour Bickri Service Agency, je souhaite discuter de mon projet.">WhatsApp</a><span>Niamey, Niger</span></div></div><div class="copy"><div>© <span data-year></span> Bickri Service Agency.</div><div>Innover et réussir.</div></div></div></footer><div class="floating"><a href="/rendez-vous/">Obtenir un devis</a><a href="#" data-wa="Bonjour Bickri Service Agency, je souhaite discuter de mon projet.">WhatsApp</a></div><script>
-(async function(){
-const root=document.getElementById('service-links-grid'); if(!root)return;
-try{
- const r=await fetch('/services-share.json',{cache:'no-store'}); const items=await r.json();
- const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
- root.innerHTML=items.map((x,i)=>{
-   const url=new URL('/services/'+x.slug+'/',location.origin).href;
-   return '<article class="serviceLinkCard"><img src="'+esc(x.img)+'" alt="'+esc(x.name)+'" loading="lazy"><div><h3>'+String(i+1).padStart(2,'0')+' · '+esc(x.name)+'</h3><div class="serviceLinkRow"><input value="'+esc(url)+'" readonly aria-label="Lien de '+esc(x.name)+'"><button type="button" data-copy-service="'+esc(x.slug)+'">Copier</button></div></div></article>';
- }).join('');
- root.querySelectorAll('[data-copy-service]').forEach(btn=>btn.addEventListener('click',async()=>{
-   const input=btn.parentElement.querySelector('input');
-   try{await navigator.clipboard.writeText(input.value);btn.textContent='Copié ✓';setTimeout(()=>btn.textContent='Copier',1600)}
-   catch(e){input.focus();input.select();btn.textContent='Sélectionné';setTimeout(()=>btn.textContent='Copier',1600)}
- });
-}catch(e){root.innerHTML='<div class="muted">Impossible de charger les liens pour le moment.</div>'}
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Services — Bickri Service Agency</title>
+<meta name="robots" content="noindex,follow">
+<link rel="canonical" href="https://bickriservice-agency.org/#services">
+<link rel="icon" href="/assets/bickri-b-logo.svg">
+<script>
+(function(){
+  var target="/#services";
+  if(location.pathname==="/services/" || location.pathname==="/services"){
+    location.replace(target);
+  }
 })();
-</script></body></html>
+</script>
+</head>
+<body></body>
+</html>
