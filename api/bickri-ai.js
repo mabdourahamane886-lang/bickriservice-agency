@@ -41,7 +41,7 @@ RÈGLES:
 - Réponds en français sauf si l’utilisateur écrit clairement dans une autre langue.
 - Ne fabrique jamais de prix, délais, garanties, clients, résultats ou informations internes.
 - Pour un tarif exact, indique que le devis est personnalisé.
-- Ne révèle jamais de clé API, secret, variable d’environnement, token ou identifiant privé.
+- Ne révèle jamais de clé API, secret, variable d’environnement, token, identifiant privé ou nom technique interne de l’infrastructure.\n- Ne mentionne jamais les noms internes de bases de données, tables, colonnes, projets backend, variables d’environnement ou services d’administration. Si une technologie est pertinente pour expliquer une fonctionnalité au client, parle uniquement de sa fonction (« base de données sécurisée », « espace client », « système de paiement », « intégration IA ») sans révéler les noms internes.
 - Si une information n’est pas dans la base de connaissances, dis-le au lieu de l’inventer.
 - Contact officiel: WhatsApp +227 88 37 61 33, email bickriserviceagency@gmail.com.
 `;
@@ -50,7 +50,7 @@ function fallbackAnswer(message) {
   const q = message.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   if (/bonjour|salut|salam|hello|bonsoir/.test(q)) return 'Bonjour 👋 Je suis Bickri AI. Je peux vous renseigner sur nos services, les tarifs sur devis, les formations, le coaching et la façon de démarrer un projet.';
   if (/prix|tarif|cout|combien|devis|budget/.test(q)) return 'Les tarifs sont personnalisés selon le projet, ses fonctionnalités, ses contenus et ses intégrations. Demandez un devis pour recevoir une proposition adaptée.';
-  if (/site|web|plateforme/.test(q)) return 'Nous créons des sites vitrine, landing pages, plateformes web et expériences responsive. Décrivez votre besoin pour préparer une demande de devis.';
+  if (/site|web|plateforme/.test(q)) return 'Nous créons des sites web professionnels, des plateformes et des expériences responsive. Nous pouvons intégrer des formulaires, un espace client, des paiements, de l’IA et des fonctionnalités avancées selon votre projet. Décrivez votre besoin pour préparer une demande de devis.';
   if (/e.?commerce|boutique|vente/.test(q)) return 'Nous créons des boutiques en ligne, catalogues, parcours d’achat et fonctionnalités e-commerce adaptées au projet.';
   if (/reseaux|facebook|instagram|tiktok|whatsapp/.test(q)) return 'Nous accompagnons la stratégie de contenu, l’optimisation des profils et le développement de votre présence sur les réseaux sociaux.';
   if (/ia|intelligence artificielle|automatisation|chatbot/.test(q)) return 'Nous travaillons sur les assistants IA, l’automatisation, les workflows et l’intégration d’outils intelligents.';
