@@ -1,6 +1,6 @@
 // Dynamic service share pages backed by Supabase.
 // The publishable Supabase key is safe to expose; RLS only permits public reads of active services.
-const SITE = 'https://bickriservice-agency.vercel.app';
+const SITE = 'https://bickriservice-agency.org';
 const SUPABASE_URL = 'https://okdohokhlkxrmxpevees.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_EiTruyR5fwwHpS_PzO5_iA_d1i4iMCP';
 
