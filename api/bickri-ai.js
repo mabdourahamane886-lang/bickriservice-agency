@@ -68,32 +68,54 @@ function json(res, status, body) {
 
 const rateBuckets = globalThis.__bickriAIRateBuckets || new Map();
 globalThis.__bickriAIRateBuckets = rateBuckets;
-function getClientIp(req){const forwarded=String(req.headers['x-forwarded-for']||'').split(',')[0].trim();return forwarded||String(req.headers['x-real-ip']||'unknown').trim()||'unknown';}
-function allowRate(ip,limit=20,windowMs=60*60*1000){const now=Date.now();const current=rateBuckets.get(ip)||{start:now,count:0};if(now-current.start>=windowMs){current.start=now;current.count=0;}current.count++;rateBuckets.set(ip,current);if(rateBuckets.size>5000){for(const [k,v] of rateBuckets){if(now-v.start>=windowMs)rateBuckets.delete(k);}}return current.count<=limit;}
-async function verifyTurnstile(req,token){const secret=process.env.TURNSTILE_SECRET_KEY;if(!secret||typeof token!=='string'||token.length===0||token.length>2048)return false;try{const ip=getClientIp(req);const body=new URLSearchParams({secret,response:token});if(ip&&ip!=='unknown')body.set('remoteip',ip);const r=await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body});const data=await r.json().catch(()=>({success:false}));const allowed=String(process.env.TURNSTILE_HOSTNAMES||'bickriservice-agency.org,bickriservice-agency.vercel.app').split(',').map(x=>x.trim()).filter(Boolean);return Boolean(r.ok&&data.success&&(!data.hostname||allowed.includes(data.hostname))&&(!data.action||data.action==='bickri-ai'));}catch(error){console.error('Bickri AI Turnstile verification failed:',error?.message||error);return false;}}
-
-// Lightweight per-instance abuse protection for expensive public AI requests.
-// The edge/platform layer should provide additional distributed rate limiting.
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const RATE_LIMIT_MAX = 10;
-const rateBuckets = new Map();
-function getClientIp(req) {
-  const forwarded = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
-  return forwarded || String(req.headers['x-real-ip'] || '').trim() || 'unknown';
+
+function getClientIp(req){
+  const forwarded=String(req.headers['x-forwarded-for']||'').split(',')[0].trim();
+  return forwarded||String(req.headers['x-real-ip']||'').trim()||'unknown';
 }
-function checkRateLimit(req) {
-  const now = Date.now();
-  const key = 'ai:' + getClientIp(req);
-  const current = rateBuckets.get(key);
-  if (!current || now - current.startedAt >= RATE_LIMIT_WINDOW_MS) {
-    rateBuckets.set(key, {startedAt: now, count: 1});
-    return {allowed: true, retryAfter: 60};
+
+function checkRateLimit(req){
+  const now=Date.now();
+  const key='ai:'+getClientIp(req);
+  const current=rateBuckets.get(key);
+  if(!current || now-current.startedAt>=RATE_LIMIT_WINDOW_MS){
+    rateBuckets.set(key,{startedAt:now,count:1});
+    return {allowed:true,retryAfter:60};
   }
-  current.count += 1;
-  if (current.count > RATE_LIMIT_MAX) {
-    return {allowed: false, retryAfter: Math.max(1, Math.ceil((RATE_LIMIT_WINDOW_MS - (now - current.startedAt)) / 1000))};
+  current.count++;
+  if(rateBuckets.size>5000){
+    for(const [k,v] of rateBuckets){
+      if(now-v.startedAt>=RATE_LIMIT_WINDOW_MS) rateBuckets.delete(k);
+    }
   }
-  return {allowed: true, retryAfter: Math.max(1, Math.ceil((RATE_LIMIT_WINDOW_MS - (now - current.startedAt)) / 1000))};
+  return {
+    allowed:current.count<=RATE_LIMIT_MAX,
+    retryAfter:Math.max(1,Math.ceil((RATE_LIMIT_WINDOW_MS-(now-current.startedAt))/1000))
+  };
+}
+
+async function verifyTurnstile(req,token){
+  const secret=process.env.TURNSTILE_SECRET_KEY;
+  if(!secret||typeof token!=='string'||token.length===0||token.length>2048)return false;
+  try{
+    const body=new URLSearchParams({secret,response:token});
+    const ip=getClientIp(req);
+    if(ip&&ip!=='unknown')body.set('remoteip',ip);
+    const r=await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify',{
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body
+    });
+    const data=await r.json().catch(()=>({success:false}));
+    const allowed=String(process.env.TURNSTILE_HOSTNAMES||'bickriservice-agency.org,bickriservice-agency.vercel.app')
+      .split(',').map(x=>x.trim()).filter(Boolean);
+    return Boolean(r.ok&&data.success&&(!data.hostname||allowed.includes(data.hostname))&&(!data.action||data.action==='bickri-ai'));
+  }catch(error){
+    console.error('Bickri AI Turnstile verification failed:',error?.message||error);
+    return false;
+  }
 }
 
 function cleanSessionId(value){
@@ -317,8 +339,6 @@ module.exports = async function handler(req, res) {
     return json(res, 503, {error:'Service de vérification temporairement indisponible.', code:'TURNSTILE_UNAVAILABLE'});
   }
 
-  const clientIp=getClientIp(req); if(!allowRate(clientIp)) return json(res,429,{error:'Trop de requêtes. Veuillez réessayer plus tard.',code:'RATE_LIMITED'});
-  const turnstileToken=typeof req.body?.turnstileToken==='string'?req.body.turnstileToken.trim():''; if(!(await verifyTurnstile(req,turnstileToken))) return json(res,403,{error:'Vérification anti-robot requise ou invalide.',code:'TURNSTILE_REQUIRED'});
   const message = typeof req.body?.message === 'string' ? req.body.message.trim() : '';
   if (!message) return json(res, 400, {error:'Message required'});
   if (message.length > 2000) return json(res, 400, {error:'Message too long'});
