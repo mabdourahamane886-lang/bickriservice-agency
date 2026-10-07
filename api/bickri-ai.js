@@ -312,17 +312,23 @@ module.exports = async function handler(req, res) {
   }
 
   if (req.method !== 'POST') return json(res, 405, {error:'Method not allowed'});
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  res.setHeader('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'");
+  const contentLength = Number(req.headers['content-length'] || 0);
+  if (Number.isFinite(contentLength) && contentLength > 256 * 1024) return json(res, 413, {error:'Requête trop volumineuse.', code:'PAYLOAD_TOO_LARGE'});
 
   const origin = String(req.headers.origin || '');
   if (origin && !/^https:\/\/([^/]+\.)?bickriservice-agency\.org$/i.test(origin) && !/^https:\/\/bickriservice-agency\.vercel\.app$/i.test(origin)) {
     return json(res, 403, {error:'Origine non autorisée.', code:'ORIGIN_BLOCKED'});
   }
 
-  const limit = checkRateLimit(req);
-  res.setHeader('X-RateLimit-Limit', String(RATE_LIMIT_MAX));
-  res.setHeader('X-RateLimit-Remaining', limit.allowed ? String(Math.max(0, RATE_LIMIT_MAX - (rateBuckets.get('ai:' + getClientIp(req))?.count || 0))) : '0');
-  res.setHeader('Retry-After', String(limit.retryAfter));
-  if (!limit.allowed) return json(res, 429, {error:'Trop de requêtes. Veuillez réessayer dans quelques instants.', code:'RATE_LIMITED'});
+  const allowed = allowRate(getClientIp(req), 10, 60 * 1000);
+  res.setHeader('X-RateLimit-Limit', '10');
+  if (!allowed) return json(res, 429, {error:'Trop de requêtes. Veuillez réessayer dans quelques instants.', code:'RATE_LIMITED'});
 
   const turnstileToken = typeof req.body?.turnstileToken === 'string' ? req.body.turnstileToken.trim() : '';
   const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
@@ -339,16 +345,17 @@ module.exports = async function handler(req, res) {
     return json(res, 503, {error:'Service de vérification temporairement indisponible.', code:'TURNSTILE_UNAVAILABLE'});
   }
 
+  if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) return json(res, 400, {error:'Requête invalide'});
   const message = typeof req.body?.message === 'string' ? req.body.message.trim() : '';
   if (!message) return json(res, 400, {error:'Message required'});
   if (message.length > 2000) return json(res, 400, {error:'Message too long'});
 
   const apiKey = process.env.OPENAI_API_KEY || process.env.AI_API_KEY;
   const endpoint = process.env.AI_API_URL || 'https://api.openai.com/v1/responses';
-  const model = process.env.OPENAI_MODEL || process.env.AI_MODEL || 'gpt-6-luna';
+  const model = process.env.OPENAI_MODEL || process.env.AI_MODEL || 'gpt-5.6-luna';
   const cookie = String(req.headers.cookie || '');
   const cookieMatch = cookie.match(/(?:^|;\\s*)bickri_ai_session=([a-zA-Z0-9_-]{16,80})/);
-  let sessionId = cleanSessionId(req.body?.sessionId) || cleanSessionId(cookieMatch?.[1]);
+  let sessionId = cleanSessionId(cookieMatch?.[1]);
   if (!sessionId) {
     sessionId = 'bsa_' + (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID().replace(/-/g,'') : (Date.now().toString(36) + Math.random().toString(36).slice(2))).slice(0,60);
     res.setHeader('Set-Cookie','bickri_ai_session=' + sessionId + '; Path=/; Max-Age=31536000; HttpOnly; Secure; SameSite=Lax');
