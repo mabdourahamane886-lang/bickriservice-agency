@@ -332,19 +332,7 @@ module.exports = async function handler(req, res) {
   if (!rate.allowed) return json(res, 429, {error:'Trop de requêtes. Veuillez réessayer dans quelques instants.', code:'RATE_LIMITED'});
 
   const turnstileToken = typeof req.body?.turnstileToken === 'string' ? req.body.turnstileToken.trim() : '';
-  const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
-  if (!turnstileSecret || !turnstileToken) return json(res, 403, {error:'Vérification anti-robot requise.', code:'TURNSTILE_REQUIRED'});
-  try {
-    const verifyBody = new URLSearchParams({secret:turnstileSecret,response:turnstileToken});
-    const forwarded = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
-    if (forwarded) verifyBody.set('remoteip', forwarded);
-    const verifyResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:verifyBody});
-    const verifyData = await verifyResponse.json().catch(() => ({}));
-    if (!verifyResponse.ok || !verifyData.success) return json(res, 403, {error:'Vérification anti-robot refusée.', code:'TURNSTILE_INVALID'});
-  } catch (error) {
-    console.error('Bickri AI Turnstile error:', error);
-    return json(res, 503, {error:'Service de vérification temporairement indisponible.', code:'TURNSTILE_UNAVAILABLE'});
-  }
+  if (!(await verifyTurnstile(req, turnstileToken))) return json(res, 403, {error:'Vérification anti-robot requise ou invalide.', code:'TURNSTILE_INVALID'});
 
   if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) return json(res, 400, {error:'Requête invalide'});
   const message = typeof req.body?.message === 'string' ? req.body.message.trim() : '';
