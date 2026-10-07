@@ -98,7 +98,7 @@
     if(main)main.classList.add('serviceDetailScroller');
   }
   function initServiceReferenceLayout(){
-    if(location.pathname.replace(/\/+$/,'')==='/services'){ window.location.replace('/'); return true; }
+    if(location.pathname.replace(/\/+$/,'')==='/services'){ window.location.replace('/#services'); return true; }
     if(!location.pathname.startsWith('/services/')) return false;
     const slug=location.pathname.split('/').filter(Boolean)[1];
     if(!slug) return false;
@@ -172,7 +172,7 @@
         <header class="siteHeader">
           <div class="siteWrap">
             <a class="siteBrand" href="/">BICKRI SERVICE AGENCY</a>
-            <nav><a href="/">Retour aux services</a><a href="/portfolio/">Projets</a><a href="/rendez-vous/">Contact</a></nav>
+            <nav><a href="/#services">Retour aux services</a><a href="/portfolio/">Projets</a><a href="/rendez-vous/">Contact</a></nav>
           </div>
         </header>
         <main>
@@ -182,7 +182,7 @@
             <p>${esc(service.desc)}</p>
             <img class="serviceHeroImage" src="${esc(service.img)}" alt="${esc(service.name)} — Bickri Service Agency" loading="eager" decoding="async" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
             <div class="serviceHeroImageFallback">L’image de présentation de ce service n’a pas pu être chargée.</div>
-            <div class="actions"><a class="btn primary" href="/rendez-vous/">Demander ce service</a><a class="btn" href="/">← Retour aux services</a></div>
+            <div class="actions"><a class="btn primary" href="/rendez-vous/">Demander ce service</a><a class="btn" href="/#services">← Retour aux services</a></div>
           </div></section>
           <section class="pageSection"><div class="siteWrap contentGrid">
             <article class="contentCard serviceFullCard">
@@ -228,7 +228,7 @@
     btn.innerHTML='<span aria-hidden="true">←</span> Retour aux services';
     btn.style.cssText='position:fixed;left:16px;bottom:18px;z-index:9999;display:inline-flex;align-items:center;gap:8px;padding:11px 15px;border:1px solid rgba(8,16,31,.12);border-radius:999px;background:rgba(255,255,255,.96);color:#08101f;font:800 13px/1 "DM Sans",sans-serif;box-shadow:0 10px 30px rgba(8,16,31,.16);backdrop-filter:blur(12px);cursor:pointer;';
     btn.addEventListener('click',()=>{
-      if(path.startsWith('/services/')){window.location.href='/';}
+      if(path.startsWith('/services/')){window.location.href='/#services';}
       else if(window.history.length>1){window.history.back();}
       else{window.location.href='/';}
     });
