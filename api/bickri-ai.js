@@ -66,6 +66,30 @@ function json(res, status, body) {
   return res.status(status).json(body);
 }
 
+// Lightweight per-instance abuse protection for expensive public AI requests.
+// The edge/platform layer should provide additional distributed rate limiting.
+const RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const RATE_LIMIT_MAX = 10;
+const rateBuckets = new Map();
+function getClientIp(req) {
+  const forwarded = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+  return forwarded || String(req.headers['x-real-ip'] || '').trim() || 'unknown';
+}
+function checkRateLimit(req) {
+  const now = Date.now();
+  const key = 'ai:' + getClientIp(req);
+  const current = rateBuckets.get(key);
+  if (!current || now - current.startedAt >= RATE_LIMIT_WINDOW_MS) {
+    rateBuckets.set(key, {startedAt: now, count: 1});
+    return {allowed: true, retryAfter: 60};
+  }
+  current.count += 1;
+  if (current.count > RATE_LIMIT_MAX) {
+    return {allowed: false, retryAfter: Math.max(1, Math.ceil((RATE_LIMIT_WINDOW_MS - (now - current.startedAt)) / 1000))};
+  }
+  return {allowed: true, retryAfter: Math.max(1, Math.ceil((RATE_LIMIT_WINDOW_MS - (now - current.startedAt)) / 1000))};
+}
+
 function cleanSessionId(value){
   const s=String(value || '').trim();
   return /^[a-zA-Z0-9_-]{16,80}$/.test(s) ? s : null;
@@ -260,6 +284,12 @@ module.exports = async function handler(req, res) {
   }
 
   if (req.method !== 'POST') return json(res, 405, {error:'Method not allowed'});
+
+  const limit = checkRateLimit(req);
+  res.setHeader('X-RateLimit-Limit', String(RATE_LIMIT_MAX));
+  res.setHeader('X-RateLimit-Remaining', limit.allowed ? String(Math.max(0, RATE_LIMIT_MAX - (rateBuckets.get('ai:' + getClientIp(req))?.count || 0))) : '0');
+  res.setHeader('Retry-After', String(limit.retryAfter));
+  if (!limit.allowed) return json(res, 429, {error:'Trop de requêtes. Veuillez réessayer dans quelques instants.', code:'RATE_LIMITED'});
 
   const message = typeof req.body?.message === 'string' ? req.body.message.trim() : '';
   if (!message) return json(res, 400, {error:'Message required'});
