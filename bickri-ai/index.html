@@ -33,7 +33,7 @@ button,textarea{font:inherit}button{cursor:pointer}.app{height:100vh;height:100d
 <main class="main">
 <header class="top"><div style="display:flex;align-items:center;gap:8px"><a class="back" href="/" aria-label="Retour au site principal">← Retour</a><button class="icon mobile" id="menu">☰</button><div class="title">Bickri <span>AI</span></div></div><div class="actions"><button class="icon" id="clear" title="Effacer la discussion">⌫</button><button class="icon" id="export" title="Exporter">⇩</button></div></header>
 <section class="chat" id="chat"></section>
-<div class="composerArea"><div class="turnstileWrap"><div id="turnstile-widget"></div></div><form class="composer" id="form"><textarea id="input" rows="1" maxlength="5000" placeholder="Écrivez votre demande à Bickri AI…"></textarea><button class="send" id="send" disabled>➤</button></form><div class="hint">Bickri AI • Conseiller digital de Bickri Service Agency</div></div>
+<div class="composerArea"><div class="turnstileWrap"><div id="turnstile-widget"></div></div><form class="composer" id="form"><textarea id="input" rows="1" maxlength="5000" placeholder="Écrivez votre demande à Bickri AI…"></textarea><button class="send" id="send" disabled>➤</button></form><div id="turnstile-ai" style="max-width:850px;margin:8px auto 0;display:flex;justify-content:center"></div><div class="hint">Bickri AI • Conseiller digital de Bickri Service Agency</div></div>
 </main>
 </div>
 <script>
@@ -62,6 +62,7 @@ async function ask(q){
   const response=await fetch("/api/bickri-ai",{method:"POST",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({message:q,history,turnstileToken})});
   const data=await response.json().catch(()=>({}));
   if(!response.ok||!data.answer)throw new Error(data.error||"Réponse indisponible");
+  turnstileToken="";if(window.turnstile&&turnstileWidget!==null)window.turnstile.reset(turnstileWidget);
   out.textContent=data.answer;
   current.messages.push({role:"assistant",content:data.answer});resetTurnstile();
  }catch(error){
@@ -79,7 +80,7 @@ document.getElementById("newChat").onclick=()=>{if(current.messages.length){save
 document.getElementById("menu").onclick=()=>sidebar.classList.toggle("open");
 document.getElementById("clear").onclick=()=>{current=blank();render()};
 document.getElementById("export").onclick=()=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(current,null,2)],{type:"application/json"}));a.download="bickri-ai.json";a.click()};
-history();render();resize();
+history();render();resize();initTurnstile();
 </script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=initBickriTurnstile" async defer></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=bickriTurnstileLoaded" async defer></script>
