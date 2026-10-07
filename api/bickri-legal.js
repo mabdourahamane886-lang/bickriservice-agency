@@ -1,4 +1,8 @@
 function json(res,status,body){return res.status(status).json(body);}
+const ALLOWED_ORIGINS=/^https:\/\/([^/]+\.)?bickriservice-agency\.org$|^https:\/\/bickriservice-agency\.vercel\.app$/i;
+const rateBuckets=new Map();
+function clientIp(req){return String(req.headers['x-forwarded-for']||'').split(',')[0].trim()||String(req.headers['x-real-ip']||'').trim()||'unknown';}
+function allowRate(req,max=20){const k=clientIp(req),n=Date.now(),v=rateBuckets.get(k);if(!v||n-v.t>60000){rateBuckets.set(k,{t:n,c:1});return true;}v.c++;return v.c<=max;}
 const SUPABASE_URL=()=>process.env.SUPABASE_URL||'https://okdohokhlkxrmxpevees.supabase.co';
 const SUPABASE_KEY=()=>process.env.SUPABASE_SERVICE_ROLE_KEY;
 const OPENAI_KEY=()=>process.env.OPENAI_API_KEY||process.env.AI_API_KEY;
@@ -30,8 +34,12 @@ async function saveAnalysis(documentId,sessionId,type,result){await sb('/rest/v1
 async function getDocument(id,sessionId){const r=await sb('/rest/v1/legal_documents?id=eq.'+encodeURIComponent(id)+'&session_id=eq.'+encodeURIComponent(sessionId)+'&select=id,title,file_name,document_type,source_text,created_at&limit=1');const d=await r.json().catch(()=>[]);return r.ok&&d[0]?d[0]:null;}
 async function relevant(documentId,query){const q=String(query||'').trim().replace(/[^\p{L}\p{N}\s-]/gu,' ').slice(0,300);if(!q)return [];const r=await sb('/rest/v1/legal_chunks?document_id=eq.'+encodeURIComponent(documentId)+'&search_vector=fts.'+encodeURIComponent(q)+'&select=chunk_index,content&order=chunk_index.asc&limit=12');const d=await r.json().catch(()=>[]);return r.ok?d:[];}
 module.exports=async function handler(req,res){
-if(req.method==='OPTIONS'){res.setHeader('Access-Control-Allow-Origin','*');res.setHeader('Access-Control-Allow-Methods','POST,OPTIONS');res.setHeader('Access-Control-Allow-Headers','Content-Type');return res.status(204).end();}
+if(req.method==='OPTIONS'){const origin=String(req.headers.origin||'');if(origin&&!ALLOWED_ORIGINS.test(origin))return res.status(403).end();if(origin)res.setHeader('Access-Control-Allow-Origin',origin);res.setHeader('Vary','Origin');res.setHeader('Access-Control-Allow-Methods','POST,OPTIONS');res.setHeader('Access-Control-Allow-Headers','Content-Type, Authorization');return res.status(204).end();}
 if(req.method!=='POST')return json(res,405,{error:'Method not allowed'});
+const origin=String(req.headers.origin||'');
+if(origin&&!ALLOWED_ORIGINS.test(origin))return json(res,403,{error:'Origine non autorisée.'});
+if(origin){res.setHeader('Access-Control-Allow-Origin',origin);res.setHeader('Vary','Origin');}
+if(!allowRate(req))return json(res,429,{error:'Trop de tentatives. Réessayez plus tard.'});
 const adminUser=await requireAdmin(req);
 if(!adminUser)return json(res,401,{error:'Accès administrateur requis.'});
 const sid=session(req,res),body=req.body||{},action=String(body.action||'').trim();
