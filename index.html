@@ -234,6 +234,7 @@ function renderServices(){
   services.forEach((s,i)=>{
     const el=document.createElement('article');
     el.className='service';
+    el.id='service-'+s.slug;
     el.style.setProperty('--service-index',i);
     el.setAttribute('role','link');
     el.setAttribute('tabindex','0');
@@ -245,6 +246,12 @@ function renderServices(){
   });
 }
 renderServices();
+(function restoreSelectedService(){
+  const hash=decodeURIComponent(location.hash||'');
+  if(!hash.startsWith('#service-'))return;
+  const target=document.getElementById(hash.slice(1));
+  if(target) setTimeout(()=>target.scrollIntoView({behavior:'instant',block:'start'}),0);
+})();
 grid.addEventListener('click',e=>{
   const share=e.target.closest('.shareCode');
   if(share){e.preventDefault();const s=services.find(x=>x.code===share.dataset.code);if(s)window.open('https://wa.me/?text='+encodeURIComponent('Découvrez ce service Bickri Service Agency : '+servicePublicUrl(s)),'_blank','noopener')}
