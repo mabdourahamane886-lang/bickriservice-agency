@@ -38,7 +38,7 @@ button,textarea{font:inherit}button{cursor:pointer}.app{height:100vh;height:100d
 </div>
 <script>
 let turnstileWidgetId=null;
-function bickriTurnstileLoaded(){fetch("/api/turnstile-sitekey").then(r=>r.json()).then(data=>{if(!data.siteKey)return;turnstileWidgetId=window.turnstile.render("#turnstile-widget",{sitekey:data.siteKey,theme:"light",callback:resize,"expired-callback":resize,"error-callback":resize});resize()}).catch(()=>{});}
+function bickriTurnstileLoaded(){fetch("/api/turnstile-sitekey").then(r=>r.json()).then(data=>{if(!data.siteKey)return;turnstileWidgetId=window.turnstile.render("#turnstile-widget",{sitekey:data.siteKey,theme:"light",action:"bickri-ai",callback:resize,"expired-callback":resize,"error-callback":resize});resize()}).catch(()=>{});}
 window.initBickriTurnstile=bickriTurnstileLoaded;window.bickriTurnstileLoaded=bickriTurnstileLoaded;
 const KEY="bickri_ai_rebuilt_v2",chatEl=document.getElementById("chat"),input=document.getElementById("input"),send=document.getElementById("send"),historyEl=document.getElementById("history"),sidebar=document.getElementById("sidebar");
 const blank=()=>({id:Date.now()+Math.random(),title:"Nouvelle discussion",messages:[],created:new Date().toISOString()});
@@ -62,16 +62,17 @@ async function ask(q){
   const response=await fetch("/api/bickri-ai",{method:"POST",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({message:q,history,turnstileToken})});
   const data=await response.json().catch(()=>({}));
   if(!response.ok||!data.answer)throw new Error(data.error||"Réponse indisponible");
-  turnstileToken="";if(window.turnstile&&turnstileWidget!==null)window.turnstile.reset(turnstileWidget);
   out.textContent=data.answer;
-  current.messages.push({role:"assistant",content:data.answer});resetTurnstile();
+  current.messages.push({role:"assistant",content:data.answer});
  }catch(error){
   console.error("Bickri AI error:",error);
   const fallback="Je rencontre temporairement un problème avec le service IA. Vérifiez la configuration OpenAI côté serveur ou réessayez dans quelques instants.";
   out.textContent=fallback;
-  current.messages.push({role:"assistant",content:fallback});resetTurnstile();
+  current.messages.push({role:"assistant",content:fallback});
+ }finally{
+  resetTurnstile();
  }
- if(window.turnstile&&turnstileWidgetId!==null)window.turnstile.reset(turnstileWidgetId);saved=saved.filter(c=>c.id!==current.id);saved.push(JSON.parse(JSON.stringify(current)));persist();history();resize()
+ saved=saved.filter(c=>c.id!==current.id);saved.push(JSON.parse(JSON.stringify(current)));persist();history();resize()
 }
 document.getElementById("form").addEventListener("submit",e=>{e.preventDefault();ask(input.value)});
 input.addEventListener("input",resize);
@@ -80,8 +81,7 @@ document.getElementById("newChat").onclick=()=>{if(current.messages.length){save
 document.getElementById("menu").onclick=()=>sidebar.classList.toggle("open");
 document.getElementById("clear").onclick=()=>{current=blank();render()};
 document.getElementById("export").onclick=()=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(current,null,2)],{type:"application/json"}));a.download="bickri-ai.json";a.click()};
-history();render();resize();initTurnstile();
+history();render();resize();
 </script>
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=initBickriTurnstile" async defer></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=bickriTurnstileLoaded" async defer></script>
 </body></html>
