@@ -285,11 +285,31 @@ module.exports = async function handler(req, res) {
 
   if (req.method !== 'POST') return json(res, 405, {error:'Method not allowed'});
 
+  const origin = String(req.headers.origin || '');
+  if (origin && !/^https:\/\/([^/]+\.)?bickriservice-agency\.org$/i.test(origin) && !/^https:\/\/bickriservice-agency\.vercel\.app$/i.test(origin)) {
+    return json(res, 403, {error:'Origine non autorisée.', code:'ORIGIN_BLOCKED'});
+  }
+
   const limit = checkRateLimit(req);
   res.setHeader('X-RateLimit-Limit', String(RATE_LIMIT_MAX));
   res.setHeader('X-RateLimit-Remaining', limit.allowed ? String(Math.max(0, RATE_LIMIT_MAX - (rateBuckets.get('ai:' + getClientIp(req))?.count || 0))) : '0');
   res.setHeader('Retry-After', String(limit.retryAfter));
   if (!limit.allowed) return json(res, 429, {error:'Trop de requêtes. Veuillez réessayer dans quelques instants.', code:'RATE_LIMITED'});
+
+  const turnstileToken = typeof req.body?.turnstileToken === 'string' ? req.body.turnstileToken.trim() : '';
+  const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
+  if (!turnstileSecret || !turnstileToken) return json(res, 403, {error:'Vérification anti-robot requise.', code:'TURNSTILE_REQUIRED'});
+  try {
+    const verifyBody = new URLSearchParams({secret:turnstileSecret,response:turnstileToken});
+    const forwarded = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+    if (forwarded) verifyBody.set('remoteip', forwarded);
+    const verifyResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:verifyBody});
+    const verifyData = await verifyResponse.json().catch(() => ({}));
+    if (!verifyResponse.ok || !verifyData.success) return json(res, 403, {error:'Vérification anti-robot refusée.', code:'TURNSTILE_INVALID'});
+  } catch (error) {
+    console.error('Bickri AI Turnstile error:', error);
+    return json(res, 503, {error:'Service de vérification temporairement indisponible.', code:'TURNSTILE_UNAVAILABLE'});
+  }
 
   const message = typeof req.body?.message === 'string' ? req.body.message.trim() : '';
   if (!message) return json(res, 400, {error:'Message required'});
