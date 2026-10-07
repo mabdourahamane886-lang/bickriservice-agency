@@ -326,9 +326,10 @@ module.exports = async function handler(req, res) {
     return json(res, 403, {error:'Origine non autorisée.', code:'ORIGIN_BLOCKED'});
   }
 
-  const allowed = allowRate(getClientIp(req), 10, 60 * 1000);
-  res.setHeader('X-RateLimit-Limit', '10');
-  if (!allowed) return json(res, 429, {error:'Trop de requêtes. Veuillez réessayer dans quelques instants.', code:'RATE_LIMITED'});
+  const rate = checkRateLimit(req);
+  res.setHeader('X-RateLimit-Limit', String(RATE_LIMIT_MAX));
+  res.setHeader('Retry-After', String(rate.retryAfter));
+  if (!rate.allowed) return json(res, 429, {error:'Trop de requêtes. Veuillez réessayer dans quelques instants.', code:'RATE_LIMITED'});
 
   const turnstileToken = typeof req.body?.turnstileToken === 'string' ? req.body.turnstileToken.trim() : '';
   const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
