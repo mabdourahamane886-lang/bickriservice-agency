@@ -267,7 +267,7 @@ module.exports = async function handler(req, res) {
 
   const apiKey = process.env.OPENAI_API_KEY || process.env.AI_API_KEY;
   const endpoint = process.env.AI_API_URL || 'https://api.openai.com/v1/responses';
-  const model = process.env.OPENAI_MODEL || process.env.AI_MODEL || 'gpt-5.6-luna';
+  const model = process.env.OPENAI_MODEL || process.env.AI_MODEL || 'gpt-6-luna';
   const cookie = String(req.headers.cookie || '');
   const cookieMatch = cookie.match(/(?:^|;\\s*)bickri_ai_session=([a-zA-Z0-9_-]{16,80})/);
   let sessionId = cleanSessionId(req.body?.sessionId) || cleanSessionId(cookieMatch?.[1]);
