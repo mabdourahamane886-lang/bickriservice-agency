@@ -172,7 +172,7 @@
         <header class="siteHeader">
           <div class="siteWrap">
             <a class="siteBrand" href="/">BICKRI SERVICE AGENCY</a>
-            <nav><a href="/#services">Retour aux services</a><a href="/portfolio/">Projets</a><a href="/rendez-vous/">Contact</a></nav>
+            <nav><a href="/#service-${encodeURIComponent(slug)}">Retour aux services</a><a href="/portfolio/">Projets</a><a href="/rendez-vous/">Contact</a></nav>
           </div>
         </header>
         <main>
@@ -182,7 +182,7 @@
             <p>${esc(service.desc)}</p>
             <img class="serviceHeroImage" src="${esc(service.img)}" alt="${esc(service.name)} — Bickri Service Agency" loading="eager" decoding="async" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
             <div class="serviceHeroImageFallback">L’image de présentation de ce service n’a pas pu être chargée.</div>
-            <div class="actions"><a class="btn primary" href="/rendez-vous/">Demander ce service</a><a class="btn" href="/#services">← Retour aux services</a></div>
+            <div class="actions"><a class="btn primary" href="/rendez-vous/">Demander ce service</a><a class="btn" href="/#service-${encodeURIComponent(slug)}">← Retour aux services</a></div>
           </div></section>
           <section class="pageSection"><div class="siteWrap contentGrid">
             <article class="contentCard serviceFullCard">
