@@ -68,6 +68,8 @@ function json(res, status, body) {
 
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const RATE_LIMIT_MAX = 10;
+const rateBuckets = globalThis.__bickriAIRateBuckets || new Map();
+globalThis.__bickriAIRateBuckets = rateBuckets;
 
 function getClientIp(req){
   const forwarded=String(req.headers['x-forwarded-for']||'').split(',')[0].trim();
