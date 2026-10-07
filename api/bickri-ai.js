@@ -300,14 +300,33 @@ module.exports = async function handler(req, res) {
 
   const systemPrompt = BASE_SYSTEM_PROMPT + buildKnowledgeContext(db) + buildMemoryContext(memory);
 
-  if (!apiKey || !model) {
-    return json(res, 200, {answer:fallbackAnswer(message),mode:'local',knowledgeLoaded:db.knowledge.length > 0});
+  if (!apiKey) {
+    console.error('Bickri AI configuration error: OPENAI_API_KEY/AI_API_KEY is missing');
+    return json(res, 503, {
+      error:'Service IA temporairement indisponible.',
+      code:'AI_KEY_MISSING',
+      knowledgeLoaded:db.knowledge.length > 0
+    });
+  }
+
+  if (!model) {
+    console.error('Bickri AI configuration error: model is missing');
+    return json(res, 503, {
+      error:'Service IA temporairement indisponible.',
+      code:'AI_MODEL_MISSING',
+      knowledgeLoaded:db.knowledge.length > 0
+    });
   }
 
   try {
     const answer = await callProvider(endpoint, apiKey, model, systemPrompt, safeHistory, message);
     if (!answer) {
-      return json(res, 200, {answer:fallbackAnswer(message),mode:'local',providerAvailable:false,providerError:'empty_response',knowledgeLoaded:db.knowledge.length > 0});
+      console.error('Bickri AI provider returned an empty response');
+      return json(res, 502, {
+        error:'Le fournisseur IA n’a pas retourné de réponse.',
+        code:'AI_EMPTY_RESPONSE',
+        knowledgeLoaded:db.knowledge.length > 0
+      });
     }
 
     res.setHeader('Cache-Control','no-store');
@@ -319,7 +338,17 @@ module.exports = async function handler(req, res) {
       servicesLoaded:db.services.length
     });
   } catch (error) {
-    console.error('Bickri AI request failed', error);
-    return json(res, 200, {answer:fallbackAnswer(message),mode:'local',knowledgeLoaded:db.knowledge.length > 0});
+    console.error('Bickri AI request failed', {
+      message:error?.message,
+      providerStatus:error?.providerStatus,
+      providerCode:error?.providerCode
+    });
+    return json(res, 502, {
+      error:'Le service IA est temporairement indisponible. Vérifiez la configuration du fournisseur IA.',
+      code:'AI_PROVIDER_ERROR',
+      providerStatus: Number.isInteger(error?.providerStatus) ? error.providerStatus : undefined,
+      providerCode: error?.providerCode || undefined,
+      knowledgeLoaded:db.knowledge.length > 0
+    });
   }
 };
