@@ -66,6 +66,24 @@ export default {async fetch(request,env,ctx){
     }catch{return json({answer:fallbackAnswer(message),version:SITE_VERSION,mode:'fallback'})}
   }
   if(url.pathname==='/api/site-version')return json({version:SITE_VERSION,assets:ASSET_VERSION,platform:'Cloudflare Workers'});
+  // Short service links: /s/<code> -> canonical service page
+  if (request.method === 'GET' && /^\\/s\\/[^/]+\\/?$/.test(url.pathname)) {
+    try {
+      const code = decodeURIComponent(url.pathname.split('/').filter(Boolean)[1] || '').trim().toUpperCase();
+      const catalogResponse = await env.ASSETS.fetch(new Request(new URL('/services-share.json', url.origin)));
+      const catalog = await catalogResponse.json().catch(() => []);
+      const service = Array.isArray(catalog) ? catalog.find(x => String(x?.code || '').trim().toUpperCase() === code) : null;
+      if (service?.slug) {
+        const target = new URL('/services/' + encodeURIComponent(service.slug) + '/', url.origin);
+        url.searchParams.forEach((value, key) => target.searchParams.append(key, value));
+        return new Response(null, { status: 302, headers: { 'Location': target.href, 'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0' } });
+      }
+      return new Response('Service link not found', { status: 404, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' } });
+    } catch (e) {
+      console.error('Short service link failed', e);
+      return new Response('Service link error', { status: 500, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' } });
+    }
+  }
   const response=await env.ASSETS.fetch(request);
   const headers=new Headers(response.headers);
   if(response.ok && request.method==='GET' && /^\/services\/[^/]+\/?$/.test(url.pathname)){
