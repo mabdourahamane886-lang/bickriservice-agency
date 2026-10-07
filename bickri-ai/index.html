@@ -39,12 +39,13 @@ button,textarea{font:inherit}button{cursor:pointer}.app{height:100vh;height:100d
 <script>
 let turnstileWidgetId=null;
 function bickriTurnstileLoaded(){fetch("/api/turnstile-sitekey").then(r=>r.json()).then(data=>{if(!data.siteKey)return;turnstileWidgetId=window.turnstile.render("#turnstile-widget",{sitekey:data.siteKey,theme:"light",callback:resize,"expired-callback":resize,"error-callback":resize});resize()}).catch(()=>{});}
-window.bickriTurnstileLoaded=bickriTurnstileLoaded;
+window.initBickriTurnstile=bickriTurnstileLoaded;window.bickriTurnstileLoaded=bickriTurnstileLoaded;
 const KEY="bickri_ai_rebuilt_v2",chatEl=document.getElementById("chat"),input=document.getElementById("input"),send=document.getElementById("send"),historyEl=document.getElementById("history"),sidebar=document.getElementById("sidebar");
 const blank=()=>({id:Date.now()+Math.random(),title:"Nouvelle discussion",messages:[],created:new Date().toISOString()});
 let saved=JSON.parse(localStorage.getItem(KEY)||"[]"),current=blank();
 function persist(){localStorage.setItem(KEY,JSON.stringify(saved.slice(-50)))}
 function hasCaptcha(){return Boolean(window.turnstile&&turnstileWidgetId!==null&&window.turnstile.getResponse(turnstileWidgetId))}
+function resetTurnstile(){try{if(window.turnstile&&turnstileWidgetId!==null)window.turnstile.reset(turnstileWidgetId)}catch(e){}resize()}
 function resize(){input.style.height="auto";input.style.height=Math.min(input.scrollHeight,170)+"px";send.disabled=!input.value.trim()||!hasCaptcha()}
 function history(){historyEl.innerHTML="";[...saved].reverse().forEach(c=>{const b=document.createElement("button");b.textContent=c.title;b.onclick=()=>{current=JSON.parse(JSON.stringify(c));render();sidebar.classList.remove("open")};historyEl.appendChild(b)})}
 function bubble(text,role){const row=document.createElement("div");row.className="message "+role;if(role==="assistant"){const a=document.createElement("div");a.className="avatar";a.textContent="B";row.appendChild(a)}const box=document.createElement("div");box.className="content";const b=document.createElement("div");b.className="bubble";b.textContent=text;box.appendChild(b);if(role==="assistant"&&text&&text!=="…"){const cp=document.createElement("button");cp.className="copy";cp.textContent="Copier";cp.onclick=()=>navigator.clipboard?.writeText(text);box.appendChild(cp)}row.appendChild(box);chatEl.appendChild(row);return b}
@@ -62,7 +63,7 @@ async function ask(q){
   const data=await response.json().catch(()=>({}));
   if(!response.ok||!data.answer)throw new Error(data.error||"Réponse indisponible");
   out.textContent=data.answer;
-  current.messages.push({role:"assistant",content:data.answer});
+  current.messages.push({role:"assistant",content:data.answer});resetTurnstile();
  }catch(error){
   console.error("Bickri AI error:",error);
   const fallback="Je rencontre temporairement un problème avec le service IA. Vérifiez la configuration OpenAI côté serveur ou réessayez dans quelques instants.";
