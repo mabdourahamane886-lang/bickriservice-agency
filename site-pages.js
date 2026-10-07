@@ -228,7 +228,7 @@
     btn.innerHTML='<span aria-hidden="true">←</span> Retour aux services';
     btn.style.cssText='position:fixed;left:16px;bottom:18px;z-index:9999;display:inline-flex;align-items:center;gap:8px;padding:11px 15px;border:1px solid rgba(8,16,31,.12);border-radius:999px;background:rgba(255,255,255,.96);color:#08101f;font:800 13px/1 "DM Sans",sans-serif;box-shadow:0 10px 30px rgba(8,16,31,.16);backdrop-filter:blur(12px);cursor:pointer;';
     btn.addEventListener('click',()=>{
-      if(path.startsWith('/services/')){window.location.href='/#services';}
+      if(path.startsWith('/services/')){const slug=path.split('/').filter(Boolean)[1]||'';window.location.href='/#service-'+encodeURIComponent(slug);}
       else if(window.history.length>1){window.history.back();}
       else{window.location.href='/';}
     });
