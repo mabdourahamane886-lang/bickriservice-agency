@@ -166,7 +166,7 @@
       if(!service)return;
       const d=details[slug]||[service.what||'',service.get||'',service.why||''];
       const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-      const url=new URL('/services/'+slug+'/',location.origin).href;
+      const url=new URL('/s/'+encodeURIComponent(service.code||''),location.origin).href;
       document.body.className='service-reference-mode';
       document.body.innerHTML=`
         <header class="siteHeader">
@@ -194,7 +194,7 @@
             <div class="serviceCta"><div><strong>Prêt à démarrer ?</strong><span>Expliquez-nous votre projet et nous vous orienterons vers la prochaine étape.</span></div><a class="btn" href="/rendez-vous/">Demander ce service →</a></div>
             <article class="contentCard"><h2>Ce que nous proposons</h2><p>${esc(service.desc)}</p><p>${esc(d[0]||service.what||'Nous adaptons la prestation à votre activité, vos objectifs et votre public afin de construire une solution digitale professionnelle et cohérente.')}</p></article>
             <article class="contentCard"><h2>Pour qui ?</h2><p>${esc(service.who||'Entrepreneurs, entreprises, créateurs, associations et organisations qui souhaitent développer leur activité grâce au numérique.')}</p></article>
-            <article class="contentCard"><h2>Votre lien partageable</h2><p>Un lien propre, stable et prêt à être copié ou partagé sur WhatsApp, Facebook, Instagram et autres réseaux.</p><div class="shareBox"><input type="text" value="${esc(url)}" readonly aria-label="Lien propre du service"><button type="button" data-copy-service-link>Copier le lien</button></div><span class="shareHint">URL officielle du service — sans paramètres ni éléments inutiles.</span></article>
+            <article class="contentCard"><h2>Votre lien partageable</h2><p>Un lien court, stable et prêt à être copié ou partagé sur WhatsApp, Facebook, Instagram et autres réseaux. Son aperçu Open Graph utilise automatiquement la photo et les informations de ce service.</p><div class="shareBox"><input type="text" value="${esc(url)}" readonly aria-label="Lien propre du service"><button type="button" data-copy-service-link>Copier le lien</button></div><span class="shareHint">URL courte officielle du service — avec aperçu Open Graph et image du service.</span></article>
           </div></section>
         </main>
         <footer class="siteFooter"><div class="siteWrap">© ${new Date().getFullYear()} Bickri Service Agency — Niamey, Niger</div></footer>`;
@@ -202,7 +202,7 @@
       const copy=document.querySelector('[data-copy-service-link]');
       const linkField=document.querySelector('.shareBox input');
       if(copy)copy.addEventListener('click',async()=>{
-        const cleanUrl=new URL('/services/'+slug+'/',location.origin).href;
+        const cleanUrl=new URL('/s/'+encodeURIComponent(service.code||''),location.origin).href;
         try{
           await navigator.clipboard.writeText(cleanUrl);
           copy.textContent='Lien copié ✓';
