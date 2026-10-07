@@ -37,11 +37,15 @@ button,textarea{font:inherit}button{cursor:pointer}.app{height:100vh;height:100d
 </main>
 </div>
 <script>
-let turnstileWidgetId=null;\nfunction bickriTurnstileLoaded(){fetch("/api/turnstile-sitekey").then(r=>r.json()).then(data=>{if(!data.siteKey)return;turnstileWidgetId=window.turnstile.render("#turnstile-widget",{sitekey:data.siteKey,theme:"light",callback:resize,"expired-callback":resize,"error-callback":resize});resize()}).catch(()=>{});}\nwindow.bickriTurnstileLoaded=bickriTurnstileLoaded;\nconst KEY="bickri_ai_rebuilt_v2",chatEl=document.getElementById("chat"),input=document.getElementById("input"),send=document.getElementById("send"),historyEl=document.getElementById("history"),sidebar=document.getElementById("sidebar");
+let turnstileWidgetId=null;
+function bickriTurnstileLoaded(){fetch("/api/turnstile-sitekey").then(r=>r.json()).then(data=>{if(!data.siteKey)return;turnstileWidgetId=window.turnstile.render("#turnstile-widget",{sitekey:data.siteKey,theme:"light",callback:resize,"expired-callback":resize,"error-callback":resize});resize()}).catch(()=>{});}
+window.bickriTurnstileLoaded=bickriTurnstileLoaded;
+const KEY="bickri_ai_rebuilt_v2",chatEl=document.getElementById("chat"),input=document.getElementById("input"),send=document.getElementById("send"),historyEl=document.getElementById("history"),sidebar=document.getElementById("sidebar");
 const blank=()=>({id:Date.now()+Math.random(),title:"Nouvelle discussion",messages:[],created:new Date().toISOString()});
 let saved=JSON.parse(localStorage.getItem(KEY)||"[]"),current=blank();
 function persist(){localStorage.setItem(KEY,JSON.stringify(saved.slice(-50)))}
-function hasCaptcha(){return Boolean(window.turnstile&&turnstileWidgetId!==null&&window.turnstile.getResponse(turnstileWidgetId))}\nfunction resize(){input.style.height="auto";input.style.height=Math.min(input.scrollHeight,170)+"px";send.disabled=!input.value.trim()||!hasCaptcha()}
+function hasCaptcha(){return Boolean(window.turnstile&&turnstileWidgetId!==null&&window.turnstile.getResponse(turnstileWidgetId))}
+function resize(){input.style.height="auto";input.style.height=Math.min(input.scrollHeight,170)+"px";send.disabled=!input.value.trim()||!hasCaptcha()}
 function history(){historyEl.innerHTML="";[...saved].reverse().forEach(c=>{const b=document.createElement("button");b.textContent=c.title;b.onclick=()=>{current=JSON.parse(JSON.stringify(c));render();sidebar.classList.remove("open")};historyEl.appendChild(b)})}
 function bubble(text,role){const row=document.createElement("div");row.className="message "+role;if(role==="assistant"){const a=document.createElement("div");a.className="avatar";a.textContent="B";row.appendChild(a)}const box=document.createElement("div");box.className="content";const b=document.createElement("div");b.className="bubble";b.textContent=text;box.appendChild(b);if(role==="assistant"&&text&&text!=="…"){const cp=document.createElement("button");cp.className="copy";cp.textContent="Copier";cp.onclick=()=>navigator.clipboard?.writeText(text);box.appendChild(cp)}row.appendChild(box);chatEl.appendChild(row);return b}
 function render(){chatEl.innerHTML="";if(!current.messages.length){const w=document.createElement("div");w.className="welcome";w.innerHTML='<div class="heroMark">B</div><h1>Bonjour, je suis <span>Bickri AI</span>.</h1><p>Votre conseiller digital pour structurer vos idées, développer votre activité et construire des solutions numériques concrètes.</p><div class="suggestions"><button>Je veux créer un site professionnel.</button><button>Je veux lancer une boutique e-commerce.</button><button>Je veux créer une application mobile.</button><button>Je veux utiliser l’IA pour mon entreprise.</button></div>';chatEl.appendChild(w);w.querySelectorAll("button").forEach(b=>b.onclick=()=>ask(b.textContent));return}current.messages.forEach(m=>bubble(m.content,m.role))}
@@ -52,7 +56,9 @@ async function ask(q){
  const out=bubble("…","assistant");
  try{
   const history=current.messages.slice(0,-1).slice(-8).map(m=>({role:m.role,content:m.content}));
-  const turnstileToken=hasCaptcha()?window.turnstile.getResponse(turnstileWidgetId):"";\n  if(!turnstileToken){out.textContent="Veuillez confirmer que vous n’êtes pas un robot avant d’envoyer votre message.";current.messages.pop();resize();return}\n  const response=await fetch("/api/bickri-ai",{method:"POST",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({message:q,history,turnstileToken})});
+  const turnstileToken=hasCaptcha()?window.turnstile.getResponse(turnstileWidgetId):"";
+  if(!turnstileToken){out.textContent="Veuillez confirmer que vous n’êtes pas un robot avant d’envoyer votre message.";current.messages.pop();resize();return}
+  const response=await fetch("/api/bickri-ai",{method:"POST",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({message:q,history,turnstileToken})});
   const data=await response.json().catch(()=>({}));
   if(!response.ok||!data.answer)throw new Error(data.error||"Réponse indisponible");
   out.textContent=data.answer;
@@ -63,7 +69,7 @@ async function ask(q){
   out.textContent=fallback;
   current.messages.push({role:"assistant",content:fallback});resetTurnstile();
  }
- saved=saved.filter(c=>c.id!==current.id);saved.push(JSON.parse(JSON.stringify(current)));persist();history();send.disabled=!input.value.trim()
+ if(window.turnstile&&turnstileWidgetId!==null)window.turnstile.reset(turnstileWidgetId);saved=saved.filter(c=>c.id!==current.id);saved.push(JSON.parse(JSON.stringify(current)));persist();history();resize()
 }
 document.getElementById("form").addEventListener("submit",e=>{e.preventDefault();ask(input.value)});
 input.addEventListener("input",resize);
@@ -75,4 +81,5 @@ document.getElementById("export").onclick=()=>{const a=document.createElement("a
 history();render();resize();
 </script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=initBickriTurnstile" async defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=bickriTurnstileLoaded" async defer></script>
 </body></html>
