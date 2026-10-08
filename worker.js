@@ -66,22 +66,42 @@ export default {async fetch(request,env,ctx){
     }catch{return json({answer:fallbackAnswer(message),version:SITE_VERSION,mode:'fallback'})}
   }
   if(url.pathname==='/api/site-version')return json({version:SITE_VERSION,assets:ASSET_VERSION,platform:'Cloudflare Workers'});
-  // Short service links: /s/<code> -> canonical service page
+  // Short service links: /s/<code> serve the service-specific Open Graph page directly.
   if (request.method === 'GET' && /^\/s\/[^/]+\/?$/.test(url.pathname)) {
     try {
       const code = decodeURIComponent(url.pathname.split('/').filter(Boolean)[1] || '').trim().toUpperCase();
       const catalogResponse = await env.ASSETS.fetch(new Request(new URL('/services-share.json', url.origin)));
       const catalog = await catalogResponse.json().catch(() => []);
       const service = Array.isArray(catalog) ? catalog.find(x => String(x?.code || '').trim().toUpperCase() === code) : null;
-      if (service?.slug) {
-        const target = new URL('/services/' + encodeURIComponent(service.slug) + '/', url.origin);
-        url.searchParams.forEach((value, key) => target.searchParams.append(key, value));
-        return new Response(null, { status: 302, headers: { 'Location': target.href, 'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0' } });
-      }
-      return new Response('Service link not found', { status: 404, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' } });
+      if (!service?.slug) return new Response('Service link not found', {status:404,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'}});
+
+      const esc = (value) => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+      const image = String(service.img || '').trim();
+      const shortUrl = new URL('/s/' + encodeURIComponent(String(service.code).trim()), url.origin).href;
+      const appUrl = new URL('/services/' + encodeURIComponent(service.slug) + '/', url.origin).href;
+      const title = (service.name || 'Service') + ' — Bickri Service Agency';
+      const description = service.desc || 'Découvrez ce service de Bickri Service Agency à Niamey, Niger.';
+      const html = '<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+        '<title>' + esc(title) + '</title><meta name="description" content="' + esc(description) + '">' +
+        '<link rel="canonical" href="' + esc(shortUrl) + '">' +
+        '<meta property="og:type" content="website"><meta property="og:site_name" content="Bickri Service Agency"><meta property="og:locale" content="fr_FR">' +
+        '<meta property="og:url" content="' + esc(shortUrl) + '"><meta property="og:title" content="' + esc(title) + '">' +
+        '<meta property="og:description" content="' + esc(description) + '">' +
+        '<meta property="og:image" content="' + esc(image) + '"><meta property="og:image:secure_url" content="' + esc(image) + '">' +
+        '<meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1600"><meta property="og:image:height" content="900">' +
+        '<meta property="og:image:alt" content="' + esc(service.name || 'Service Bickri Service Agency') + '">' +
+        '<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="' + esc(title) + '">' +
+        '<meta name="twitter:description" content="' + esc(description) + '"><meta name="twitter:image" content="' + esc(image) + '">' +
+        '</head><body style="margin:0;background:#08101f;color:#fff;font-family:Arial,sans-serif"><main style="max-width:900px;margin:auto;padding:24px">' +
+        '<img src="' + esc(image) + '" alt="' + esc(service.name || '') + '" style="width:100%;max-height:520px;object-fit:cover;border-radius:20px">' +
+        '<p style="color:#d9a441;font-weight:700;letter-spacing:.08em">BICKRI SERVICE AGENCY · NIAMEY · NIGER</p>' +
+        '<h1>' + esc(service.name || 'Service') + '</h1><p style="font-size:18px;line-height:1.6">' + esc(description) + '</p>' +
+        '<p><a href="' + esc(appUrl) + '" style="display:inline-block;padding:14px 20px;background:#d9a441;color:#08101f;text-decoration:none;border-radius:10px;font-weight:700">Ouvrir le service</a></p>' +
+        '</main></body></html>';
+      return new Response(html,{status:200,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0','Vary':'User-Agent'}});
     } catch (e) {
-      console.error('Short service link failed', e);
-      return new Response('Service link error', { status: 500, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' } });
+      console.error('Short service Open Graph page failed', e);
+      return new Response('Service link error',{status:500,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'}});
     }
   }
   const response=await env.ASSETS.fetch(request);
