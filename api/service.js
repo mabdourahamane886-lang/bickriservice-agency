@@ -90,13 +90,15 @@ module.exports = async function (req, res) {
     '<p style="color:#d9a441;font-weight:700;letter-spacing:.08em">BICKRI SERVICE AGENCY · NIAMEY · NIGER</p>' +
     '<h1>' + escapeHtml(service.name) + '</h1><p style="font-size:18px;line-height:1.6">' + escapeHtml(description) + '</p>' +
     
-    '<div style="margin:18px 0;padding:14px;border:1px solid #263248;border-radius:14px;background:#0d1729">' +
-    '<div style="font-size:11px;color:#9aa8bd;margin-bottom:7px">Lien de partage</div>' +
-    '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
-    '<a id="share-url" href="' + escapeHtml(publicUrl) + '" style="flex:1;min-width:240px;color:#d9a441;font-size:13px;font-weight:700;overflow-wrap:anywhere">' + escapeHtml(publicUrl) + '</a>' +
-    '<button type="button" id="copy-share-url" style="padding:11px 14px;border:0;border-radius:10px;background:#d9a441;color:#08101f;font-weight:800;cursor:pointer">Copier le lien</button>' +
+    '<div style="margin:18px 0;padding:18px;border:1px solid #263248;border-radius:18px;background:#0d1729;text-align:center">' +
+    '<div style="font-size:12px;color:#d9a441;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:9px">Référence et lien du service</div>' +
+    '<div style="display:flex;flex-direction:column;gap:10px;align-items:stretch">' +
+    '<div style="padding:11px 12px;border-radius:10px;background:#111d32;color:#fff;font-weight:800;overflow-wrap:anywhere">Référence : ' + escapeHtml(service.reference_code) + '</div>' +
+    '<a id="share-url" href="' + escapeHtml(publicUrl) + '" style="padding:11px 12px;border-radius:10px;background:#fff;color:#111827;font-size:13px;font-weight:800;overflow-wrap:anywhere;text-decoration:underline">' + escapeHtml(publicUrl) + '</a>' +
+    '<button type="button" id="copy-share-url" style="padding:13px;border:0;border-radius:10px;background:#d9a441;color:#08101f;font-weight:800;cursor:pointer">Copier le lien</button>' +
+    '<a href="https://wa.me/?text=' + encodeURIComponent('Découvrez ' + service.name + ' — ' + publicUrl) + '" target="_blank" rel="noopener" style="padding:13px;border-radius:10px;background:#fff;color:#111827;text-decoration:none;font-weight:800">Partager sur WhatsApp</a>' +
+    '<a href="' + escapeHtml(appUrl) + '" style="padding:13px;border-radius:10px;background:#d9a441;color:#08101f;text-decoration:none;font-weight:800">Ouvrir le service</a>' +
     '</div></div>' +
-    '<p><a href="' + escapeHtml(appUrl) + '" style="display:inline-block;padding:14px 20px;background:#d9a441;color:#08101f;text-decoration:none;border-radius:10px;font-weight:700">Ouvrir le service</a></p>' +
     '<script>(function(){var b=document.getElementById("copy-share-url");if(b)b.onclick=function(){var u=document.getElementById("share-url").href;navigator.clipboard.writeText(u).then(function(){b.textContent="Lien copié ✓";setTimeout(function(){b.textContent="Copier le lien"},1600)}).catch(function(){window.prompt("Copiez ce lien :",u)})}})();</script>' +
     '</main></body></html>';
 
