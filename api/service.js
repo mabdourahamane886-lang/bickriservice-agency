@@ -89,7 +89,7 @@ module.exports = async function (req, res) {
     '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(service.name) + '" style="width:100%;max-height:520px;object-fit:cover;border-radius:20px">' +
     '<p style="color:#d9a441;font-weight:700;letter-spacing:.08em">BICKRI SERVICE AGENCY · NIAMEY · NIGER</p>' +
     '<h1>' + escapeHtml(service.name) + '</h1><p style="font-size:18px;line-height:1.6">' + escapeHtml(description) + '</p>' +
-    '<p><strong>Référence :</strong> ' + escapeHtml(service.reference_code) + '</p>' +
+    
     '<div style="margin:18px 0;padding:14px;border:1px solid #263248;border-radius:14px;background:#0d1729">' +
     '<div style="font-size:11px;color:#9aa8bd;margin-bottom:7px">Lien de partage</div>' +
     '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
