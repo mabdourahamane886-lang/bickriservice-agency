@@ -35,7 +35,16 @@ jobs:
       - name: Verify Cloudflare access
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CLOUDFLARD_API_TOKEN }}
-        run: wrangler whoami
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID || 'ac74cb0ae880fb837da6033568a5a930' }}
+        run: |
+          wrangler whoami
+          echo "Checking Workers Scripts asset-upload permission..."
+          curl --fail-with-body --silent --show-error \
+            -X POST \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/bickriservice-agency/assets-upload-session" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data '{"manifest":{}}' >/tmp/cloudflare-assets-permission.json
 
       - name: Deploy Worker and assets
         env:
