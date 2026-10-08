@@ -8,6 +8,10 @@
     {
       "pattern": "bickriservice-agency.bickriserviceagency.dev",
       "custom_domain": true
+    },
+    {
+      "pattern": "bickriservice-agency.org",
+      "custom_domain": true
     }
   ],
   "assets": {
