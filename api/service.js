@@ -4,6 +4,9 @@ const SITE = 'https://bickriservice-agency.org';
 const SUPABASE_URL = 'https://okdohokhlkxrmxpevees.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_EiTruyR5fwwHpS_PzO5_iA_d1i4iMCP';
 
+// Bundle the same 37-card catalog used by the homepage so short-link resolution is deterministic.
+const SERVICE_CATALOG = require('../services-share.json');
+
 function escapeHtml(value) {
   return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) {
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
@@ -16,19 +19,11 @@ function absoluteImage(src) {
 }
 
 async function getService(code) {
-  // Source principale : services-share.json, afin que les 37 liens courts
-  // utilisent exactement les mêmes services, slugs et images que le site.
-  const catalogResponse = await fetch(SITE + '/services-share.json', {
-    headers: { 'Cache-Control': 'no-cache' }
+  const normalizedCode = String(code || '').trim().toUpperCase();
+  const catalog = Array.isArray(SERVICE_CATALOG) ? SERVICE_CATALOG : [];
+  const item = catalog.find(function (service) {
+    return String(service && service.code || '').trim().toUpperCase() === normalizedCode;
   });
-  if (!catalogResponse.ok) throw new Error('Service catalog returned ' + catalogResponse.status);
-  const catalog = await catalogResponse.json();
-  const item = Array.isArray(catalog)
-    ? catalog.find(function (service) {
-        return String(service.code || '').trim().toUpperCase() === code;
-      })
-    : null;
-
   if (!item) return null;
 
   return {
@@ -49,7 +44,8 @@ module.exports = async function (req, res) {
   const code = String((req.query && req.query.code) || '').trim().toUpperCase();
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+  res.setHeader('Vary', 'User-Agent');
 
   if (!code) {
     res.statusCode = 400;
@@ -85,7 +81,7 @@ module.exports = async function (req, res) {
     '<meta property="og:description" content="' + escapeHtml(description) + '">' +
     '<meta property="og:image" content="' + escapeHtml(image) + '">' +
     '<meta property="og:image:alt" content="' + escapeHtml(service.name) + '">' +
-    '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">' +
+    '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="fr_FR">' +
     '<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="' + escapeHtml(title) + '">' +
     '<meta name="twitter:description" content="' + escapeHtml(description) + '"><meta name="twitter:image" content="' + escapeHtml(image) + '">' +
     '</head><body style="margin:0;background:#08101f;color:#fff;font-family:Arial,sans-serif">' +
