@@ -97,14 +97,14 @@ export default {async fetch(request,env,ctx){
         '<p style="color:#d9a441;font-weight:700;letter-spacing:.08em">BICKRI SERVICE AGENCY · NIAMEY · NIGER</p>' +
         '<h1>' + esc(service.name || 'Service') + '</h1><p style="font-size:18px;line-height:1.6">' + esc(description) + '</p>' +
         '<div style="margin:24px 0;padding:18px;border:1px solid #2b3850;border-radius:18px;background:#0d1729;text-align:center">' +
-        '<div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#d9a441;margin-bottom:10px">Référence et lien du service</div>' +
+        '<div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#d9a441;margin-bottom:10px">Lien du service</div>' +
         '<div style="display:flex;flex-direction:column;gap:10px;align-items:stretch">' +
         '<a href="' + esc(shortUrl) + '" style="padding:11px 12px;border-radius:10px;background:#fff;color:#111827;font-weight:800;overflow-wrap:anywhere;text-decoration:underline">' + esc(shortUrl) + '</a>' +
-        '<div style="display:flex;flex-direction:column;gap:10px">' +
-        '<button type="button" onclick="navigator.clipboard&&navigator.clipboard.writeText(' + JSON.stringify(shortUrl) + ').then(()=>{this.textContent=\'Lien copié ✓\'})" style="padding:13px;border:1px solid #d9a441;background:#d9a441;color:#08101f;border-radius:10px;font-weight:800;cursor:pointer">Copier le lien</button>' +
+        '<button type="button" id="copy-share-url" style="padding:13px;border:1px solid #d9a441;background:#d9a441;color:#08101f;border-radius:10px;font-weight:800;cursor:pointer">Copier le lien</button>' +
         '<a href="https://wa.me/?text=' + encodeURIComponent('Découvrez ' + String(service.name || 'ce service') + ' — ' + shortUrl) + '" target="_blank" rel="noopener" style="padding:13px;border-radius:10px;background:#fff;color:#111827;text-decoration:none;font-weight:800">Partager sur WhatsApp</a>' +
         '<a href="' + esc(appUrl) + '" style="padding:13px;border-radius:10px;background:#d9a441;color:#08101f;text-decoration:none;font-weight:800">Ouvrir le service</a>' +
-        '</div></div></div>' +
+        '</div></div>' +
+        '<script>document.getElementById("copy-share-url")?.addEventListener("click",async function(){try{await navigator.clipboard.writeText(shortUrl);this.textContent="Lien copié ✓";setTimeout(()=>this.textContent="Copier le lien",1600)}catch(e){window.prompt("Copiez ce lien :",shortUrl)}});</script>' +
         '</main></body></html>';
       return new Response(html,{status:200,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0','Vary':'User-Agent'}});
     } catch (e) {
