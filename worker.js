@@ -96,7 +96,16 @@ export default {async fetch(request,env,ctx){
         '<img src="' + esc(image) + '" alt="' + esc(service.name || '') + '" style="width:100%;max-height:520px;object-fit:cover;border-radius:20px">' +
         '<p style="color:#d9a441;font-weight:700;letter-spacing:.08em">BICKRI SERVICE AGENCY · NIAMEY · NIGER</p>' +
         '<h1>' + esc(service.name || 'Service') + '</h1><p style="font-size:18px;line-height:1.6">' + esc(description) + '</p>' +
-        '<p><a href="' + esc(appUrl) + '" style="display:inline-block;padding:14px 20px;background:#d9a441;color:#08101f;text-decoration:none;border-radius:10px;font-weight:700">Ouvrir le service</a></p>' +
+        '<div style="margin:24px 0;padding:18px;border:1px solid #2b3850;border-radius:18px;background:#0d1729;text-align:center">' +
+        '<div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#d9a441;margin-bottom:10px">Référence et lien du service</div>' +
+        '<div style="display:flex;flex-direction:column;gap:10px;align-items:stretch">' +
+        '<div style="padding:11px 12px;border-radius:10px;background:#111d32;color:#fff;font-weight:800;overflow-wrap:anywhere">Référence : ' + esc(service.code) + '</div>' +
+        '<a href="' + esc(shortUrl) + '" style="padding:11px 12px;border-radius:10px;background:#fff;color:#111827;font-weight:800;overflow-wrap:anywhere;text-decoration:underline">' + esc(shortUrl) + '</a>' +
+        '<div style="display:flex;flex-direction:column;gap:10px">' +
+        '<button type="button" onclick="navigator.clipboard&&navigator.clipboard.writeText(' + JSON.stringify(shortUrl) + ').then(()=>{this.textContent=\'Lien copié ✓\'})" style="padding:13px;border:1px solid #d9a441;background:#d9a441;color:#08101f;border-radius:10px;font-weight:800;cursor:pointer">Copier le lien</button>' +
+        '<a href="https://wa.me/?text=' + encodeURIComponent('Découvrez ' + String(service.name || 'ce service') + ' — ' + shortUrl) + '" target="_blank" rel="noopener" style="padding:13px;border-radius:10px;background:#fff;color:#111827;text-decoration:none;font-weight:800">Partager sur WhatsApp</a>' +
+        '<a href="' + esc(appUrl) + '" style="padding:13px;border-radius:10px;background:#d9a441;color:#08101f;text-decoration:none;font-weight:800">Ouvrir le service</a>' +
+        '</div></div></div>' +
         '</main></body></html>';
       return new Response(html,{status:200,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0','Vary':'User-Agent'}});
     } catch (e) {
@@ -138,8 +147,9 @@ export default {async fetch(request,env,ctx){
             '<meta name="twitter:image" content="'+image+'">'
           ].join('');
           const shortLink=safe(new URL('/s/'+encodeURIComponent(String(service.code||'').trim()),url.origin).href);
+          const referenceBlock='<div style="margin:10px 18px 0;padding:14px 20px;border:1px solid #e5e7eb;border-radius:18px;background:#f8fafc;text-align:center;font-family:inherit"><div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8a6a2f;margin-bottom:6px">Référence du service</div><div style="font-weight:900;color:#111827;overflow-wrap:anywhere">'+safe(service.code||'')+'</div></div>';
           const serviceLinkBlock='<div style="margin:32px 18px 0;padding:18px 20px;border:1px solid #e5e7eb;border-radius:18px;background:#fff8e8;text-align:center;font-family:inherit"><div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8a6a2f;margin-bottom:8px">Lien Open Graph du service</div><div style="display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap"><a href="'+shortLink+'" style="display:inline-block;max-width:100%;overflow-wrap:anywhere;color:#111827;font-weight:700;text-decoration:underline">'+shortLink+'</a><button type="button" onclick="navigator.clipboard&&navigator.clipboard.writeText('+JSON.stringify(shortLink)+').then(()=>{this.textContent=\'Lien copié ✓\'})" style="border:1px solid #e3e8f0;background:#fff;border-radius:9px;padding:8px 11px;font-weight:800;cursor:pointer">Copier le lien</button></div><a href="https://wa.me/?text='+encodeURIComponent('Découvrez '+String(service.name||'ce service')+' — '+shortLink)+'" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;color:#8a6416;font-weight:800;text-decoration:none">Partager sur WhatsApp</a></div>';
-          const replaced=source.replace(/<title>[\s\S]*?<\/title>/i,'<title>'+title+'</title>').replace(/<head>/i,'<head>'+meta).replace(/<\/body>/i,serviceLinkBlock+'</body>');
+          const replaced=source.replace(/<title>[\s\S]*?<\/title>/i,'<title>'+title+'</title>').replace(/<head>/i,'<head>'+meta).replace(/<\/body>/i,referenceBlock+serviceLinkBlock+'</body>');
           headers.set('Content-Type','text/html; charset=utf-8');
           headers.set('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
           return new Response(replaced,{status:response.status,statusText:response.statusText,headers});
