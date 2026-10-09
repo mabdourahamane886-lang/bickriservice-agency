@@ -219,7 +219,7 @@
 
   function initBackButton(){
     if(document.getElementById('bickri-back-button'))return;
-    const path=location.pathname.replace(/\\/+$/,'')||'/';
+    const path=location.pathname.replace(/\/+$/,'')||'/';
     if(path==='/'||path==='/index.html')return;
     const btn=document.createElement('button');
     btn.id='bickri-back-button';
