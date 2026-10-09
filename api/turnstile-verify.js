@@ -12,6 +12,12 @@ function allowedOrigin(origin) {
   return !origin || /^https:\/\/([^/]+\.)?bickriservice-agency\.org$/i.test(origin) || /^https:\/\/bickriservice-agency\.vercel\.app$/i.test(origin);
 }
 
+function allowedHostname(hostname) {
+  const configured = String(process.env.TURNSTILE_HOSTNAMES || 'bickriservice-agency.org,bickriservice-agency.vercel.app')
+    .split(',').map(value => value.trim().toLowerCase()).filter(Boolean);
+  return typeof hostname === 'string' && configured.includes(hostname.toLowerCase());
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -64,7 +70,7 @@ module.exports = async function handler(req, res) {
       body
     });
     const data = await r.json().catch(()=>({success:false}));
-    if (!r.ok || !data.success) return res.status(403).json({success:false,error:'Vérification Turnstile refusée'});
+    if (!r.ok || !data.success || !allowedHostname(data.hostname)) return res.status(403).json({success:false,error:'Vérification Turnstile refusée'});
     return res.status(200).json({success:true});
   } catch (error) {
     console.error('Turnstile verification failed:', error?.message || error);
