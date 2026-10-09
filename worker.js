@@ -144,7 +144,7 @@ export default {async fetch(request,env,ctx){
   const url=new URL(request.url);
   if (url.pathname === '/api/turnstile-sitekey') {
     if (request.method !== 'GET') return json({error:'Method not allowed'},405);
-    return json({siteKey: env.TURNSTILE_SITE_KEY || ''},200,{'Cache-Control':'no-store'});
+    return json({siteKey: env.TURNSTILE_SITE_KEY || '0x4AAAAAAFSQKBE9BhCCTI8Qc1vlZ_sojAI'},200,{'Cache-Control':'no-store'});
   }
   if (url.pathname === '/api/turnstile-verify') {
     if (!isAllowedOrigin(request)) return json({success:false,error:'Origine non autorisée'},403);
