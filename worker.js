@@ -85,7 +85,7 @@ async function verifyWorkerTurnstile(request, token, env, expectedAction) {
     const allowedHosts = String(env.TURNSTILE_HOSTNAMES || 'bickriservice-agency.org,bickriservice-agency.vercel.app,bickriservice-agency.bickriserviceagency.dev')
       .split(',').map(value => value.trim().toLowerCase()).filter(Boolean);
     return {
-      ok: Boolean(response.ok && data.success && typeof data.hostname === 'string' && allowedHosts.includes(data.hostname.toLowerCase()) && (!expectedAction || !data.action || data.action === expectedAction)),
+      ok: Boolean(response.ok && data.success && typeof data.hostname === 'string' && allowedHosts.includes(data.hostname.toLowerCase()) && (!expectedAction || data.action === expectedAction)),
       configured: true
     };
   } catch (error) {
