@@ -13,7 +13,7 @@ function allowedOrigin(origin) {
 }
 
 function allowedHostname(hostname) {
-  const configured = String(process.env.TURNSTILE_HOSTNAMES || 'bickriservice-agency.org,bickriservice-agency.vercel.app')
+  const configured = String(process.env.TURNSTILE_HOSTNAMES || 'bickriservice-agency.org,bickriservice-agency.vercel.app,bickriservice-agency.bickriserviceagency.dev')
     .split(',').map(value => value.trim().toLowerCase()).filter(Boolean);
   return typeof hostname === 'string' && configured.includes(hostname.toLowerCase());
 }
