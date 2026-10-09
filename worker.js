@@ -104,7 +104,19 @@ CONTACT : oriente vers le bouton WhatsApp du site ou bickriserviceagency@gmail.c
 STYLE : français par défaut, ton professionnel, chaleureux, motivant et encourageant. Encourage la personne à avancer dans son projet, sans inventer de résultats, garanties, délais, clients ou promesses.
 `;
 
-function json(body,status=200,extra={}){const h=new Headers({'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store',...extra});return new Response(JSON.stringify(body),{status,headers:h})}
+const SECURITY_HEADERS = {
+  'X-Content-Type-Options':'nosniff',
+  'Referrer-Policy':'strict-origin-when-cross-origin',
+  'X-Frame-Options':'SAMEORIGIN',
+  'Strict-Transport-Security':'max-age=31536000; includeSubDomains',
+  'X-DNS-Prefetch-Control':'off',
+  'X-Permitted-Cross-Domain-Policies':'none',
+  'Permissions-Policy':'camera=(), microphone=(), geolocation=()',
+  'Content-Security-Policy':"default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' https: data: blob:; connect-src 'self' https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; media-src 'self' https: blob:; worker-src 'self' blob:; upgrade-insecure-requests",
+  'Cross-Origin-Opener-Policy':'same-origin-allow-popups',
+  'Cross-Origin-Resource-Policy':'same-origin'
+};
+function json(body,status=200,extra={}){const h=new Headers({...SECURITY_HEADERS,'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store',...extra});return new Response(JSON.stringify(body),{status,headers:h})}
 function isUuid(v){return typeof v==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v)}
 function getSessionId(req){const c=req.headers.get('Cookie')||'';const m=c.match(/(?:^|;\\s*)bickri_ai_session=([^;]+)/i);return m&&isUuid(m[1])?m[1]:null}
 async function supabaseRequest(path,key,opt={}){if(!key)return null;const h=new Headers(opt.headers||{});h.set('apikey',key);h.set('Authorization',`Bearer ${key}`);h.set('Content-Type','application/json');const r=await fetch(`${SUPABASE_URL}/rest/v1/${path}`,{...opt,headers:h});if(!r.ok)throw new Error(`Supabase ${r.status}`);return r}
@@ -160,7 +172,7 @@ export default {async fetch(request,env,ctx){
     const message=typeof body?.message==='string'?body.message.trim():'';
     if(!message)return json({error:'Message required'},400);
     if(message.length>2000)return json({error:'Message too long'},400);
-    const captcha = await verifyWorkerTurnstile(request, body?.turnstileToken, env);
+    const captcha = await verifyWorkerTurnstile(request, body?.turnstileToken, env, 'bickri-ai');
     if (!captcha.ok) return json({error:captcha.configured?'Vérification anti-robot requise ou invalide.':'Service de vérification anti-robot non configuré.',code:captcha.configured?'TURNSTILE_INVALID':'TURNSTILE_UNCONFIGURED'},captcha.configured?403:503);
     const apiKey=env.OPENAI_API_KEY || env.AI_API_KEY, endpoint=env.AI_API_URL || 'https://api.openai.com/v1/responses', model=env.OPENAI_MODEL || env.AI_MODEL || 'gpt-4.1-mini';
     if(!apiKey)return json({answer:fallbackAnswer(message),version:SITE_VERSION,mode:'local'});
@@ -228,7 +240,7 @@ export default {async fetch(request,env,ctx){
         '<a href="' + esc(appUrl) + '" style="padding:13px;border-radius:10px;background:#d9a441;color:#08101f;text-decoration:none;font-weight:800">Ouvrir le service</a>' +
         '</div></div>' +
         '</main></body></html>';
-      return new Response(html,{status:200,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0','Vary':'User-Agent'}});
+      return new Response(html,{status:200,headers:{...SECURITY_HEADERS,'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0','Vary':'User-Agent'}});
     } catch (e) {
       console.error('Short service Open Graph page failed', e);
       return new Response('Service link error',{status:500,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'}});
@@ -236,6 +248,7 @@ export default {async fetch(request,env,ctx){
   }
   const response=await env.ASSETS.fetch(request);
   const headers=new Headers(response.headers);
+  for (const [key,value] of Object.entries(SECURITY_HEADERS)) if (!headers.has(key)) headers.set(key,value);
   if(response.ok && request.method==='GET' && /^\/services\/[^/]+\/?$/.test(url.pathname)){
     try{
       const slug=url.pathname.split('/').filter(Boolean)[1];
