@@ -8,6 +8,28 @@ const AI_RATE_LIMIT_MAX = 10;
 const aiRateBuckets = globalThis.__bickriWorkerAiRateBuckets || new Map();
 globalThis.__bickriWorkerAiRateBuckets = aiRateBuckets;
 
+const turnstileRateBuckets = globalThis.__bickriWorkerTurnstileRateBuckets || new Map();
+globalThis.__bickriWorkerTurnstileRateBuckets = turnstileRateBuckets;
+
+function checkTurnstileRateLimit(request) {
+  const ip = request.headers.get('CF-Connecting-IP') ||
+    String(request.headers.get('X-Forwarded-For') || '').split(',')[0].trim() || 'unknown';
+  const now = Date.now();
+  const current = turnstileRateBuckets.get(ip);
+  if (!current || now - current.startedAt >= AI_RATE_LIMIT_WINDOW_MS) {
+    turnstileRateBuckets.set(ip, {startedAt: now, count: 1});
+    return {allowed: true, retryAfter: 60};
+  }
+  current.count += 1;
+  if (turnstileRateBuckets.size > 5000) {
+    for (const [key, value] of turnstileRateBuckets) {
+      if (now - value.startedAt >= AI_RATE_LIMIT_WINDOW_MS) turnstileRateBuckets.delete(key);
+    }
+  }
+  return {allowed: current.count <= 20, retryAfter: Math.max(1, Math.ceil((AI_RATE_LIMIT_WINDOW_MS - (now - current.startedAt)) / 1000))};
+}
+
+
 function isAllowedOrigin(request) {
   const origin = request.headers.get('Origin');
   if (!origin) return true;
@@ -46,7 +68,7 @@ function checkAiRateLimit(request) {
   };
 }
 
-async function verifyWorkerTurnstile(request, token, env) {
+async function verifyWorkerTurnstile(request, token, env, expectedAction) {
   const secret = env.TURNSTILE_SECRET_KEY;
   if (!secret) return {ok: false, configured: false};
   if (typeof token !== 'string' || !token || token.length > 2048) return {ok: false, configured: true};
@@ -63,7 +85,7 @@ async function verifyWorkerTurnstile(request, token, env) {
     const allowedHosts = String(env.TURNSTILE_HOSTNAMES || 'bickriservice-agency.org,bickriservice-agency.vercel.app,bickriservice-agency.bickriserviceagency.dev')
       .split(',').map(value => value.trim().toLowerCase()).filter(Boolean);
     return {
-      ok: Boolean(response.ok && data.success && typeof data.hostname === 'string' && allowedHosts.includes(data.hostname.toLowerCase()) && (!data.action || data.action === 'bickri-ai')),
+      ok: Boolean(response.ok && data.success && typeof data.hostname === 'string' && allowedHosts.includes(data.hostname.toLowerCase()) && (!expectedAction || !data.action || data.action === expectedAction)),
       configured: true
     };
   } catch (error) {
@@ -108,6 +130,24 @@ function fallbackAnswer(message){
 
 export default {async fetch(request,env,ctx){
   const url=new URL(request.url);
+  if (url.pathname === '/api/turnstile-sitekey') {
+    if (request.method !== 'GET') return json({error:'Method not allowed'},405);
+    return json({siteKey: env.TURNSTILE_SITE_KEY || ''},200,{'Cache-Control':'no-store'});
+  }
+  if (url.pathname === '/api/turnstile-verify') {
+    if (!isAllowedOrigin(request)) return json({success:false,error:'Origine non autorisée'},403);
+    if (request.method === 'OPTIONS') return json({},204);
+    if (request.method !== 'POST') return json({success:false,error:'Method not allowed'},405);
+    const contentLength = Number(request.headers.get('Content-Length') || 0);
+    if (Number.isFinite(contentLength) && contentLength > 16 * 1024) return json({success:false,error:'Requête trop volumineuse'},413);
+    const rate = checkTurnstileRateLimit(request);
+    if (!rate.allowed) return json({success:false,error:'Trop de requêtes. Veuillez réessayer plus tard.'},429,{'Retry-After':String(rate.retryAfter)});
+    let body;
+    try { body = await request.json(); } catch { return json({success:false,error:'Requête JSON invalide'},400); }
+    const captcha = await verifyWorkerTurnstile(request, body?.token, env, null);
+    if (!captcha.ok) return json({success:false,error:captcha.configured?'Vérification Turnstile refusée':'Service de vérification indisponible'},captcha.configured?403:503);
+    return json({success:true},200,{'Cache-Control':'no-store'});
+  }
   if(url.pathname==='/api/bickri-ai'){
     if (!isAllowedOrigin(request)) return json({error:'Origine non autorisée'},403);
     if(request.method==='OPTIONS')return json({},204);
@@ -122,7 +162,7 @@ export default {async fetch(request,env,ctx){
     if(message.length>2000)return json({error:'Message too long'},400);
     const captcha = await verifyWorkerTurnstile(request, body?.turnstileToken, env);
     if (!captcha.ok) return json({error:captcha.configured?'Vérification anti-robot requise ou invalide.':'Service de vérification anti-robot non configuré.',code:captcha.configured?'TURNSTILE_INVALID':'TURNSTILE_UNCONFIGURED'},captcha.configured?403:503);
-    const apiKey=env.AI_API_KEY, endpoint=env.AI_API_URL || 'https://api.openai.com/v1/responses', model=env.AI_MODEL || 'gpt-4.1-mini';
+    const apiKey=env.OPENAI_API_KEY || env.AI_API_KEY, endpoint=env.AI_API_URL || 'https://api.openai.com/v1/responses', model=env.OPENAI_MODEL || env.AI_MODEL || 'gpt-4.1-mini';
     if(!apiKey)return json({answer:fallbackAnswer(message),version:SITE_VERSION,mode:'local'});
     const clientHistory=Array.isArray(body?.history)?body.history.slice(-8).filter(x=>x&&(x.role==='user'||x.role==='assistant')&&typeof x.content==='string').map(x=>({role:x.role,content:x.content.slice(0,2000)})):[];
     let sessionId=getSessionId(request),conversationId=null,storedHistory=[];
