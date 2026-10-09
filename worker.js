@@ -3,6 +3,76 @@ const ASSET_VERSION = '2026-09-19-logo-exact-1';
 const SUPABASE_URL = 'https://okdohokhlkxrmxpevees.supabase.co';
 const SERVICES = ['Création web','E-commerce','Réseaux sociaux','Intelligence artificielle','Branding & design','Publicité digitale','Formation & coaching'];
 
+const AI_RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const AI_RATE_LIMIT_MAX = 10;
+const aiRateBuckets = globalThis.__bickriWorkerAiRateBuckets || new Map();
+globalThis.__bickriWorkerAiRateBuckets = aiRateBuckets;
+
+function isAllowedOrigin(request) {
+  const origin = request.headers.get('Origin');
+  if (!origin) return true;
+  try {
+    const parsed = new URL(origin);
+    const host = parsed.hostname.toLowerCase();
+    return parsed.protocol === 'https:' && (
+      host === 'bickriservice-agency.org' ||
+      host.endsWith('.bickriservice-agency.org') ||
+      host === 'bickriservice-agency.vercel.app' ||
+      host === 'bickriservice-agency.bickriserviceagency.dev'
+    );
+  } catch {
+    return false;
+  }
+}
+
+function checkAiRateLimit(request) {
+  const ip = request.headers.get('CF-Connecting-IP') ||
+    String(request.headers.get('X-Forwarded-For') || '').split(',')[0].trim() || 'unknown';
+  const now = Date.now();
+  const current = aiRateBuckets.get(ip);
+  if (!current || now - current.startedAt >= AI_RATE_LIMIT_WINDOW_MS) {
+    aiRateBuckets.set(ip, {startedAt: now, count: 1});
+    return {allowed: true, retryAfter: 60};
+  }
+  current.count += 1;
+  if (aiRateBuckets.size > 5000) {
+    for (const [key, value] of aiRateBuckets) {
+      if (now - value.startedAt >= AI_RATE_LIMIT_WINDOW_MS) aiRateBuckets.delete(key);
+    }
+  }
+  return {
+    allowed: current.count <= AI_RATE_LIMIT_MAX,
+    retryAfter: Math.max(1, Math.ceil((AI_RATE_LIMIT_WINDOW_MS - (now - current.startedAt)) / 1000))
+  };
+}
+
+async function verifyWorkerTurnstile(request, token, env) {
+  const secret = env.TURNSTILE_SECRET_KEY;
+  if (!secret) return {ok: false, configured: false};
+  if (typeof token !== 'string' || !token || token.length > 2048) return {ok: false, configured: true};
+  try {
+    const body = new URLSearchParams({secret, response: token});
+    const ip = request.headers.get('CF-Connecting-IP');
+    if (ip) body.set('remoteip', ip);
+    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body
+    });
+    const data = await response.json().catch(() => ({success: false}));
+    const allowedHosts = String(env.TURNSTILE_HOSTNAMES || 'bickriservice-agency.org,bickriservice-agency.vercel.app,bickriservice-agency.bickriserviceagency.dev')
+      .split(',').map(value => value.trim().toLowerCase()).filter(Boolean);
+    return {
+      ok: Boolean(response.ok && data.success && typeof data.hostname === 'string' && allowedHosts.includes(data.hostname.toLowerCase()) && (!data.action || data.action === 'bickri-ai')),
+      configured: true
+    };
+  } catch (error) {
+    console.error('Bickri AI Turnstile verification failed', error?.message || error);
+    return {ok: false, configured: true};
+  }
+}
+
+
 const SYSTEM_PROMPT = `Tu es Bickri IA, l'assistant officiel de Bickri Service Agency, agence digitale basée à Niamey, Niger.
 TU DOIS RÉPONDRE UNIQUEMENT À PARTIR DU CONTENU PRÉSENT SUR LE SITE.
 Le site présente : création de sites web, e-commerce, réseaux sociaux, intelligence artificielle, branding & design, publicité digitale, formation & coaching ; les solutions Lancer, Développer et Automatiser ; le coaching entrepreneurial, réseaux sociaux et IA & digital ; la méthode en 6 étapes Écoute, Stratégie, Conception, Production, Optimisation et Suivi ; les réalisations du portfolio ; ainsi que les informations de contact du site.
@@ -12,7 +82,7 @@ CONTACT : oriente vers le bouton WhatsApp du site ou bickriserviceagency@gmail.c
 STYLE : français par défaut, ton professionnel, chaleureux, motivant et encourageant. Encourage la personne à avancer dans son projet, sans inventer de résultats, garanties, délais, clients ou promesses.
 `;
 
-function json(body,status=200,extra={}){const h=new Headers({'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'POST, OPTIONS','Access-Control-Allow-Headers':'Content-Type',...extra});return new Response(JSON.stringify(body),{status,headers:h})}
+function json(body,status=200,extra={}){const h=new Headers({'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store',...extra});return new Response(JSON.stringify(body),{status,headers:h})}
 function isUuid(v){return typeof v==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v)}
 function getSessionId(req){const c=req.headers.get('Cookie')||'';const m=c.match(/(?:^|;\\s*)bickri_ai_session=([^;]+)/i);return m&&isUuid(m[1])?m[1]:null}
 async function supabaseRequest(path,key,opt={}){if(!key)return null;const h=new Headers(opt.headers||{});h.set('apikey',key);h.set('Authorization',`Bearer ${key}`);h.set('Content-Type','application/json');const r=await fetch(`${SUPABASE_URL}/rest/v1/${path}`,{...opt,headers:h});if(!r.ok)throw new Error(`Supabase ${r.status}`);return r}
@@ -39,14 +109,21 @@ function fallbackAnswer(message){
 export default {async fetch(request,env,ctx){
   const url=new URL(request.url);
   if(url.pathname==='/api/bickri-ai'){
+    if (!isAllowedOrigin(request)) return json({error:'Origine non autorisée'},403);
     if(request.method==='OPTIONS')return json({},204);
     if(request.method!=='POST')return json({error:'Method not allowed'},405);
-    const apiKey=env.AI_API_KEY, endpoint=env.AI_API_URL, model=env.AI_MODEL;
+    const contentLength = Number(request.headers.get('Content-Length') || 0);
+    if (Number.isFinite(contentLength) && contentLength > 256 * 1024) return json({error:'Requête trop volumineuse'},413);
+    const rate = checkAiRateLimit(request);
+    if (!rate.allowed) return json({error:'Trop de requêtes. Veuillez réessayer dans quelques instants.'},429,{'Retry-After':String(rate.retryAfter)});
     let body;try{body=await request.json()}catch{return json({error:'Invalid JSON body'},400)}
     const message=typeof body?.message==='string'?body.message.trim():'';
     if(!message)return json({error:'Message required'},400);
     if(message.length>2000)return json({error:'Message too long'},400);
-    if(!apiKey||!endpoint||!model)return json({answer:fallbackAnswer(message),version:SITE_VERSION,mode:'local'});
+    const captcha = await verifyWorkerTurnstile(request, body?.turnstileToken, env);
+    if (!captcha.ok) return json({error:captcha.configured?'Vérification anti-robot requise ou invalide.':'Service de vérification anti-robot non configuré.',code:captcha.configured?'TURNSTILE_INVALID':'TURNSTILE_UNCONFIGURED'},captcha.configured?403:503);
+    const apiKey=env.AI_API_KEY, endpoint=env.AI_API_URL || 'https://api.openai.com/v1/responses', model=env.AI_MODEL || 'gpt-4.1-mini';
+    if(!apiKey)return json({answer:fallbackAnswer(message),version:SITE_VERSION,mode:'local'});
     const clientHistory=Array.isArray(body?.history)?body.history.slice(-8).filter(x=>x&&(x.role==='user'||x.role==='assistant')&&typeof x.content==='string').map(x=>({role:x.role,content:x.content.slice(0,2000)})):[];
     let sessionId=getSessionId(request),conversationId=null,storedHistory=[];
     const supabaseKey=env.SUPABASE_SERVICE_ROLE_KEY;
@@ -54,16 +131,22 @@ export default {async fetch(request,env,ctx){
     if(supabaseKey&&sessionId){try{conversationId=await ensureConversation(sessionId,supabaseKey);storedHistory=await loadConversationHistory(conversationId,supabaseKey)}catch(e){console.error('Supabase persistence read failed',e)}}
     const history=storedHistory.length?storedHistory:clientHistory;
     try{
-      const upstream=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`},body:JSON.stringify({model,temperature:.2,messages:[{role:'system',content:SYSTEM_PROMPT},...history,{role:'user',content:message}]})});
+      const isResponses=/\/responses(?:$|\?)/i.test(endpoint);
+      const payload = isResponses
+        ? {model,instructions:SYSTEM_PROMPT,input:[...history.map(x=>({role:x.role,content:x.content})),{role:'user',content:message}]}
+        : {model,temperature:.2,messages:[{role:'system',content:SYSTEM_PROMPT},...history,{role:'user',content:message}]};
+      const upstream=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`},body:JSON.stringify(payload)});
       const data=await upstream.json().catch(()=>({}));
-      if(!upstream.ok)return json({answer:fallbackAnswer(message),version:SITE_VERSION,mode:'fallback'});
-      const answer=data?.choices?.[0]?.message?.content||data?.output_text||data?.response;
+      if(!upstream.ok){console.error('Bickri AI provider error',upstream.status,data?.error?.code||data?.error?.type||'unknown');return json({answer:fallbackAnswer(message),version:SITE_VERSION,mode:'fallback'});}
+      const answer=isResponses
+        ? (typeof data?.output_text==='string'?data.output_text:data?.output?.flatMap(item=>Array.isArray(item?.content)?item.content:[]).map(item=>item?.text||'').filter(Boolean).join('\n'))
+        : (data?.choices?.[0]?.message?.content||data?.output_text||data?.response);
       if(typeof answer!=='string'||!answer.trim())return json({answer:fallbackAnswer(message),version:SITE_VERSION,mode:'fallback'});
       const finalAnswer=answer.trim();
       if(ctx?.waitUntil&&supabaseKey&&conversationId)ctx.waitUntil(saveConversationExchange(conversationId,supabaseKey,message,finalAnswer).catch(e=>console.error('Supabase persistence write failed',e)));
       const headers={};if(sessionId&&!getSessionId(request))headers['Set-Cookie']=secureCookie(sessionId);
       return json({answer:finalAnswer,version:SITE_VERSION,persistence:Boolean(supabaseKey&&conversationId)},200,headers);
-    }catch{return json({answer:fallbackAnswer(message),version:SITE_VERSION,mode:'fallback'})}
+    }catch(error){console.error('Bickri AI request failed',error?.message||error);return json({answer:fallbackAnswer(message),version:SITE_VERSION,mode:'fallback'})}
   }
   if(url.pathname==='/api/site-version')return json({version:SITE_VERSION,assets:ASSET_VERSION,platform:'Cloudflare Workers'});
   // Short service links: /s/<code> serve the service-specific Open Graph page directly.
