@@ -5,7 +5,7 @@
   function enhanceSEO(){
     const title=document.title||'Bickri Service Agency — Agence digitale';
     const description=document.querySelector('meta[name="description"]')?.content||'Bickri Service Agency — agence digitale à Niamey, Niger.';
-    const url=location.href.split('#')[0]; const image='https://bickriservice-agency.vercel.app/hero-yellow.jpg';
+    const url=location.href.split('#')[0]; const image='https://bickriservice-agency.org/assets/bickri-b-logo.svg';
     const ensure=(selector,attrs)=>{if(document.head.querySelector(selector))return;const m=document.createElement('meta');Object.entries(attrs).forEach(([k,v])=>m.setAttribute(k,v));document.head.appendChild(m)};
     ensure('meta[property="og:type"]',{property:'og:type',content:'website'});
     ensure('meta[property="og:url"]',{property:'og:url',content:url});
@@ -18,7 +18,7 @@
     ensure('meta[name="twitter:image"]',{name:'twitter:image',content:image});
     if(!document.querySelector('link[rel="icon"]')){const icon=document.createElement('link');icon.rel='icon';icon.href='/assets/bickri-b-logo.svg';document.head.appendChild(icon)}
     if(!document.querySelector('link[rel="canonical"]')){const canonical=document.createElement('link');canonical.rel='canonical';canonical.href=url;document.head.appendChild(canonical)}
-    if(!document.getElementById('bickri-webpage-schema')){const ld=document.createElement('script');ld.type='application/ld+json';ld.id='bickri-webpage-schema';ld.textContent=JSON.stringify({'@context':'https://schema.org','@type':'WebPage',name:title,url,inLanguage:document.documentElement.lang||'fr',isPartOf:{'@type':'WebSite',name:'Bickri Service Agency',url:'https://bickriservice-agency.vercel.app/'}});document.head.appendChild(ld)}
+    if(!document.getElementById('bickri-webpage-schema')){const ld=document.createElement('script');ld.type='application/ld+json';ld.id='bickri-webpage-schema';ld.textContent=JSON.stringify({'@context':'https://schema.org','@type':'WebPage',name:title,url,inLanguage:document.documentElement.lang||'fr',isPartOf:{'@type':'WebSite',name:'Bickri Service Agency',url:'https://bickriservice-agency.org/'}});document.head.appendChild(ld)}
   }
   function addArabicLink(){const desktop=document.querySelector('.links');if(desktop&&!desktop.querySelector('a[href="/ar/"]')){const a=document.createElement('a');a.href='/ar/';a.textContent='العربية';desktop.appendChild(a)}const mobile=document.querySelector('.mobile');if(mobile&&!mobile.querySelector('a[href="/ar/"]')){const a=document.createElement('a');a.href='/ar/';a.textContent='العربية';mobile.appendChild(a)}}
   function initPortfolioFilters(){
@@ -32,7 +32,7 @@
         const filter=button.dataset.filter||'all';
         buttons.forEach(b=>b.classList.toggle('active',b===button));
         cards.forEach(card=>{
-          const categories=(card.dataset.category||'').split(/s+/);
+          const categories=(card.dataset.category||'').split(/\s+/);
           card.classList.toggle('is-hidden',filter!=='all'&&!categories.includes(filter));
         });
       });
