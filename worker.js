@@ -48,6 +48,48 @@ function isAllowedOrigin(request) {
   }
 }
 
+const PARTNER_RATE_WINDOW_MS = 10 * 60 * 1000;
+const PARTNER_RATE_LIMIT_MAX = 5;
+const partnerRateBuckets = globalThis.__bickriWorkerPartnerRateBuckets || new Map();
+globalThis.__bickriWorkerPartnerRateBuckets = partnerRateBuckets;
+
+function checkPartnerRateLimit(request) {
+  const ip = request.headers.get('CF-Connecting-IP') ||
+    String(request.headers.get('X-Forwarded-For') || '').split(',')[0].trim() || 'unknown';
+  const now = Date.now();
+  let bucket = partnerRateBuckets.get(ip);
+  if (!bucket || now - bucket.startedAt >= PARTNER_RATE_WINDOW_MS) {
+    bucket = {startedAt: now, count: 0};
+    partnerRateBuckets.set(ip, bucket);
+  }
+  bucket.count += 1;
+  if (partnerRateBuckets.size > 5000) {
+    for (const [key, value] of partnerRateBuckets) {
+      if (now - value.startedAt >= PARTNER_RATE_WINDOW_MS) partnerRateBuckets.delete(key);
+    }
+  }
+  return {
+    allowed: bucket.count <= PARTNER_RATE_LIMIT_MAX,
+    retryAfter: Math.max(1, Math.ceil((PARTNER_RATE_WINDOW_MS - (now - bucket.startedAt)) / 1000))
+  };
+}
+
+function isAllowedPartnerOrigin(request) {
+  const origin = request.headers.get('Origin');
+  if (!origin) return false;
+  try {
+    const parsed = new URL(origin);
+    return parsed.protocol === 'https:' && [
+      'bickriservice-agency.org',
+      'www.bickriservice-agency.org',
+      'bickriservice-agency.vercel.app',
+      'bickriservice-agency.bickriserviceagency.dev'
+    ].includes(parsed.hostname.toLowerCase());
+  } catch {
+    return false;
+  }
+}
+
 function checkAiRateLimit(request) {
   const ip = request.headers.get('CF-Connecting-IP') ||
     String(request.headers.get('X-Forwarded-For') || '').split(',')[0].trim() || 'unknown';
@@ -145,13 +187,15 @@ export default {async fetch(request,env,ctx){
   const url=new URL(request.url);
   // Candidatures partenaires : envoi natif avec Cloudflare Email Service, sans Resend ni Google.
   if (url.pathname === '/api/partner') {
-    if (!isAllowedOrigin(request)) return json({error:'Origine non autorisée'},403);
+    if (!isAllowedPartnerOrigin(request)) return json({error:'Origine non autorisée'},403);
     if (request.method !== 'POST') return json({error:'Méthode non autorisée'},405,{'Allow':'POST'});
+    const rate = checkPartnerRateLimit(request);
+    if (!rate.allowed) return json({error:'Trop de candidatures envoyées. Réessayez plus tard.'},429,{'Retry-After':String(rate.retryAfter)});
     const contentLength = Number(request.headers.get('Content-Length') || 0);
     if (Number.isFinite(contentLength) && contentLength > 32 * 1024) return json({error:'Requête trop volumineuse'},413);
     let body;
     try { body = await request.json(); } catch { return json({error:'Requête JSON invalide.'},400); }
-    const {fullName,email,companyName,websiteUrl='',partnerType,message,website=''} = body || {};
+    const {fullName,email,companyName,websiteUrl='',partnerType,message,website='',turnstileToken=''} = body || {};
     if (website) return json({ok:true});
     const allowedTypes = new Set(['technical','referral','integrator','other']);
     if (typeof fullName !== 'string' || fullName.trim().length < 2 || fullName.length > 120 ||
@@ -162,6 +206,8 @@ export default {async fetch(request,env,ctx){
         (websiteUrl && (typeof websiteUrl !== 'string' || websiteUrl.length > 500 || !/^https?:\\/\\//i.test(websiteUrl)))) {
       return json({error:'Vérifiez les champs du formulaire puis réessayez.'},400);
     }
+    const captcha = await verifyWorkerTurnstile(request, turnstileToken, env, 'partner-application');
+    if (!captcha.ok) return json({error:captcha.configured?'Vérification anti-robot requise ou invalide.':'Service de vérification anti-robot non configuré.'},captcha.configured?403:503);
     if (!env.PARTNER_EMAIL || typeof env.PARTNER_EMAIL.send !== 'function') {
       console.error('Cloudflare Email Service binding PARTNER_EMAIL is not configured.');
       return json({error:'Le service e-mail n’est pas encore activé sur le site.'},503);

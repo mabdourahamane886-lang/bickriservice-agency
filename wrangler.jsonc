@@ -27,7 +27,7 @@
     "AI_API_URL": "https://api.openai.com/v1/responses",
     "OPENAI_MODEL": "gpt-4.1-mini",
     "AI_MODEL": "gpt-4.1-mini",
-    "TURNSTILE_HOSTNAMES": "bickriservice-agency.org,bickriservice-agency.vercel.app,bickriservice-agency.bickriserviceagency.dev",
+    "TURNSTILE_HOSTNAMES": "bickriservice-agency.org,www.bickriservice-agency.org,bickriservice-agency.vercel.app,bickriservice-agency.bickriserviceagency.dev",
     "TURNSTILE_SITE_KEY": "0x4AAAAAAFSQKBE9BhCCTI8Qc1vlZ_sojAI"
   },
   "send_email": [

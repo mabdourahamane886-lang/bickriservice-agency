@@ -95,6 +95,7 @@
     <div class="partnerField full"><label for="partnerType">Type de partenariat <span>*</span></label><select id="partnerType" name="partnerType" required><option value="referral">Apporteur d’affaires</option><option value="technical">Partenaire technologique</option><option value="integrator">Intégrateur</option><option value="other">Autre partenariat</option></select></div>
     <div class="partnerField full"><label for="partnerMessage">Présentez votre proposition <span>*</span></label><textarea id="partnerMessage" name="message" minlength="10" maxlength="5000" required placeholder="Parlez-nous de votre organisation, de votre expertise et de la collaboration envisagée…"></textarea></div>
     <div class="partnerHoneypot" aria-hidden="true"><label for="partnerCompanyWebsite">Ne pas remplir</label><input id="partnerCompanyWebsite" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+    <div class="partnerField full"><label>Vérification anti-robot <span>*</span></label><div id="partnerTurnstile" aria-label="Vérification anti-robot"></div><input type="hidden" name="turnstileToken" id="partnerTurnstileToken"><p id="partnerTurnstileStatus" class="partnerFormStatus" role="status" aria-live="polite">Chargement de la vérification…</p></div>
     <div class="partnerFormSubmit"><button class="btn btnGold" id="partnerSubmitButton" type="submit">Envoyer ma candidature →</button><span id="partnerFormProgress" class="partnerFormStatus" role="status" aria-live="polite"></span></div>
   </form>
 </div>
@@ -145,6 +146,42 @@ document.addEventListener('click',e=>{
 });
 
 
+const partnerTurnstileToken=document.getElementById('partnerTurnstileToken');
+const partnerTurnstileStatus=document.getElementById('partnerTurnstileStatus');
+const partnerSubmitButton=document.getElementById('partnerSubmitButton');
+let partnerTurnstileWidget=null;
+async function initPartnerTurnstile(){
+  try{
+    const keyResponse=await fetch('/api/turnstile-sitekey',{cache:'no-store'});
+    if(!keyResponse.ok) throw new Error('clé indisponible');
+    const config=await keyResponse.json();
+    if(!config.siteKey) throw new Error('clé publique absente');
+    if(!window.turnstile){
+      await new Promise((resolve,reject)=>{
+        const script=document.createElement('script');
+        script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        script.async=true;script.defer=true;
+        script.onload=resolve;script.onerror=()=>reject(new Error('chargement Turnstile impossible'));
+        document.head.appendChild(script);
+      });
+    }
+    partnerTurnstileWidget=window.turnstile.render('#partnerTurnstile',{
+      sitekey:config.siteKey,
+      action:'partner-application',
+      callback(token){partnerTurnstileToken.value=token;partnerTurnstileStatus.textContent='Vérification réussie ✓';partnerTurnstileStatus.className='partnerFormStatus success';partnerSubmitButton.disabled=false;},
+      'expired-callback'(){partnerTurnstileToken.value='';partnerTurnstileStatus.textContent='La vérification a expiré. Validez à nouveau.';partnerTurnstileStatus.className='partnerFormStatus error';partnerSubmitButton.disabled=true;},
+      'error-callback'(){partnerTurnstileToken.value='';partnerTurnstileStatus.textContent='Vérification indisponible. Rechargez la page.';partnerTurnstileStatus.className='partnerFormStatus error';partnerSubmitButton.disabled=true;}
+    });
+    partnerTurnstileStatus.textContent='Validez le contrôle anti-robot pour envoyer votre candidature.';
+    partnerSubmitButton.disabled=true;
+  }catch(error){
+    partnerTurnstileStatus.textContent='La vérification anti-robot ne se charge pas. Réessayez plus tard.';
+    partnerTurnstileStatus.className='partnerFormStatus error';
+    partnerSubmitButton.disabled=true;
+  }
+}
+initPartnerTurnstile();
+
 const partnerForm=document.getElementById('partnerApplicationForm');
 partnerForm?.addEventListener('submit',async(event)=>{
   event.preventDefault();
@@ -159,12 +196,12 @@ partnerForm?.addEventListener('submit',async(event)=>{
     const response=await fetch('/api/partner',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
     const result=await response.json().catch(()=>({}));
     if(!response.ok) throw new Error(result.error||'Impossible d’envoyer la candidature pour le moment.');
-    partnerForm.reset(); success.hidden=false; progress.textContent='';
+    partnerForm.reset(); if(window.turnstile && partnerTurnstileWidget!==null){window.turnstile.reset(partnerTurnstileWidget);partnerTurnstileToken.value='';partnerSubmitButton.disabled=true;} success.hidden=false; progress.textContent='';
     success.scrollIntoView({behavior:'smooth',block:'center'});
   }catch(error){
     errorBox.textContent=error.message||'Une erreur est survenue. Veuillez réessayer.';
     errorBox.hidden=false; progress.textContent='';
-  }finally{submitButton.disabled=false;}
+  }finally{submitButton.disabled=!partnerTurnstileToken.value;}
 });
 
 const partnerLink=document.getElementById('partnersShareLink'),partnerCopy=document.getElementById('copyPartnersLink');
