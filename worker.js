@@ -1,3 +1,4 @@
+import { sendPartnerApplication } from './lib/bickri-mail.js';
 const SITE_VERSION = '2026-09-19-logo-exact-1';
 const ASSET_VERSION = '2026-09-19-logo-exact-1';
 const SUPABASE_URL = 'https://okdohokhlkxrmxpevees.supabase.co';
@@ -165,32 +166,19 @@ export default {async fetch(request,env,ctx){
       console.error('Cloudflare Email Service binding PARTNER_EMAIL is not configured.');
       return json({error:'Le service e-mail n’est pas encore activé sur le site.'},503);
     }
-    const typeLabels = {technical:'Partenaire technologique',referral:'Apporteur d’affaires',integrator:'Intégrateur',other:'Autre partenariat'};
     try {
-      const subject = 'Candidature partenaire — ' + companyName.trim();
-      const text = [
-        'Nouvelle candidature de partenariat Bickri Service Agency',
-        '',
-        'Nom : ' + fullName.trim(),
-        'Email du candidat : ' + email.trim(),
-        'Entreprise / organisation : ' + companyName.trim(),
-        'Site web : ' + (websiteUrl.trim() || 'Non renseigné'),
-        'Type de partenariat : ' + typeLabels[partnerType],
-        '',
-        'Message :',
-        message.trim()
-      ].join('\\n');
-      await env.PARTNER_EMAIL.send({
-        from: 'partenaires@bickriservice-agency.org',
-        to: 'bickriserviceagency@gmail.com',
-        replyTo: email.trim(),
-        subject,
-        text
+      const result = await sendPartnerApplication(env.PARTNER_EMAIL, {
+        fullName: fullName.trim(),
+        email: email.trim(),
+        companyName: companyName.trim(),
+        websiteUrl: websiteUrl.trim(),
+        partnerType,
+        message: message.trim()
       });
-      return json({ok:true,message:'Votre candidature a bien été envoyée.'},200);
+      return json(result, 200);
     } catch (error) {
-      console.error('Cloudflare Email Service partner send failed:',error?.code || error?.message || 'unknown error');
-      return json({error:'L’envoi a échoué. Vérifiez la configuration e-mail Cloudflare puis réessayez.'},502);
+      console.error('Bickri Mail send failed:', error?.code || error?.message || 'unknown error');
+      return json({error:'L’envoi a échoué. Vérifiez que Bickri Mail est activé dans Cloudflare puis réessayez.'},502);
     }
   }
   if (url.pathname === '/api/turnstile-sitekey') {
