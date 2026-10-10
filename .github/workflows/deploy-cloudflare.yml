@@ -50,3 +50,5 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CLOUDFLARD_API_TOKEN }}
         run: wrangler deploy
+
+# Manual production redeployment requested on 2026-10-10.
