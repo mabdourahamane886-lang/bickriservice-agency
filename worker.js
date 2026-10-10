@@ -142,7 +142,7 @@ function fallbackAnswer(message){
 
 export default {async fetch(request,env,ctx){
   const url=new URL(request.url);
-  // Candidatures partenaires : envoi direct via Resend vers l'adresse officielle de l'agence.
+  // Candidatures partenaires : envoi via Google Apps Script et Gmail, sans Resend.
   if (url.pathname === '/api/partner') {
     if (!isAllowedOrigin(request)) return json({error:'Origine non autorisée'},403);
     if (request.method !== 'POST') return json({error:'Méthode non autorisée'},405,{'Allow':'POST'});
@@ -161,41 +161,26 @@ export default {async fetch(request,env,ctx){
         (websiteUrl && (typeof websiteUrl !== 'string' || websiteUrl.length > 500 || !/^https?:\\/\\//i.test(websiteUrl)))) {
       return json({error:'Vérifiez les champs du formulaire puis réessayez.'},400);
     }
-    const apiKey = env.RESEND_API_KEY;
-    const from = env.RESEND_FROM_EMAIL;
-    const recipient = 'bickriserviceagency@gmail.com';
-    if (!apiKey || !from) {
-      console.error('Partner email is missing RESEND_API_KEY or RESEND_FROM_EMAIL in Cloudflare Worker settings.');
-      return json({error:'Le service de candidature est temporairement indisponible. Veuillez réessayer plus tard.'},503);
+    const scriptUrl = env.GOOGLE_APPS_SCRIPT_URL;
+    const sharedSecret = env.PARTNER_MAIL_SECRET;
+    if (!scriptUrl || !sharedSecret) {
+      console.error('Partner email unavailable: configure GOOGLE_APPS_SCRIPT_URL and PARTNER_MAIL_SECRET in Cloudflare Worker settings.');
+      return json({error:'Le service de candidature doit encore être configuré. Veuillez réessayer plus tard.'},503);
     }
-    const typeLabels = {technical:'Partenaire technologique',referral:'Apporteur d’affaires',integrator:'Intégrateur',other:'Autre partenariat'};
     try {
-      const response = await fetch('https://api.resend.com/emails', {
+      const target = new URL(scriptUrl);
+      if (target.protocol !== 'https:' || target.hostname !== 'script.google.com' || !target.pathname.includes('/macros/s/')) {
+        return json({error:'La configuration du service e-mail est invalide.'},503);
+      }
+      const response = await fetch(target.toString(), {
         method:'POST',
-        headers:{Authorization:`Bearer ${apiKey}`,'Content-Type':'application/json'},
-        body:JSON.stringify({
-          from,
-          to:[recipient],
-          reply_to:email.trim(),
-          subject:`Candidature partenaire — ${companyName.trim()}`,
-          text:[
-            'Nouvelle candidature de partenariat Bickri Service Agency',
-            '',
-            `Nom : ${fullName.trim()}`,
-            `Email du candidat : ${email.trim()}`,
-            `Entreprise / organisation : ${companyName.trim()}`,
-            `Site web : ${websiteUrl.trim() || 'Non renseigné'}`,
-            `Type de partenariat : ${typeLabels[partnerType]}`,
-            '',
-            'Message :',
-            message.trim()
-          ].join('\\n')
-        })
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({...body, _secret:sharedSecret})
       });
-      if (!response.ok) {
-        const detail = await response.text().catch(()=>'');
-        console.error('Resend partner email failed:',response.status,detail.slice(0,500));
-        return json({error:'L’envoi a échoué. Vérifiez la configuration de l’adresse expéditrice puis réessayez.'},502);
+      const result = await response.json().catch(()=>null);
+      if (!response.ok || !result?.ok) {
+        console.error('Google Apps Script partner email failed:',response.status,result?.error || 'invalid response');
+        return json({error:'L’envoi a échoué. Vérifiez la configuration Gmail puis réessayez.'},502);
       }
       return json({ok:true,message:'Votre candidature a bien été envoyée.'},200);
     } catch (error) {
