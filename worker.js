@@ -142,6 +142,67 @@ function fallbackAnswer(message){
 
 export default {async fetch(request,env,ctx){
   const url=new URL(request.url);
+  // Candidatures partenaires : envoi direct via Resend vers l'adresse officielle de l'agence.
+  if (url.pathname === '/api/partner') {
+    if (!isAllowedOrigin(request)) return json({error:'Origine non autorisée'},403);
+    if (request.method !== 'POST') return json({error:'Méthode non autorisée'},405,{'Allow':'POST'});
+    const contentLength = Number(request.headers.get('Content-Length') || 0);
+    if (Number.isFinite(contentLength) && contentLength > 32 * 1024) return json({error:'Requête trop volumineuse'},413);
+    let body;
+    try { body = await request.json(); } catch { return json({error:'Requête JSON invalide.'},400); }
+    const {fullName,email,companyName,websiteUrl='',partnerType,message,website=''} = body || {};
+    if (website) return json({ok:true});
+    const allowedTypes = new Set(['technical','referral','integrator','other']);
+    if (typeof fullName !== 'string' || fullName.trim().length < 2 || fullName.length > 120 ||
+        typeof email !== 'string' || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email) || email.length > 254 ||
+        typeof companyName !== 'string' || companyName.trim().length < 2 || companyName.length > 160 ||
+        typeof message !== 'string' || message.trim().length < 10 || message.length > 5000 ||
+        !allowedTypes.has(partnerType) ||
+        (websiteUrl && (typeof websiteUrl !== 'string' || websiteUrl.length > 500 || !/^https?:\\/\\//i.test(websiteUrl)))) {
+      return json({error:'Vérifiez les champs du formulaire puis réessayez.'},400);
+    }
+    const apiKey = env.RESEND_API_KEY;
+    const from = env.RESEND_FROM_EMAIL;
+    const recipient = 'bickriserviceagency@gmail.com';
+    if (!apiKey || !from) {
+      console.error('Partner email is missing RESEND_API_KEY or RESEND_FROM_EMAIL in Cloudflare Worker settings.');
+      return json({error:'Le service de candidature est temporairement indisponible. Veuillez réessayer plus tard.'},503);
+    }
+    const typeLabels = {technical:'Partenaire technologique',referral:'Apporteur d’affaires',integrator:'Intégrateur',other:'Autre partenariat'};
+    try {
+      const response = await fetch('https://api.resend.com/emails', {
+        method:'POST',
+        headers:{Authorization:`Bearer ${apiKey}`,'Content-Type':'application/json'},
+        body:JSON.stringify({
+          from,
+          to:[recipient],
+          reply_to:email.trim(),
+          subject:`Candidature partenaire — ${companyName.trim()}`,
+          text:[
+            'Nouvelle candidature de partenariat Bickri Service Agency',
+            '',
+            `Nom : ${fullName.trim()}`,
+            `Email du candidat : ${email.trim()}`,
+            `Entreprise / organisation : ${companyName.trim()}`,
+            `Site web : ${websiteUrl.trim() || 'Non renseigné'}`,
+            `Type de partenariat : ${typeLabels[partnerType]}`,
+            '',
+            'Message :',
+            message.trim()
+          ].join('\\n')
+        })
+      });
+      if (!response.ok) {
+        const detail = await response.text().catch(()=>'');
+        console.error('Resend partner email failed:',response.status,detail.slice(0,500));
+        return json({error:'L’envoi a échoué. Vérifiez la configuration de l’adresse expéditrice puis réessayez.'},502);
+      }
+      return json({ok:true,message:'Votre candidature a bien été envoyée.'},200);
+    } catch (error) {
+      console.error('Partner email request failed:',error?.message || 'unknown error');
+      return json({error:'Impossible d’envoyer la candidature pour le moment.'},502);
+    }
+  }
   if (url.pathname === '/api/turnstile-sitekey') {
     if (request.method !== 'GET') return json({error:'Method not allowed'},405);
     return json({siteKey: env.TURNSTILE_SITE_KEY || '0x4AAAAAAFSQKBE9BhCCTI8Qc1vlZ_sojAI'},200,{'Cache-Control':'no-store'});
