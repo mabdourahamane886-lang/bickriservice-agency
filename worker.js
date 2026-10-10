@@ -142,7 +142,7 @@ function fallbackAnswer(message){
 
 export default {async fetch(request,env,ctx){
   const url=new URL(request.url);
-  // Candidatures partenaires : envoi via Google Apps Script et Gmail, sans Resend.
+  // Candidatures partenaires : envoi natif avec Cloudflare Email Service, sans Resend ni Google.
   if (url.pathname === '/api/partner') {
     if (!isAllowedOrigin(request)) return json({error:'Origine non autorisée'},403);
     if (request.method !== 'POST') return json({error:'Méthode non autorisée'},405,{'Allow':'POST'});
@@ -161,31 +161,36 @@ export default {async fetch(request,env,ctx){
         (websiteUrl && (typeof websiteUrl !== 'string' || websiteUrl.length > 500 || !/^https?:\\/\\//i.test(websiteUrl)))) {
       return json({error:'Vérifiez les champs du formulaire puis réessayez.'},400);
     }
-    const scriptUrl = env.GOOGLE_APPS_SCRIPT_URL;
-    const sharedSecret = env.PARTNER_MAIL_SECRET;
-    if (!scriptUrl || !sharedSecret) {
-      console.error('Partner email unavailable: configure GOOGLE_APPS_SCRIPT_URL and PARTNER_MAIL_SECRET in Cloudflare Worker settings.');
-      return json({error:'Le service de candidature doit encore être configuré. Veuillez réessayer plus tard.'},503);
+    if (!env.PARTNER_EMAIL || typeof env.PARTNER_EMAIL.send !== 'function') {
+      console.error('Cloudflare Email Service binding PARTNER_EMAIL is not configured.');
+      return json({error:'Le service e-mail n’est pas encore activé sur le site.'},503);
     }
+    const typeLabels = {technical:'Partenaire technologique',referral:'Apporteur d’affaires',integrator:'Intégrateur',other:'Autre partenariat'};
     try {
-      const target = new URL(scriptUrl);
-      if (target.protocol !== 'https:' || target.hostname !== 'script.google.com' || !target.pathname.includes('/macros/s/')) {
-        return json({error:'La configuration du service e-mail est invalide.'},503);
-      }
-      const response = await fetch(target.toString(), {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({...body, _secret:sharedSecret})
+      const subject = 'Candidature partenaire — ' + companyName.trim();
+      const text = [
+        'Nouvelle candidature de partenariat Bickri Service Agency',
+        '',
+        'Nom : ' + fullName.trim(),
+        'Email du candidat : ' + email.trim(),
+        'Entreprise / organisation : ' + companyName.trim(),
+        'Site web : ' + (websiteUrl.trim() || 'Non renseigné'),
+        'Type de partenariat : ' + typeLabels[partnerType],
+        '',
+        'Message :',
+        message.trim()
+      ].join('\\n');
+      await env.PARTNER_EMAIL.send({
+        from: 'partenaires@bickriservice-agency.org',
+        to: 'bickriserviceagency@gmail.com',
+        replyTo: email.trim(),
+        subject,
+        text
       });
-      const result = await response.json().catch(()=>null);
-      if (!response.ok || !result?.ok) {
-        console.error('Google Apps Script partner email failed:',response.status,result?.error || 'invalid response');
-        return json({error:'L’envoi a échoué. Vérifiez la configuration Gmail puis réessayez.'},502);
-      }
       return json({ok:true,message:'Votre candidature a bien été envoyée.'},200);
     } catch (error) {
-      console.error('Partner email request failed:',error?.message || 'unknown error');
-      return json({error:'Impossible d’envoyer la candidature pour le moment.'},502);
+      console.error('Cloudflare Email Service partner send failed:',error?.code || error?.message || 'unknown error');
+      return json({error:'L’envoi a échoué. Vérifiez la configuration e-mail Cloudflare puis réessayez.'},502);
     }
   }
   if (url.pathname === '/api/turnstile-sitekey') {
