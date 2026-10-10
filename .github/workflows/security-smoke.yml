@@ -1,0 +1,29 @@
+name: Security smoke checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [security-hardening-2026-10]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check serverless JavaScript syntax
+        run: |
+          node --check api/partner.js
+          node --check api/turnstile-verify.js
+          node --check api/turnstile-sitekey.js
+      - name: Check sitemap and partner form safeguards
+        run: |
+          ! grep -q 'privacy-policy.html' sitemap.xml
+          grep -q 'turnstileToken' partenaires/index.html
+          grep -q 'turnstile.render' partenaires/index.html
+          grep -q 'turnstile/v0/siteverify' api/partner.js
