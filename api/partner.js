@@ -12,7 +12,7 @@ function clientIp(req) {
 function allowOrigin(origin) {
   return origin === "https://bickriservice-agency.org" ||
     origin === "https://www.bickriservice-agency.org" ||
-    /^https:\/\/bickriservice-agency-[a-z0-9-]+\.vercel\.app$/i.test(origin);
+    origin === "https://bickriservice-agency-w44v.vercel.app";
 }
 
 async function verifyTurnstile(token, ip) {
@@ -32,7 +32,7 @@ async function verifyTurnstile(token, ip) {
     if (!response.ok) return false;
     const result = await response.json();
     return result.success === true &&
-      (!result.hostname || ["bickriservice-agency.org", "www.bickriservice-agency.org"].includes(result.hostname));
+      (!result.hostname || ["bickriservice-agency.org", "www.bickriservice-agency.org", "bickriservice-agency-w44v.vercel.app"].includes(result.hostname));
   } catch {
     return false;
   } finally {
