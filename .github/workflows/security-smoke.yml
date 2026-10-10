@@ -23,7 +23,7 @@ jobs:
       - name: Check Turnstile site key API syntax
         run: node --check api/turnstile-sitekey.js
       - name: Check Cloudflare Worker syntax
-        run: node --input-type=module --check < worker.js
+        run: cp worker.js /tmp/worker.mjs && node --check /tmp/worker.mjs
       - name: Check sitemap and partner form safeguards
         run: |
           ! grep -q 'privacy-policy.html' sitemap.xml
