@@ -201,7 +201,7 @@ partnerForm?.addEventListener('submit',async(event)=>{
   }catch(error){
     errorBox.textContent=error.message||'Une erreur est survenue. Veuillez réessayer.';
     errorBox.hidden=false; progress.textContent='';
-  }finally{submitButton.disabled=false;}
+  }finally{submitButton.disabled=!partnerTurnstileToken.value;}
 });
 
 const partnerLink=document.getElementById('partnersShareLink'),partnerCopy=document.getElementById('copyPartnersLink');
