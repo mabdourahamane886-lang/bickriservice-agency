@@ -21,6 +21,7 @@ jobs:
           node --check api/partner.js
           node --check api/turnstile-verify.js
           node --check api/turnstile-sitekey.js
+          node --input-type=module --check < worker.js
       - name: Check sitemap and partner form safeguards
         run: |
           ! grep -q 'privacy-policy.html' sitemap.xml
