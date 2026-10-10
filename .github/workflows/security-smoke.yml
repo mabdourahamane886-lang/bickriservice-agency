@@ -28,3 +28,5 @@ jobs:
           grep -q 'turnstileToken' partenaires/index.html
           grep -q 'turnstile.render' partenaires/index.html
           grep -q 'turnstile/v0/siteverify' api/partner.js
+          grep -q "partner-application" worker.js
+          grep -q "checkPartnerRateLimit" worker.js
