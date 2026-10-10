@@ -167,6 +167,7 @@ async function initPartnerTurnstile(){
     }
     partnerTurnstileWidget=window.turnstile.render('#partnerTurnstile',{
       sitekey:config.siteKey,
+      action:'partner-application',
       callback(token){partnerTurnstileToken.value=token;partnerTurnstileStatus.textContent='Vérification réussie ✓';partnerTurnstileStatus.className='partnerFormStatus success';partnerSubmitButton.disabled=false;},
       'expired-callback'(){partnerTurnstileToken.value='';partnerTurnstileStatus.textContent='La vérification a expiré. Validez à nouveau.';partnerTurnstileStatus.className='partnerFormStatus error';partnerSubmitButton.disabled=true;},
       'error-callback'(){partnerTurnstileToken.value='';partnerTurnstileStatus.textContent='Vérification indisponible. Rechargez la page.';partnerTurnstileStatus.className='partnerFormStatus error';partnerSubmitButton.disabled=true;}
