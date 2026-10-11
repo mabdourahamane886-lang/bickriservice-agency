@@ -37,7 +37,7 @@
 <div class="profile"><span class="eyebrow">Profil partenaire public</span><h1 id="profileName">Partenaire</h1><p class="desc" id="profileDescription"></p><div class="profileBadge"><img id="profileBadgeIcon" src="/assets/partners/badge-verified-green.svg" alt=""><span id="profileBadgeLabel">Partenaire vérifié</span></div><div class="profileTags" id="profileTags"></div><div class="actions"><a id="profileWebsite" class="btn gold" href="#" target="_blank" rel="noopener" hidden>Visiter le site ↗</a><button id="profileShare" class="btn ghost" type="button">Partager le profil</button><button id="profileCopy" class="btn ghost" type="button">Copier le lien</button></div></div>
 </div></div></section>
 <section class="main"><div class="wrap contentGrid" id="profileDetails" hidden>
-<article class="panel"><h2>À propos</h2><p id="profileMission"></p></article>
+<article class="panel"><h2>À propos de l’entreprise</h2><p id="profileAbout"></p><h2 style="margin-top:26px">Mission et activités</h2><p id="profileMission"></p></article>
 <aside class="panel"><h2>Informations</h2><div class="details"><div class="detail"><span class="label">Pays / Ville</span><span class="value" id="profileLocation"></span></div><div class="detail" id="profileFounderRow"><span class="label">Dirigeant / contact public</span><span class="value" id="profileFounder"></span></div><div class="detail"><span class="label">Domaine</span><span class="value" id="profileType"></span></div><div class="detail"><span class="label">Identifiant partenaire</span><span class="value" id="profileId"></span></div><div class="detail"><span class="label">Badge vérifié le</span><span class="value" id="profileVerifiedAt"></span></div></div><div id="profileSocials" class="actionsPanel"></div><p class="muted" style="margin-top:16px">Le badge atteste du statut affiché par Bickri Service Agency. Il ne constitue pas une garantie générale sur l’activité du partenaire.</p></aside>
 </div><div id="profileNotFound" class="panel notFound"><h1>Profil introuvable</h1><p>Ce profil n’est pas disponible ou a été désactivé.</p><a class="btn gold" href="/partenaires/">Retour à l’annuaire</a></div></section>
 </main>
@@ -73,7 +73,8 @@ async function init(){
   const badge=p.badgeLevel||'green';
   $('profileName').textContent=p.name||'Partenaire';
   $('profileDescription').textContent=p.description||p.mission||'Partenaire de Bickri Service Agency';
-  $('profileMission').textContent=p.mission||p.description||'Présentation non renseignée.';
+  $('profileAbout').textContent=p.about||p.description||'Présentation détaillée non renseignée.';
+  $('profileMission').textContent=p.mission||p.description||'Mission non renseignée.';
   $('profileLogo').src=p.logoUrl||('/assets/partners/'+(slug==='impact-afriq'?'impact-afriq.svg':slug==='egan-btp'?'egan-btp.svg':'badge-verified-green.svg'));
   $('profileLogo').alt='Logo '+(p.name||'partenaire');
   $('profileBadgeIcon').src='/assets/partners/'+(badges[badge]||badges.green);
