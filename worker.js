@@ -1,6 +1,6 @@
 import { sendPartnerApplication } from './lib/bickri-mail.js';
-const SITE_VERSION = '1.0.0';
-const ASSET_VERSION = '1.0.0';
+const SITE_VERSION = '2.0.0';
+const ASSET_VERSION = '2.0.0';
 const SUPABASE_URL = 'https://okdohokhlkxrmxpevees.supabase.co';
 const SERVICES = ['Création web','E-commerce','Réseaux sociaux','Intelligence artificielle','Branding & design','Publicité digitale','Formation & coaching'];
 
