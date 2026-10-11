@@ -2,6 +2,8 @@ import { sendPartnerApplication } from './lib/bickri-mail.js';
 const SITE_VERSION = '2.0.0';
 const ASSET_VERSION = '2.0.0';
 const SUPABASE_URL = 'https://okdohokhlkxrmxpevees.supabase.co';
+// Publishable key is intentionally public and is used only for RLS-protected public profile reads.
+const SUPABASE_PUBLIC_KEY = 'sb_publishable_EiTruyR5fwwHpS_PzO5_iA_d1i4iMCP';
 const SERVICES = ['Création web','E-commerce','Réseaux sociaux','Intelligence artificielle','Branding & design','Publicité digitale','Formation & coaching'];
 
 const AI_RATE_LIMIT_WINDOW_MS = 60 * 1000;
@@ -298,7 +300,7 @@ export default {async fetch(request,env,ctx){
   // Candidatures partenaires : envoi natif avec Cloudflare Email Service, sans Resend ni Google.
   
   if (url.pathname === '/api/partners' && request.method === 'GET') {
-    const key = env.SUPABASE_SERVICE_ROLE_KEY;
+    const key = env.SUPABASE_SERVICE_ROLE_KEY || SUPABASE_PUBLIC_KEY;
     if (!key) return partnerJson(request,{error:'Le répertoire des partenaires est momentanément indisponible.'},503);
     try {
       const params = new URLSearchParams({
@@ -321,7 +323,7 @@ export default {async fetch(request,env,ctx){
   }
 
   if (url.pathname === '/api/partners/metrics' && request.method === 'GET') {
-    const key = env.SUPABASE_SERVICE_ROLE_KEY;
+    const key = env.SUPABASE_SERVICE_ROLE_KEY || SUPABASE_PUBLIC_KEY;
     if (!key) return partnerJson(request,{error:'Statistiques temporairement indisponibles.'},503);
     try {
       const r = await supabaseRequest('agency_partners?active=eq.true&select=id,badge_verified',key,{method:'GET'});
