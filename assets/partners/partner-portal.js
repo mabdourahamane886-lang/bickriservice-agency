@@ -87,14 +87,14 @@
     try{
       if(authMode==='signup'){
         const result=await authRequest('signup',{email:String(data.email).trim(),password:String(data.password),data:{full_name:String(data.fullName||'').trim()}});
-        if(result.access_token){saveSession(result);await loadDashboard();}
+        if(result.access_token){saveSession(result);sessionStorage.setItem('bsa_partner_email',String(data.email).trim());await loadDashboard();}
         else{
           setAuthMode('login');
           showMessage('Compte créé. Vérifiez votre boîte e-mail pour confirmer l’adresse, puis connectez-vous.','success');
         }
       }else{
         const result=await authRequest('token?grant_type=password',{email:String(data.email).trim(),password:String(data.password)});
-        saveSession(result);await loadDashboard();
+        saveSession(result);sessionStorage.setItem('bsa_partner_email',String(data.email).trim());await loadDashboard();
       }
     }catch(error){showMessage(error.message||messages.server,'error');}
     finally{if(button)button.disabled=false;}
@@ -110,7 +110,7 @@
   });
   $('logoutButton')?.addEventListener('click',async()=>{
     try{if(token())await fetch(SUPABASE_URL+'/auth/v1/logout',{method:'POST',headers:{apikey:SUPABASE_PUBLIC_KEY,Authorization:'Bearer '+token()}});}catch{}
-    clearSession();showAuth('Vous êtes déconnecté.');
+    clearSession();sessionStorage.removeItem('bsa_partner_email');showAuth('Vous êtes déconnecté.');
   });
 
   async function loadDashboard(){
@@ -141,6 +141,7 @@
       const edit=$('partnerProfileForm');
       if(edit){
         edit.elements.description.value=p.description||'';
+        edit.elements.about.value=p.about||'';
         edit.elements.mission.value=p.mission||'';
         edit.elements.country.value=p.country||'Niger';
         edit.elements.city.value=p.city||'';
@@ -193,7 +194,7 @@
       ['Dossiers',data.stats?.applications||0],['En attente',data.stats?.pending||0],['À examiner',data.stats?.underReview||0],['Partenaires actifs',data.stats?.partners||0],['Vérifiés',data.stats?.verified||0],['Événements suivis',data.stats?.trackedEvents||0]
     ].map(([label,value])=>'<div class="portalStat"><strong>'+esc(value)+'</strong><span>'+esc(label)+'</span></div>').join('');
     renderAdminApplications();renderAdminPartners();renderAdminHistory();showDashboard();
-    if($('adminSignedIn'))$('adminSignedIn').textContent='Administration connectée';
+    if($('adminSignedIn'))$('adminSignedIn').textContent='Connecté avec : '+(sessionStorage.getItem('bsa_partner_email')||'compte administrateur');
   }
   function renderAdminApplications(){
     const root=$('adminApplications');if(!root)return;
