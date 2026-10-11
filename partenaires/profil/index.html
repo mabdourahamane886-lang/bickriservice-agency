@@ -58,7 +58,7 @@ function addSocial(label,url){const href=escUrl(url);if(!href)return;const a=doc
 async function init(){
  if(!slug){$('profileLoading').hidden=true;$('profileNotFound').style.display='block';return;}
  try{
-  const response=await fetch(apiUrl('/api/partners?slug='+encodeURIComponent(slug),{cache:'no-store',headers:{Accept:'application/json'}});
+  const response=await fetch(apiUrl('/api/partners?slug='+encodeURIComponent(slug)),{cache:'no-store',headers:{Accept:'application/json'}});
   const data=await response.json().catch(()=>({}));if(!response.ok||!data.partner)throw new Error('not found');
   const p=data.partner;const badge=p.badgeLevel||'green';
   $('profileName').textContent=p.name||'Partenaire';
