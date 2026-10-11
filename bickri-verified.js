@@ -57,27 +57,26 @@ function closeModal(){
   document.removeEventListener("keydown",escHandler);
 }
 function escHandler(e){if(e.key==="Escape")closeModal()}
-function isBadge(el){
-  return !!(el && el.matches && el.matches(".verifiedBadge,.metaStyleBadge,[data-bickri-verified],img[src*=\"/assets/partners/badge-verified-\\"],img[src*=\"/assets/partners/badge-construction\"]"));
-}
+const badgeSelector = '.verifiedBadge,.metaStyleBadge,[data-bickri-verified],img[src*="/assets/partners/badge-verified-"],img[src*="/assets/partners/badge-construction"]';
 function init(){
   if(document.documentElement.dataset.bickriVerifiedDelegation==="1")return;
   document.documentElement.dataset.bickriVerifiedDelegation="1";
   document.addEventListener("click",function(e){
-    const badge=e.target.closest(".verifiedBadge,.metaStyleBadge,[data-bickri-verified],img[src*=\"/assets/partners/badge-verified-\\"],img[src*=\"/assets/partners/badge-construction\"]");
+    const target=e.target;
+    const badge=target&&target.closest?target.closest(badgeSelector):null;
     if(!badge)return;
     e.preventDefault();
     e.stopPropagation();
     openModal(badge);
   },true);
   document.addEventListener("keydown",function(e){
-    const badge=e.target.closest&&e.target.closest(".verifiedBadge,.metaStyleBadge,[data-bickri-verified],img[src*=\"/assets/partners/badge-verified-\\"],img[src*=\"/assets/partners/badge-construction\"]");
+    const badge=e.target&&e.target.closest?e.target.closest(badgeSelector):null;
     if(!badge || (e.key!=="Enter" && e.key!==" "))return;
     e.preventDefault();
     e.stopPropagation();
     openModal(badge);
   },true);
-  document.querySelectorAll(".verifiedBadge,.metaStyleBadge,[data-bickri-verified],img[src*=\"/assets/partners/badge-verified-\\"],img[src*=\"/assets/partners/badge-construction\"]").forEach(el=>{
+  document.querySelectorAll(badgeSelector).forEach(el=>{
     el.setAttribute("role","button");
     el.setAttribute("tabindex","0");
     el.setAttribute("aria-label","Voir les informations du badge Bickri Verified");
