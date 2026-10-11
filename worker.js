@@ -209,7 +209,7 @@ async function partnerIsAdmin(userId, key) {
     const rows = await r.json().catch(() => []);
     if (Array.isArray(rows) && rows.some(row => row.role === 'admin')) return true;
   } catch {}
-  for (const table of ['bickri_admin_users','niger_admins']) {
+  for (const table of ['bickri_admin_users']) {
     try {
       const r = await supabaseRequest(`${table}?user_id=eq.${encodeURIComponent(userId)}&select=user_id&limit=1`,key,{method:'GET'});
       const rows = await r.json().catch(() => []);
@@ -221,7 +221,8 @@ async function partnerIsAdmin(userId, key) {
 
 async function partnerCount(resource, key) {
   try {
-    const r = await supabaseRequest(`${resource}?select=id`,key,{
+    const separator=String(resource).includes('?')?'&':'?';
+    const r = await supabaseRequest(`${resource}${separator}select=id`,key,{
       method:'GET',
       headers:{Prefer:'count=exact',Range:'0-0'}
     });
@@ -716,6 +717,44 @@ export default {async fetch(request,env,ctx){
       return new Response('Service link error',{status:500,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'}});
     }
   }
+
+  // Social preview for dynamic partner profiles: bots receive server-rendered Open Graph metadata.
+  if (request.method === 'GET' && url.pathname === '/partenaires/profil/' &&
+      /(WhatsApp|facebookexternalhit|Facebot|Twitterbot|LinkedInBot|TelegramBot|Slackbot|Discordbot|SkypeUriPreview)/i.test(request.headers.get('User-Agent') || '')) {
+    const slug=(url.searchParams.get('slug')||'').trim().slice(0,90);
+    const key=env.SUPABASE_SERVICE_ROLE_KEY;
+    const escapeHtml=(value)=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    if(!slug||!key) return new Response('Profil partenaire introuvable',{status:404,headers:{...SECURITY_HEADERS,'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'}});
+    try {
+      const params=new URLSearchParams({slug:`eq.${slug}`,active:'eq.true',select:'name,slug,description,mission,logo_url,country,city,partner_type,category,badge_label,public_id',limit:'1'});
+      const profileResponse=await supabaseRequest(`agency_partners?${params.toString()}`,key,{method:'GET'});
+      const profileRows=await profileResponse.json().catch(()=>[]);
+      const p=Array.isArray(profileRows)?profileRows[0]:null;
+      if(!p) return new Response('Profil partenaire introuvable',{status:404,headers:{...SECURITY_HEADERS,'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'}});
+      const basePath='/partenaires/profil/?slug='+encodeURIComponent(p.slug);
+      const canonical=new URL(basePath,url.origin).href;
+      const link=new URL(basePath,url.origin);
+      const referral=(url.searchParams.get('ref')||'').trim();
+      if(referral) link.searchParams.set('ref',referral);
+      const sharedUrl=link.href;
+      const slugLogos={'impact-afriq':'/assets/partners/impact-afriq.svg','egan-btp':'/assets/partners/egan-btp.svg'};
+      const image=safePartnerUrl(p.logo_url)||new URL(slugLogos[p.slug]||'/assets/bickri-b-logo.svg',url.origin).href;
+      const title=(p.name||'Partenaire')+' — Partenaire Bickri Service Agency';
+      const description=String(p.description||p.mission||'Découvrez ce partenaire du réseau Bickri Service Agency.').slice(0,300);
+      const html='<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
+        '<title>'+escapeHtml(title)+'</title><meta name="description" content="'+escapeHtml(description)+'"><link rel="canonical" href="'+escapeHtml(canonical)+'">'+
+        '<meta property="og:type" content="profile"><meta property="og:site_name" content="Bickri Service Agency"><meta property="og:locale" content="fr_FR">'+
+        '<meta property="og:url" content="'+escapeHtml(canonical)+'"><meta property="og:title" content="'+escapeHtml(title)+'"><meta property="og:description" content="'+escapeHtml(description)+'">'+
+        '<meta property="og:image" content="'+escapeHtml(image)+'"><meta property="og:image:secure_url" content="'+escapeHtml(image)+'"><meta property="og:image:alt" content="'+escapeHtml(p.name||'Partenaire')+'">'+
+        '<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="'+escapeHtml(title)+'"><meta name="twitter:description" content="'+escapeHtml(description)+'"><meta name="twitter:image" content="'+escapeHtml(image)+'">'+
+        '</head><body><main><h1>'+escapeHtml(p.name||'Partenaire')+'</h1><p>'+escapeHtml(description)+'</p><a href="'+escapeHtml(sharedUrl)+'">Voir le profil partenaire</a></main></body></html>';
+      return new Response(html,{status:200,headers:{...SECURITY_HEADERS,'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store, no-cache, must-revalidate, max-age=0','Vary':'User-Agent'}});
+    } catch(error) {
+      console.error('Partner Open Graph rendering failed:',error?.message||'unknown error');
+      return new Response('Profil partenaire indisponible',{status:503,headers:{...SECURITY_HEADERS,'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'}});
+    }
+  }
+
   const response=await env.ASSETS.fetch(request);
   const headers=new Headers(response.headers);
   for (const [key,value] of Object.entries(SECURITY_HEADERS)) if (!headers.has(key)) headers.set(key,value);
