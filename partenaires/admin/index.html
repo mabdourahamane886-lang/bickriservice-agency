@@ -25,6 +25,16 @@
 <div id="portalMessage" class="portalMessage" role="status" aria-live="polite" hidden></div>
 <section id="authCard" class="panel authWrap"><h2>Connexion administrateur</h2><p class="muted">Accès réservé au compte administrateur autorisé. Connectez-vous avec votre adresse e-mail et votre mot de passe Bickri. Les comptes partenaires ordinaires ne peuvent pas accéder à cette interface. Aucun compte ne peut obtenir les droits administrateur depuis cette page.</p>
 <form id="loginForm" class="portalForm"><div class="field full"><label for="authEmail">Adresse e-mail</label><input id="authEmail" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" required></div><div class="field full"><label for="authPassword">Mot de passe</label><input id="authPassword" name="password" type="password" autocomplete="current-password" minlength="8" required></div><div class="authActions"><button class="btn btnGold" id="authSubmit" type="submit">Se connecter</button></div></form><div style="margin-top:14px"><button class="btn btnLight" id="forgotPassword" type="button">Réinitialiser le mot de passe</button></div></section>
+<section id="passwordResetCard" class="panel authWrap" hidden>
+<h2>Définir un nouveau mot de passe</h2>
+<p class="muted">Choisissez un nouveau mot de passe pour votre compte. Utilisez au moins 8 caractères et ne partagez jamais votre mot de passe.</p>
+<form id="passwordResetForm" class="portalForm">
+<div class="field full"><label for="newPassword">Nouveau mot de passe</label><input id="newPassword" name="newPassword" type="password" autocomplete="new-password" minlength="8" maxlength="128" required></div>
+<div class="field full"><label for="confirmNewPassword">Confirmer le nouveau mot de passe</label><input id="confirmNewPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" maxlength="128" required></div>
+<div class="authActions"><button class="btn btnGold" id="passwordResetSubmit" type="submit">Enregistrer le nouveau mot de passe</button></div>
+</form>
+<button class="btn btnLight" id="cancelPasswordReset" type="button" style="margin-top:14px">Retour à la connexion</button>
+</section>
 <section id="adminDashboard" hidden>
 <div class="portalRow"><div><h2 style="font:800 24px Manrope;margin:0">Vue d’ensemble</h2><p id="adminSignedIn" class="muted">Administration connectée</p></div><button class="btn btnLight" id="adminRefresh" type="button">Actualiser</button></div>
 <div id="adminStats" class="portalStats"></div>
