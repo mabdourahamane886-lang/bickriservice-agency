@@ -28,7 +28,7 @@ function openModal(trigger){
   const title=isProfile?"Profil vérifié":badge.title;
   const text=isProfile
     ?"Ce profil est vérifié par Bickri Verified."
-    :"Cette entreprise bénéficie du statut « "+badge.label+" » de Bickri Verified.";
+    :(!trigger.closest(".partner,.projectCard")&&!trigger.dataset.verifiedName ? "Ce badge représente le niveau « "+badge.label+" » du programme Bickri Verified." : "Cette entreprise bénéficie du statut « "+badge.label+" » de Bickri Verified.");
   const modal=document.createElement("div");
   modal.className="bickriVerifiedModal";
   modal.innerHTML='<div class="bickriVerifiedBackdrop" data-verified-close></div>'+
