@@ -1,0 +1,8 @@
+{
+  "name": "Bickri Service Agency",
+  "version": "1.0.0",
+  "release": "1.0.0",
+  "status": "stable",
+  "homepage": "https://bickriservice-agency.org/",
+  "versionEndpoint": "/api/site-version"
+}
