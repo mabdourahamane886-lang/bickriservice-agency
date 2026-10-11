@@ -177,8 +177,26 @@ export default {async fetch(request,env,ctx){
       });
       return json(result, 200);
     } catch (error) {
-      console.error('Bickri Mail send failed:', error?.code || error?.message || 'unknown error');
-      return json({error:'L’envoi a échoué. Vérifiez que Bickri Mail est activé dans Cloudflare puis réessayez.'},502);
+      const knownCode = typeof error?.code === 'string' && /^[A-Z0-9_]{3,80}$/.test(error.code)
+        ? error.code
+        : 'BICKRI_MAIL_SEND_FAILED';
+      console.error('Bickri Mail send failed:', knownCode, error?.message || 'unknown error');
+      const mailErrors = {
+        E_SENDER_NOT_VERIFIED: {status:503, message:'Le domaine expéditeur de Bickri Mail doit être vérifié dans Cloudflare Email Service.'},
+        E_SENDER_DOMAIN_NOT_AVAILABLE: {status:503, message:'Le domaine bickriservice-agency.org doit être activé dans Cloudflare Email Service.'},
+        E_RECIPIENT_NOT_ALLOWED: {status:503, message:'L’adresse de réception n’est pas autorisée dans Cloudflare Email Service.'},
+        E_RECIPIENT_SUPPRESSED: {status:503, message:'L’adresse de réception est bloquée par le service e-mail. Vérifiez les suppressions et les rebonds dans Cloudflare.'},
+        E_RATE_LIMIT_EXCEEDED: {status:429, message:'La limite d’envoi Bickri Mail est atteinte. Réessayez plus tard.'},
+        E_DAILY_LIMIT_EXCEEDED: {status:429, message:'Le quota quotidien Bickri Mail est atteint. Vérifiez le quota Email Service dans Cloudflare.'},
+        E_DELIVERY_FAILED: {status:502, message:'Le serveur de réception a refusé le message. Vérifiez la délivrabilité et les journaux Email Service.'},
+        E_VALIDATION_ERROR: {status:400, message:'Cloudflare a refusé le format du message. Vérifiez la configuration de Bickri Mail.'},
+        E_FIELD_MISSING: {status:400, message:'Un champ obligatoire du message est manquant dans la configuration de Bickri Mail.'}
+      };
+      const knownError = mailErrors[knownCode] || {
+        status:502,
+        message:'Bickri Mail n’a pas pu envoyer le message. Consultez le code de diagnostic et les journaux Email Service dans Cloudflare.'
+      };
+      return json({error:knownError.message, code:knownCode}, knownError.status);
     }
   }
   if (url.pathname === '/api/turnstile-sitekey') {
