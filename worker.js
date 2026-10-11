@@ -49,6 +49,20 @@ function isAllowedOrigin(request) {
   }
 }
 
+function partnerJson(request, body, status=200, extra={}) {
+  const headers=new Headers({...SECURITY_HEADERS,'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store',...extra});
+  const origin=request.headers.get('Origin');
+  if (origin && isAllowedOrigin(request)) {
+    headers.set('Access-Control-Allow-Origin',origin);
+    headers.set('Access-Control-Allow-Methods','GET, POST, PATCH, OPTIONS');
+    headers.set('Access-Control-Allow-Headers','Authorization, Content-Type, Accept');
+    headers.set('Access-Control-Max-Age','86400');
+    headers.set('Vary','Origin');
+  }
+  return new Response(status===204||status===304?null:JSON.stringify(body),{status,headers});
+}
+
+
 function checkAiRateLimit(request) {
   const ip = request.headers.get('CF-Connecting-IP') ||
     String(request.headers.get('X-Forwarded-For') || '').split(',')[0].trim() || 'unknown';
@@ -188,17 +202,17 @@ async function partnerAuthUser(request, env) {
   const key = env.SUPABASE_SERVICE_ROLE_KEY;
   const authorization = request.headers.get('Authorization') || '';
   const token = authorization.match(/^Bearer\s+(.+)$/i)?.[1];
-  if (!key) return {error: json({error:'Le service de compte partenaire n’est pas configuré.',code:'PARTNER_AUTH_UNCONFIGURED'},503)};
-  if (!token || token.length > 8192) return {error: json({error:'Connectez-vous pour accéder à cet espace.',code:'AUTH_REQUIRED'},401)};
+  if (!key) return {error: partnerJson(request,{error:'Le service de compte partenaire n’est pas configuré.',code:'PARTNER_AUTH_UNCONFIGURED'},503)};
+  if (!token || token.length > 8192) return {error: partnerJson(request,{error:'Connectez-vous pour accéder à cet espace.',code:'AUTH_REQUIRED'},401)};
   try {
     const r = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
       headers: {apikey:key, Authorization:`Bearer ${token}`}
     });
     const user = await r.json().catch(() => ({}));
-    if (!r.ok || !user?.id || !user?.email) return {error: json({error:'Votre session a expiré. Reconnectez-vous.',code:'AUTH_INVALID'},401)};
+    if (!r.ok || !user?.id || !user?.email) return {error: partnerJson(request,{error:'Votre session a expiré. Reconnectez-vous.',code:'AUTH_INVALID'},401)};
     return {user,key};
   } catch {
-    return {error: json({error:'Le service d’authentification est momentanément indisponible.',code:'AUTH_UNAVAILABLE'},503)};
+    return {error: partnerJson(request,{error:'Le service d’authentification est momentanément indisponible.',code:'AUTH_UNAVAILABLE'},503)};
   }
 }
 
@@ -262,11 +276,15 @@ function fallbackAnswer(message){
 
 export default {async fetch(request,env,ctx){
   const url=new URL(request.url);
+  if (url.pathname.startsWith('/api/partner') && request.method === 'OPTIONS') {
+    if (!isAllowedOrigin(request)) return json({error:'Origine non autorisée'},403);
+    return partnerJson(request,{},204);
+  }
   // Candidatures partenaires : envoi natif avec Cloudflare Email Service, sans Resend ni Google.
   
   if (url.pathname === '/api/partners' && request.method === 'GET') {
     const key = env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!key) return json({error:'Le répertoire des partenaires est momentanément indisponible.'},503);
+    if (!key) return partnerJson(request,{error:'Le répertoire des partenaires est momentanément indisponible.'},503);
     try {
       const params = new URLSearchParams({
         active:'eq.true',
@@ -280,22 +298,22 @@ export default {async fetch(request,env,ctx){
       const rows = await r.json().catch(() => []);
       const partners = Array.isArray(rows) ? rows.map(publicPartner) : [];
       if (slug) return partners.length ? json({partner:partners[0]}) : json({error:'Partenaire introuvable.'},404);
-      return json({partners, total:partners.length, verified:partners.filter(p=>p.badgeVerified).length, version:SITE_VERSION});
+      return partnerJson(request,{partners, total:partners.length, verified:partners.filter(p=>p.badgeVerified).length, version:SITE_VERSION});
     } catch (error) {
       console.error('Partner directory read failed:',error?.message||'unknown error');
-      return json({error:'Impossible de charger le répertoire pour le moment.'},503);
+      return partnerJson(request,{error:'Impossible de charger le répertoire pour le moment.'},503);
     }
   }
 
   if (url.pathname === '/api/partners/metrics' && request.method === 'GET') {
     const key = env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!key) return json({error:'Statistiques temporairement indisponibles.'},503);
+    if (!key) return partnerJson(request,{error:'Statistiques temporairement indisponibles.'},503);
     try {
       const r = await supabaseRequest('agency_partners?active=eq.true&select=id,badge_verified',key,{method:'GET'});
       const rows = await r.json().catch(() => []);
       const partners = Array.isArray(rows) ? rows : [];
       const clicks = await partnerCount('agency_partner_clicks',key);
-      return json({
+      return partnerJson(request,{
         partners:partners.length,
         verified:partners.filter(p=>p.badge_verified===true).length,
         trackedEvents:clicks,
@@ -303,23 +321,23 @@ export default {async fetch(request,env,ctx){
       });
     } catch (error) {
       console.error('Partner metrics read failed:',error?.message||'unknown error');
-      return json({error:'Statistiques temporairement indisponibles.'},503);
+      return partnerJson(request,{error:'Statistiques temporairement indisponibles.'},503);
     }
   }
 
   if (url.pathname === '/api/partner/click') {
-    if (!isAllowedOrigin(request)) return json({error:'Origine non autorisée'},403);
-    if (request.method !== 'POST') return json({error:'Méthode non autorisée'},405,{'Allow':'POST'});
+    if (!isAllowedOrigin(request)) return partnerJson(request,{error:'Origine non autorisée'},403);
+    if (request.method !== 'POST') return partnerJson(request,{error:'Méthode non autorisée'},405,{'Allow':'POST'});
     const rate = checkPartnerLimit(request,partnerClickBuckets,60,60*1000);
-    if (!rate.allowed) return json({error:'Trop de clics. Réessayez dans un instant.'},429,{'Retry-After':String(rate.retryAfter)});
+    if (!rate.allowed) return partnerJson(request,{error:'Trop de clics. Réessayez dans un instant.'},429,{'Retry-After':String(rate.retryAfter)});
     let body;
-    try { body = await request.json(); } catch { return json({error:'Requête JSON invalide.'},400); }
+    try { body = await request.json(); } catch { return partnerJson(request,{error:'Requête JSON invalide.'},400); }
     const allowedEvents = new Set(['profile_view','share_click','website_click','contact_click']);
     const eventType = allowedEvents.has(body?.eventType) ? body.eventType : 'profile_view';
     const slug = typeof body?.slug === 'string' ? body.slug.trim().slice(0,90) : '';
     const inputReferral = typeof body?.referralCode === 'string' ? body.referralCode.trim().slice(0,80) : '';
     const key = env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!key) return json({ok:false,tracking:false},200);
+    if (!key) return partnerJson(request,{ok:false,tracking:false},200);
     try {
       let partner = null;
       if (slug) {
@@ -342,10 +360,10 @@ export default {async fetch(request,env,ctx){
         headers:{Prefer:'return=minimal'},
         body:JSON.stringify({partner_id:partner?.id || null,referral_code:referralCode || null,event_type:eventType,source:source || null,medium:medium || null,campaign:campaign || null,landing_path:landingPath})
       });
-      return json({ok:true,tracking:true},202);
+      return partnerJson(request,{ok:true,tracking:true},202);
     } catch (error) {
       console.error('Partner click tracking failed:',error?.message||'unknown error');
-      return json({ok:false,tracking:false},200);
+      return partnerJson(request,{ok:false,tracking:false},200);
     }
   }
 
@@ -353,31 +371,31 @@ export default {async fetch(request,env,ctx){
     const code = (url.searchParams.get('code') || '').trim().toUpperCase();
     const email = (url.searchParams.get('email') || '').trim().toLowerCase();
     if (!/^BPA-[A-F0-9]{10}$/.test(code) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
-      return json({error:'Saisissez un code de dossier et une adresse e-mail valides.'},400);
+      return partnerJson(request,{error:'Saisissez un code de dossier et une adresse e-mail valides.'},400);
     }
     const key = env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!key) return json({error:'Le suivi des candidatures est momentanément indisponible.'},503);
+    if (!key) return partnerJson(request,{error:'Le suivi des candidatures est momentanément indisponible.'},503);
     try {
       const path = `agency_partner_applications?application_code=eq.${encodeURIComponent(code)}&email=ilike.${encodeURIComponent(email)}&select=application_code,company_name,status,created_at,reviewed_at&limit=1`;
       const r = await supabaseRequest(path,key,{method:'GET'});
       const rows = await r.json().catch(()=>[]);
-      if (!Array.isArray(rows) || !rows.length) return json({error:'Aucun dossier trouvé avec ces informations.'},404);
+      if (!Array.isArray(rows) || !rows.length) return partnerJson(request,{error:'Aucun dossier trouvé avec ces informations.'},404);
       const a=rows[0];
       const labels={pending:'En attente',under_review:'En cours d’examen',approved:'Approuvée',rejected:'Refusée'};
-      return json({application:{code:a.application_code,companyName:a.company_name,status:a.status,statusLabel:labels[a.status]||a.status,submittedAt:a.created_at,reviewedAt:a.reviewed_at}});
+      return partnerJson(request,{application:{code:a.application_code,companyName:a.company_name,status:a.status,statusLabel:labels[a.status]||a.status,submittedAt:a.created_at,reviewedAt:a.reviewed_at}});
     } catch (error) {
       console.error('Partner application status lookup failed:',error?.message||'unknown error');
-      return json({error:'Impossible de vérifier votre dossier pour le moment.'},503);
+      return partnerJson(request,{error:'Impossible de vérifier votre dossier pour le moment.'},503);
     }
   }
 
   if (url.pathname === '/api/partner/me') {
-    if (!['GET','PATCH'].includes(request.method)) return json({error:'Méthode non autorisée'},405,{'Allow':'GET, PATCH'});
+    if (!['GET','PATCH'].includes(request.method)) return partnerJson(request,{error:'Méthode non autorisée'},405,{'Allow':'GET, PATCH'});
     const auth = await partnerAuthUser(request,env);
     if (auth.error) return auth.error;
     const {user,key} = auth;
     if (request.method === 'GET') {
-      if (!user.email_confirmed_at) return json({error:'Confirmez votre adresse e-mail avant d’accéder à vos candidatures.',code:'EMAIL_NOT_CONFIRMED'},403);
+      if (!user.email_confirmed_at) return partnerJson(request,{error:'Confirmez votre adresse e-mail avant d’accéder à vos candidatures.',code:'EMAIL_NOT_CONFIRMED'},403);
       try {
         const safeEmail = encodeURIComponent(String(user.email).toLowerCase());
         const appsR = await supabaseRequest(`agency_partner_applications?email=ilike.${safeEmail}&select=id,application_code,company_name,partner_type,country,city,status,email_status,created_at,reviewed_at&order=created_at.desc&limit=50`,key,{method:'GET'});
@@ -414,19 +432,19 @@ export default {async fetch(request,env,ctx){
           clickStats.total=await partnerCount(`agency_partner_clicks?partner_id=eq.${encodeURIComponent(partner.id)}`,key);
           clickStats.last7Days=await partnerCount(`agency_partner_clicks?partner_id=eq.${encodeURIComponent(partner.id)}&created_at=gte.${encodeURIComponent(new Date(Date.now()-7*86400000).toISOString())}`,key);
         }
-        return json({user:{id:user.id,email:user.email,emailConfirmed:Boolean(user.email_confirmed_at)},applications:safeApps,partner,clickStats});
+        return partnerJson(request,{user:{id:user.id,email:user.email,emailConfirmed:Boolean(user.email_confirmed_at)},applications:safeApps,partner,clickStats});
       } catch (error) {
         console.error('Partner dashboard read failed:',error?.message||'unknown error');
-        return json({error:'Impossible de charger votre espace partenaire.'},503);
+        return partnerJson(request,{error:'Impossible de charger votre espace partenaire.'},503);
       }
     }
     let body;
-    try { body=await request.json(); } catch { return json({error:'Requête JSON invalide.'},400); }
+    try { body=await request.json(); } catch { return partnerJson(request,{error:'Requête JSON invalide.'},400); }
     try {
       const partnerR = await supabaseRequest(`agency_partners?owner_user_id=eq.${encodeURIComponent(user.id)}&active=eq.true&select=id,name,slug,description,mission,country,city,website_url,social_links&limit=1`,key,{method:'GET'});
       const rows=await partnerR.json().catch(()=>[]);
       const partner=Array.isArray(rows)?rows[0]:null;
-      if (!partner) return json({error:'Aucun profil partenaire actif n’est associé à votre compte.'},403);
+      if (!partner) return partnerJson(request,{error:'Aucun profil partenaire actif n’est associé à votre compte.'},403);
       const description=typeof body.description==='string'?body.description.trim().slice(0,500):partner.description;
       const mission=typeof body.mission==='string'?body.mission.trim().slice(0,1500):partner.mission;
       const country=typeof body.country==='string'?body.country.trim().slice(0,80):partner.country;
@@ -436,10 +454,10 @@ export default {async fetch(request,env,ctx){
       await supabaseRequest(`agency_partners?id=eq.${encodeURIComponent(partner.id)}&owner_user_id=eq.${encodeURIComponent(user.id)}`,key,{
         method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({description,mission,country,city,website_url:websiteUrl||null,social_links:socialLinks,updated_at:new Date().toISOString()})
       });
-      return json({ok:true,message:'Profil partenaire mis à jour.'});
+      return partnerJson(request,{ok:true,message:'Profil partenaire mis à jour.'});
     } catch (error) {
       console.error('Partner profile update failed:',error?.message||'unknown error');
-      return json({error:'Impossible d’enregistrer vos modifications.'},503);
+      return partnerJson(request,{error:'Impossible d’enregistrer vos modifications.'},503);
     }
   }
 
@@ -447,7 +465,7 @@ export default {async fetch(request,env,ctx){
     const auth = await partnerAuthUser(request,env);
     if (auth.error) return auth.error;
     const {user,key}=auth;
-    if (!(await partnerIsAdmin(user.id,key))) return json({error:'Accès réservé à l’administration.'},403);
+    if (!(await partnerIsAdmin(user.id,key))) return partnerJson(request,{error:'Accès réservé à l’administration.'},403);
     try {
       const [appsR,partnersR,clicks] = await Promise.all([
         supabaseRequest('agency_partner_applications?select=id,application_code,full_name,email,company_name,website_url,logo_url,public_description,public_mission,public_profile_consent,country,city,category,partner_type,social_links,message,referral_code,status,email_status,email_error_code,reviewer_notes,created_at,reviewed_at&order=created_at.desc&limit=150',key,{method:'GET'}),
@@ -459,38 +477,38 @@ export default {async fetch(request,env,ctx){
       const safeApplications=Array.isArray(applications)?applications:[];
       const safePartners=Array.isArray(partners)?partners:[];
       const counts={pending:safeApplications.filter(a=>a.status==='pending').length,underReview:safeApplications.filter(a=>a.status==='under_review').length,approved:safeApplications.filter(a=>a.status==='approved').length,rejected:safeApplications.filter(a=>a.status==='rejected').length};
-      return json({applications:safeApplications,stats:{applications:safeApplications.length,...counts,partners:safePartners.filter(p=>p.active).length,verified:safePartners.filter(p=>p.active&&p.badge_verified).length,trackedEvents:clicks}});
+      return partnerJson(request,{applications:safeApplications,stats:{applications:safeApplications.length,...counts,partners:safePartners.filter(p=>p.active).length,verified:safePartners.filter(p=>p.active&&p.badge_verified).length,trackedEvents:clicks}});
     } catch (error) {
       console.error('Partner admin read failed:',error?.message||'unknown error');
-      return json({error:'Impossible de charger le tableau de bord administrateur.'},503);
+      return partnerJson(request,{error:'Impossible de charger le tableau de bord administrateur.'},503);
     }
   }
 
   if (url.pathname === '/api/partner/admin/review') {
-    if (!isAllowedOrigin(request)) return json({error:'Origine non autorisée'},403);
-    if (request.method !== 'POST') return json({error:'Méthode non autorisée'},405,{'Allow':'POST'});
+    if (!isAllowedOrigin(request)) return partnerJson(request,{error:'Origine non autorisée'},403);
+    if (request.method !== 'POST') return partnerJson(request,{error:'Méthode non autorisée'},405,{'Allow':'POST'});
     const auth = await partnerAuthUser(request,env);
     if (auth.error) return auth.error;
     const {user,key}=auth;
-    if (!(await partnerIsAdmin(user.id,key))) return json({error:'Accès réservé à l’administration.'},403);
+    if (!(await partnerIsAdmin(user.id,key))) return partnerJson(request,{error:'Accès réservé à l’administration.'},403);
     let body;
-    try { body=await request.json(); } catch { return json({error:'Requête JSON invalide.'},400); }
+    try { body=await request.json(); } catch { return partnerJson(request,{error:'Requête JSON invalide.'},400); }
     const id=typeof body?.applicationId==='string'?body.applicationId:'';
     const action=body?.action;
     const allowedStatuses=new Set(['under_review','approve','reject']);
-    if (!isUuid(id)||!allowedStatuses.has(action)) return json({error:'Action de validation invalide.'},400);
+    if (!isUuid(id)||!allowedStatuses.has(action)) return partnerJson(request,{error:'Action de validation invalide.'},400);
     const notes=typeof body.reviewerNotes==='string'?body.reviewerNotes.trim().slice(0,2000):'';
     const badgeLevel=['green','blue','gold','construction'].includes(body.badgeLevel)?body.badgeLevel:'green';
     try {
       const appR=await supabaseRequest(`agency_partner_applications?id=eq.${encodeURIComponent(id)}&select=*&limit=1`,key,{method:'GET'});
       const found=await appR.json().catch(()=>[]);
       const app=Array.isArray(found)?found[0]:null;
-      if (!app) return json({error:'Candidature introuvable.'},404);
+      if (!app) return partnerJson(request,{error:'Candidature introuvable.'},404);
       const existingR=await supabaseRequest(`agency_partners?application_id=eq.${encodeURIComponent(id)}&select=id,slug,owner_user_id,public_id,referral_code,active&limit=1`,key,{method:'GET'});
       const existingRows=await existingR.json().catch(()=>[]);
       const existing=Array.isArray(existingRows)?existingRows[0]||null:null;
       if (action==='approve' && app.public_profile_consent !== true) {
-        return json({error:'Impossible de publier ce profil : le consentement de publication n’a pas été enregistré.',code:'PUBLIC_PROFILE_CONSENT_REQUIRED'},409);
+        return partnerJson(request,{error:'Impossible de publier ce profil : le consentement de publication n’a pas été enregistré.',code:'PUBLIC_PROFILE_CONSENT_REQUIRED'},409);
       }
       const status=action==='approve'?'approved':action==='reject'?'rejected':'under_review';
       const updatedAt=new Date().toISOString();
@@ -508,7 +526,7 @@ export default {async fetch(request,env,ctx){
             body:JSON.stringify({active:false,badge_verified:false,updated_at:updatedAt})
           });
         }
-        return json({ok:true,status,partner:null});
+        return partnerJson(request,{ok:true,status,partner:null});
       }
       let slug=existing?.slug || partnerSlug(app.company_name);
       if (!existing) {
@@ -541,24 +559,24 @@ export default {async fetch(request,env,ctx){
         const readRows=await readBack.json().catch(()=>[]);
         partner=Array.isArray(readRows)?readRows[0]||null:null;
       }
-      return json({ok:true,status,partner:partner?publicPartner(partner):null});
+      return partnerJson(request,{ok:true,status,partner:partner?publicPartner(partner):null});
     } catch (error) {
       console.error('Partner application review failed:',error?.message||'unknown error');
-      return json({error:'La mise à jour n’a pas pu être terminée. Vérifiez le dossier et réessayez.'},503);
+      return partnerJson(request,{error:'La mise à jour n’a pas pu être terminée. Vérifiez le dossier et réessayez.'},503);
     }
   }
 
   if (url.pathname === '/api/partner') {
-    if (!isAllowedOrigin(request)) return json({error:'Origine non autorisée'},403);
-    if (request.method !== 'POST') return json({error:'Méthode non autorisée'},405,{'Allow':'POST'});
+    if (!isAllowedOrigin(request)) return partnerJson(request,{error:'Origine non autorisée'},403);
+    if (request.method !== 'POST') return partnerJson(request,{error:'Méthode non autorisée'},405,{'Allow':'POST'});
     const contentLength = Number(request.headers.get('Content-Length') || 0);
-    if (Number.isFinite(contentLength) && contentLength > 32 * 1024) return json({error:'Requête trop volumineuse'},413);
+    if (Number.isFinite(contentLength) && contentLength > 32 * 1024) return partnerJson(request,{error:'Requête trop volumineuse'},413);
     const rate=checkPartnerLimit(request,partnerSubmissionBuckets,5,10*60*1000);
-    if (!rate.allowed) return json({error:'Trop de candidatures depuis cet accès. Réessayez dans quelques minutes.'},429,{'Retry-After':String(rate.retryAfter)});
+    if (!rate.allowed) return partnerJson(request,{error:'Trop de candidatures depuis cet accès. Réessayez dans quelques minutes.'},429,{'Retry-After':String(rate.retryAfter)});
     let body;
-    try { body = await request.json(); } catch { return json({error:'Requête JSON invalide.'},400); }
+    try { body = await request.json(); } catch { return partnerJson(request,{error:'Requête JSON invalide.'},400); }
     const {fullName,email,companyName,websiteUrl='',logoUrl='',publicDescription='',publicMission='',publicProfileConsent='',partnerType,message,website='',country='Niger',city='',category='',socialLinks={},socialFacebook='',socialInstagram='',socialLinkedIn='',socialWhatsApp='',referralCode=''} = body || {};
-    if (website) return json({ok:true,message:'Demande reçue.'},201);
+    if (website) return partnerJson(request,{ok:true,message:'Demande reçue.'},201);
     const allowedTypes = new Set(['technical','referral','integrator','other']);
     if (typeof fullName !== 'string' || fullName.trim().length < 2 || fullName.trim().length > 120 ||
         typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) || email.trim().length > 254 ||
@@ -571,12 +589,12 @@ export default {async fetch(request,env,ctx){
         (country && (typeof country!=='string'||country.trim().length>80)) ||
         (city && (typeof city!=='string'||city.trim().length>100)) ||
         (category && (typeof category!=='string'||category.trim().length>100))) {
-      return json({error:'Vérifiez les champs du formulaire puis réessayez.'},400);
+      return partnerJson(request,{error:'Vérifiez les champs du formulaire puis réessayez.'},400);
     }
     const key=env.SUPABASE_SERVICE_ROLE_KEY;
     if (!key) {
       console.error('Bickri Mail partner submission has no Supabase persistence key.');
-      return json({error:'Le formulaire est temporairement indisponible. Réessayez plus tard.'},503);
+      return partnerJson(request,{error:'Le formulaire est temporairement indisponible. Réessayez plus tard.'},503);
     }
     const cleanEmail=email.trim().toLowerCase();
     const rawLinks=socialLinks && typeof socialLinks==='object' && !Array.isArray(socialLinks) ? socialLinks : {};
@@ -613,7 +631,7 @@ export default {async fetch(request,env,ctx){
       const application=Array.isArray(inserted)?inserted[0]:null;
       if (!application?.id||!application?.application_code) {
         console.error('Bickri Mail application persistence returned no application identifier.');
-        return json({error:'La candidature n’a pas pu être enregistrée. Réessayez plus tard.'},503);
+        return partnerJson(request,{error:'La candidature n’a pas pu être enregistrée. Réessayez plus tard.'},503);
       }
       let emailStatus='not_configured';
       let emailErrorCode=null;
@@ -643,13 +661,13 @@ export default {async fetch(request,env,ctx){
       } catch (error) {
         console.error('Could not update partner email status:',error?.message||'unknown error');
       }
-      return json({
+      return partnerJson(request,{
         ok:true,saved:true,applicationCode:application.application_code,emailStatus,
         message:'Votre candidature a été enregistrée. Conservez votre code de dossier pour suivre son état.'
       },201);
     } catch (error) {
       console.error('Partner application storage failed:',error?.message||'unknown error');
-      return json({error:'Impossible d’enregistrer la candidature. Le service de données est momentanément indisponible.'},503);
+      return partnerJson(request,{error:'Impossible d’enregistrer la candidature. Le service de données est momentanément indisponible.'},503);
     }
   }
 
