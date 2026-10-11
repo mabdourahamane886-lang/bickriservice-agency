@@ -67,9 +67,9 @@ jobs:
           let checked = 0;
           for (const page of pages) {
             const html = fs.readFileSync(page, 'utf8');
-            const blocks = [...html.matchAll(/<script\\b([^>]*)>([\\s\\S]*?)<\\/script>/gi)];
+            const blocks = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)];
             for (const [, attributes, source] of blocks) {
-              if (/\\bsrc\\s*=/.test(attributes) || !source.trim()) continue;
+              if (/\bsrc\s*=/.test(attributes) || !source.trim()) continue;
               new Function(source);
               checked += 1;
             }
