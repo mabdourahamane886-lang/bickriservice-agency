@@ -466,8 +466,9 @@ export default {async fetch(request,env,ctx){
     }
   }
 
-  if (url.pathname === '/api/partner/admin/review' && request.method === 'POST') {
+  if (url.pathname === '/api/partner/admin/review') {
     if (!isAllowedOrigin(request)) return json({error:'Origine non autorisée'},403);
+    if (request.method !== 'POST') return json({error:'Méthode non autorisée'},405,{'Allow':'POST'});
     const auth = await partnerAuthUser(request,env);
     if (auth.error) return auth.error;
     const {user,key}=auth;
@@ -485,6 +486,9 @@ export default {async fetch(request,env,ctx){
       const found=await appR.json().catch(()=>[]);
       const app=Array.isArray(found)?found[0]:null;
       if (!app) return json({error:'Candidature introuvable.'},404);
+      const existingR=await supabaseRequest(`agency_partners?application_id=eq.${encodeURIComponent(id)}&select=id,slug,owner_user_id,public_id,referral_code,active&limit=1`,key,{method:'GET'});
+      const existingRows=await existingR.json().catch(()=>[]);
+      const existing=Array.isArray(existingRows)?existingRows[0]||null:null;
       const status=action==='approve'?'approved':action==='reject'?'rejected':'under_review';
       const updatedAt=new Date().toISOString();
       const patch={status,reviewer_notes:notes||null,reviewed_by:user.id,reviewed_at:updatedAt,updated_at:updatedAt};
@@ -493,27 +497,49 @@ export default {async fetch(request,env,ctx){
       });
       await updateR.json().catch(()=>[]);
       let partner=null;
-      if (action==='approve') {
-        let slug=partnerSlug(app.company_name);
+      if (action !== 'approve') {
+        // A rejected or re-opened application must not leave a stale public profile visible.
+        if (existing) {
+          await supabaseRequest(`agency_partners?id=eq.${encodeURIComponent(existing.id)}&application_id=eq.${encodeURIComponent(id)}`,key,{
+            method:'PATCH',headers:{Prefer:'return=minimal'},
+            body:JSON.stringify({active:false,badge_verified:false,updated_at:updatedAt})
+          });
+        }
+        return json({ok:true,status,partner:null});
+      }
+      if (app.public_profile_consent !== true) {
+        return json({error:'Impossible de publier ce profil : le consentement de publication n’a pas été enregistré.',code:'PUBLIC_PROFILE_CONSENT_REQUIRED'},409);
+      }
+      let slug=existing?.slug || partnerSlug(app.company_name);
+      if (!existing) {
         const existingSlugR=await supabaseRequest(`agency_partners?slug=eq.${encodeURIComponent(slug)}&select=id,application_id&limit=1`,key,{method:'GET'});
         const existingSlugs=await existingSlugR.json().catch(()=>[]);
         if (Array.isArray(existingSlugs)&&existingSlugs[0]&&existingSlugs[0].application_id!==id) slug=`${slug}-${app.application_code.slice(-4).toLowerCase()}`;
-        const partnerTypeLabel={technical:'Partenaire technologique',referral:'Apporteur d’affaires',integrator:'Intégrateur',other:'Autre partenariat'}[app.partner_type]||'Partenaire';
-        const profile={
-          application_id:id,name:app.company_name,slug,description:(app.message||'').slice(0,500),
-          founder:app.full_name,mission:app.message,country:app.country||'Niger',city:app.city||null,
-          website_url:app.website_url||null,category:app.category||null,social_links:safePartnerLinks(app.social_links||{}),
-          partner_type:partnerTypeLabel,active:true,badge_level:badgeLevel,
-          badge_label:badgeLevel==='gold'?'Partenaire Premium':badgeLevel==='blue'?'Partenaire certifié':badgeLevel==='construction'?'Partenaire BTP vérifié':'Partenaire vérifié',
-          badge_verified:true,verified_at:updatedAt,owner_user_id:app.owner_user_id||null,
-          public_id:'BSP-'+app.application_code.replace(/[^A-Z0-9]/g,'').slice(-8),
-          referral_code:'REF-'+app.application_code.replace(/[^A-Z0-9]/g,'').slice(-10)
-        };
-        const upsertR=await supabaseRequest('agency_partners?on_conflict=application_id',key,{
-          method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(profile)
-        });
-        const upsertRows=await upsertR.json().catch(()=>[]);
-        partner=Array.isArray(upsertRows)?upsertRows[0]||null:null;
+      }
+      const partnerTypeLabel={technical:'Partenaire technologique',referral:'Apporteur d’affaires',integrator:'Intégrateur',other:'Autre partenariat'}[app.partner_type]||'Partenaire';
+      const profile={
+        application_id:id,name:app.company_name,slug,
+        description:(app.public_description||'Partenaire du réseau Bickri Service Agency.').slice(0,500),
+        founder:null,mission:(app.public_mission||app.public_description||'').slice(0,1500),
+        logo_url:safePartnerUrl(app.logo_url)||null,
+        country:app.country||'Niger',city:app.city||null,website_url:safePartnerUrl(app.website_url)||null,
+        category:app.category||null,social_links:safePartnerLinks(app.social_links||{}),
+        partner_type:partnerTypeLabel,active:true,badge_level:badgeLevel,
+        badge_label:badgeLevel==='gold'?'Partenaire Premium':badgeLevel==='blue'?'Partenaire certifié':badgeLevel==='construction'?'Partenaire BTP vérifié':'Partenaire vérifié',
+        badge_verified:true,verified_at:updatedAt,
+        owner_user_id:existing?.owner_user_id||app.owner_user_id||null,
+        public_id:existing?.public_id||('BSP-'+app.application_code.replace(/[^A-Z0-9]/g,'').slice(-8)),
+        referral_code:existing?.referral_code||('REF-'+app.application_code.replace(/[^A-Z0-9]/g,'').slice(-10))
+      };
+      const upsertR=await supabaseRequest('agency_partners?on_conflict=application_id',key,{
+        method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(profile)
+      });
+      const upsertRows=await upsertR.json().catch(()=>[]);
+      partner=Array.isArray(upsertRows)?upsertRows[0]||null:null;
+      if (!partner) {
+        const readBack=await supabaseRequest(`agency_partners?application_id=eq.${encodeURIComponent(id)}&select=id,name,slug,description,logo_url,founder,mission,country,city,partner_type,category,website_url,social_links,badge_level,badge_label,badge_verified,verified_at,public_id,referral_code&limit=1`,key,{method:'GET'});
+        const readRows=await readBack.json().catch(()=>[]);
+        partner=Array.isArray(readRows)?readRows[0]||null:null;
       }
       return json({ok:true,status,partner:partner?publicPartner(partner):null});
     } catch (error) {
