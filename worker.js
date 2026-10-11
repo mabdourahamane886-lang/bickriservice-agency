@@ -495,7 +495,7 @@ export default {async fetch(request,env,ctx){
     try {
       const [appsR,partnersR,eventsR,clicks] = await Promise.all([
         supabaseRequest('agency_partner_applications?select=id,application_code,full_name,email,company_name,website_url,logo_url,public_description,public_mission,public_about,public_profile_consent,country,city,category,partner_type,social_links,message,referral_code,status,email_status,email_error_code,reviewer_notes,created_at,reviewed_at&order=created_at.desc&limit=150',key,{method:'GET'}),
-        supabaseRequest('agency_partners?select=id,name,slug,description,company_about,mission,logo_url,country,city,category,partner_type,active,badge_level,badge_label,badge_verified,public_id,referral_code,verified_at&order=name.asc&limit=300',key,{method:'GET'}),
+        supabaseRequest('agency_partners?select=id,name,slug,description,company_about,mission,founder,logo_url,country,city,category,partner_type,website_url,social_links,active,badge_level,badge_label,badge_verified,public_id,referral_code,verified_at&order=name.asc&limit=300',key,{method:'GET'}),
         supabaseRequest('agency_partner_admin_events?select=id,admin_user_id,action,application_id,partner_id,details,created_at&order=created_at.desc&limit=40',key,{method:'GET'}),
         partnerCount('agency_partner_clicks',key)
       ]);
@@ -538,13 +538,14 @@ export default {async fetch(request,env,ctx){
         const description=typeof body.description==='string'?body.description.trim().slice(0,500):'';
         const mission=typeof body.mission==='string'?body.mission.trim().slice(0,1500):'';
         const companyAbout=typeof body.about==='string'?body.about.trim():'';
+        const founder=typeof body.founder==='string'?body.founder.trim().slice(0,160):'';
         const websiteUrl=safePartnerUrl(body.websiteUrl);
         const logoUrl=safePartnerUrl(body.logoUrl);
         const websiteUrlInput=typeof body.websiteUrl==='string'?body.websiteUrl.trim():'';
         const logoUrlInput=typeof body.logoUrl==='string'?body.logoUrl.trim():'';
         const publicConsent=body.publicConsent===true;
         const verificationConfirmed=body.verificationConfirmed===true;
-        if(name.length<2||name.length>160||companyAbout.length>5000||!publicConsent||!verificationConfirmed||
+        if(name.length<2||name.length>160||founder.length>160||companyAbout.length>5000||!publicConsent||!verificationConfirmed||
           (websiteUrlInput&&!websiteUrl)||(logoUrlInput&&!/^https:\/\//i.test(logoUrlInput))||
           (logoUrlInput&&!logoUrl)||typeof body.partnerType!=='string'||body.partnerType.trim().length>120) {
           return partnerJson(request,{error:'Vérifiez le nom, les liens, le consentement et les contrôles de vérification avant de publier.'},400);
@@ -557,7 +558,7 @@ export default {async fetch(request,env,ctx){
         const inputSocial=body.socialLinks&&typeof body.socialLinks==='object'&&!Array.isArray(body.socialLinks)?body.socialLinks:{};
         const profile={
           name,slug,description:description||'Partenaire du réseau Bickri Service Agency.',
-          company_about:companyAbout||null,mission:mission||description||'',founder:null,logo_url:logoUrl||null,
+          company_about:companyAbout||null,mission:mission||description||'',founder:founder||null,logo_url:logoUrl||null,
           country:country||'Niger',city:city||null,category:category||null,
           website_url:websiteUrl||null,social_links:safePartnerLinks(inputSocial),
           partner_type:body.partnerType.trim().slice(0,120),active:true,badge_level:badgeLevel,
@@ -579,6 +580,7 @@ export default {async fetch(request,env,ctx){
       if(!current) return partnerJson(request,{error:'Partenaire introuvable.'},404);
       if(action==='update_details') {
         const name=typeof body.name==='string'?body.name.trim():current.name;
+        const founder=typeof body.founder==='string'?body.founder.trim():String(current.founder||'');
         const description=typeof body.description==='string'?body.description.trim():String(current.description||'');
         const companyAbout=typeof body.about==='string'?body.about.trim():String(current.company_about||'');
         const mission=typeof body.mission==='string'?body.mission.trim():String(current.mission||'');
@@ -589,13 +591,13 @@ export default {async fetch(request,env,ctx){
         const websiteInput=typeof body.websiteUrl==='string'?body.websiteUrl.trim():String(current.website_url||'');
         const logoInput=typeof body.logoUrl==='string'?body.logoUrl.trim():String(current.logo_url||'');
         const websiteUrl=safePartnerUrl(websiteInput), logoUrl=safePartnerUrl(logoInput);
-        if(name.length<2||name.length>160||description.length>500||companyAbout.length>5000||mission.length>1500||
+        if(name.length<2||name.length>160||founder.length>160||description.length>500||companyAbout.length>5000||mission.length>1500||
           country.length>80||city.length>100||category.length>100||partnerType.length>120||
           (websiteInput&&!websiteUrl)||(logoInput&&(!logoUrl||!/^https:\/\//i.test(logoInput)))) {
           return partnerJson(request,{error:'Vérifiez les champs : description 500 caractères, présentation détaillée 5000 caractères maximum, mission 1500 caractères maximum et liens valides.'},400);
         }
         const socialLinks=body.socialLinks===undefined?safePartnerLinks(current.social_links):safePartnerLinks(body.socialLinks);
-        const patchDetails={name,description:description||null,company_about:companyAbout||null,mission:mission||null,country:country||'Niger',city:city||null,category:category||null,partner_type:partnerType||'Collaboration',website_url:websiteUrl||null,logo_url:logoUrl||null,social_links:socialLinks,updated_at:now};
+        const patchDetails={name,founder:founder||null,description:description||null,company_about:companyAbout||null,mission:mission||null,country:country||'Niger',city:city||null,category:category||null,partner_type:partnerType||'Collaboration',website_url:websiteUrl||null,logo_url:logoUrl||null,social_links:socialLinks,updated_at:now};
         await supabaseRequest(`agency_partners?id=eq.${encodeURIComponent(partnerId)}`,key,{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(patchDetails)});
         await recordPartnerAdminEvent(key,user.id,'partner_details_updated',null,partnerId,{name,aboutCharacters:companyAbout.length});
         const freshR=await supabaseRequest(`agency_partners?id=eq.${encodeURIComponent(partnerId)}&select=id,name,slug,description,company_about,logo_url,founder,mission,country,city,partner_type,category,website_url,social_links,badge_level,badge_label,badge_verified,verified_at,public_id,referral_code,active&limit=1`,key,{method:'GET'});
