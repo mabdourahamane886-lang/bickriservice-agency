@@ -42,6 +42,54 @@
 
 @media(max-width:850px){.links{display:none}.menu{display:block}.mobile.open{display:grid;background:#fff;border-bottom:1px solid var(--line);padding:8px 16px 14px}.mobile a{padding:11px 8px;font-weight:800;border-bottom:1px solid #eef1f5}.heroGrid{grid-template-columns:1fr}.heroCard{display:none}.stats{grid-template-columns:repeat(2,1fr)}.partnerGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.levels{grid-template-columns:1fr}}
 @media(max-width:600px){.wrap{width:min(100% - 22px,1160px)}.hero{padding:62px 0 54px}.hero h1{font-size:3.15rem}.lead{font-size:16px}.section{padding:54px 0}.stats{grid-template-columns:repeat(2,1fr);margin-top:-18px}.stat{padding:15px}.stat b{font-size:25px}.partnerGrid{grid-template-columns:1fr}.partner{min-height:350px}.cta{display:block;padding:30px}.cta .btn{margin-top:20px;width:100%}.partnerShareRow{flex-direction:column}.partnerShareRow button{width:100%}.footer .copy{display:block}.footer .copy div+div{margin-top:6px}}
+
+.partnerTools{margin:22px 0 18px;background:#fff;border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 12px 30px rgba(8,16,31,.045)}
+.partnerFilters{display:grid;grid-template-columns:2fr repeat(3,minmax(0,1fr));gap:10px}
+.partnerFilters input,.partnerFilters select,.trackerForm input{width:100%;min-height:46px;border:1px solid #d7deea;border-radius:12px;padding:10px 13px;background:#fbfcfe;color:var(--text);font:inherit}
+.partnerToolsBottom{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px}
+.partnerResultsCount{font-size:12px;font-weight:800;color:var(--muted)}
+.partnerToolsLinks{display:flex;gap:8px;flex-wrap:wrap}
+.partnerToolsLinks a{min-height:40px;padding:0 13px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;background:var(--navy);color:#fff;font-size:11px;font-weight:900}
+.partnerToolsLinks a.secondary{background:var(--soft);color:#775b1f;border:1px solid #ead39e}
+.partnerCardActions{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px;margin-top:auto;padding-top:22px}
+.partnerCardActions button,.partnerCardActions a{display:flex;min-width:0;min-height:42px;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:11px;background:#f8fafc;color:#344054;padding:8px 7px;font-size:11px;font-weight:900;cursor:pointer}
+.partnerCardActions a.primary{background:var(--navy);border-color:var(--navy);color:#fff}
+.partnerCardActions button.share{background:#eafff0;color:#087a38;border-color:#bce8cd}
+.partnerCardActions button.qr{background:var(--soft);color:#775b1f;border-color:#ead39e}
+.partnerLiveBadge{display:inline-flex;align-items:center;gap:5px;width:max-content;margin:10px auto 0;background:#f2fdf6;color:#087a38;border:1px solid #bce8cd;border-radius:999px;padding:6px 10px;font-size:10px;font-weight:900}
+.partnerPublicId{font-size:10px;color:#8b95a5;margin-top:8px}
+.partnerDialog{width:min(560px,calc(100% - 26px));border:0;border-radius:24px;padding:0;box-shadow:0 30px 100px rgba(0,0,0,.35)}
+.partnerDialog::backdrop{background:rgba(5,9,20,.68);backdrop-filter:blur(4px)}
+.partnerDialogBody{padding:26px;background:#fff}
+.partnerDialogHeader{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.partnerDialogHeader h2{font:800 24px Manrope;margin:0 0 5px}
+.partnerDialogClose{width:38px;height:38px;border:1px solid var(--line);background:#fff;border-radius:10px;font-weight:900;cursor:pointer}
+.partnerDialogUrl{overflow-wrap:anywhere;word-break:break-word;padding:12px;background:#f6f8fb;border:1px solid var(--line);border-radius:12px;font-size:12px;color:#775b1f;margin:18px 0}
+.partnerDialogGrid{display:grid;grid-template-columns:160px 1fr;gap:20px;align-items:center}
+.partnerDialogQr{width:160px;height:160px;background:white;border:1px solid var(--line);border-radius:12px;object-fit:contain}
+.partnerDialogButtons{display:grid;gap:8px}
+.partnerDialogButtons button,.partnerDialogButtons a{display:flex;align-items:center;justify-content:center;min-height:42px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:12px;font-weight:900;cursor:pointer}
+.partnerDialogButtons a.whatsapp{background:#25d366;border-color:#25d366;color:#fff}
+.partnerApplicationCode{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px;background:#f4f8ff;border:1px solid #cdddf7;border-radius:12px;margin-top:14px}
+.partnerApplicationCode code{font-size:15px;font-weight:900;color:var(--navy)}
+.partnerApplicationCode button{border:1px solid #cdddf7;border-radius:8px;padding:7px 9px;background:white;font-weight:800;cursor:pointer}
+.applicationTracker{margin-top:30px;padding-top:26px;border-top:1px solid var(--line)}
+.applicationTracker h3{font:800 19px Manrope;margin:0 0 7px}
+.applicationTracker p{color:var(--muted);font-size:13px;margin:0 0 14px}
+.trackerForm{display:grid;grid-template-columns:1fr 1fr auto;gap:10px}
+.partnerTrackerResult{margin-top:12px;border-radius:12px;padding:13px;font-size:13px;background:#f5f7fa;color:#344054}
+.partnerTrackerResult.success{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0}
+.partnerTrackerResult.error{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+.partnerBenefits{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:26px}
+.partnerBenefit{background:#fff;border:1px solid var(--line);border-radius:20px;padding:23px}
+.partnerBenefitIcon{width:42px;height:42px;border-radius:13px;background:var(--soft);display:grid;place-items:center;font-size:20px}
+.partnerBenefit h3{font:800 17px Manrope;margin:15px 0 6px}
+.partnerBenefit p{color:var(--muted);font-size:12px;margin:0}
+.partnerApplicationCard{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fbfcfe}
+.partnerApplicationCard strong{color:var(--text)}
+@media(max-width:800px){.partnerFilters{grid-template-columns:1fr 1fr}.partnerBenefits{grid-template-columns:1fr}.partnerCardActions{grid-template-columns:1fr 1fr}.partnerCardActions a.primary{grid-column:1/-1}}
+@media(max-width:600px){.partnerToolsBottom{align-items:stretch;flex-direction:column}.partnerToolsLinks{display:grid;grid-template-columns:1fr 1fr}.partnerDialogGrid{grid-template-columns:1fr;text-align:center}.partnerDialogQr{margin:auto}.partnerDialogButtons{grid-template-columns:1fr 1fr}.trackerForm{grid-template-columns:1fr}.trackerForm button{width:100%}.partnerCardActions{grid-template-columns:1fr 1fr 1fr}.partnerCardActions a.primary{grid-column:auto}.partnerCardActions button,.partnerCardActions a{font-size:10px;padding:7px 4px}}
+
 </style>
 </head>
 <body>
@@ -57,7 +105,7 @@
 <main>
 <section class="hero">
 <div class="wrap heroGrid">
-<div><span class="eyebrow">Écosystème Bickri</span><h1>Nos <span class="gold">partenaires</span></h1><p class="lead">Des collaborations professionnelles fondées sur la confiance, l’innovation et une ambition commune : créer davantage de valeur numérique en Afrique.</p><div class="heroActions"><a class="btn btnGold" href="#partenaires">Découvrir nos partenaires</a><a class="btn btnGhost" href="#devenir-partenaire">Devenir partenaire</a></div></div>
+<div><span class="eyebrow">Écosystème Bickri</span><h1>Nos <span class="gold">partenaires</span></h1><p class="lead">Des collaborations professionnelles fondées sur la confiance, l’innovation et une ambition commune : créer davantage de valeur numérique en Afrique.</p><div class="heroActions"><a class="btn btnGold" href="#partenaires">Découvrir nos partenaires</a><a class="btn btnGhost" href="#devenir-partenaire">Devenir partenaire</a><a class="btn btnGhost" href="/partenaires/espace/">Espace partenaire</a></div></div>
 <div class="heroCard"><strong>Un partenariat, une confiance.</strong><p>Chaque partenaire peut disposer d’un niveau de badge clair et vérifiable.</p><div class="level"><img src="/assets/partners/badge-verified-green.svg" alt=""><span>Partenaire vérifié</span></div><div class="level"><img src="/assets/partners/badge-verified-blue.svg" alt=""><span>Partenaire certifié</span></div><div class="level"><img src="/assets/partners/badge-verified-gold.svg" alt=""><span>Partenaire Premium</span></div></div>
 </div>
 </section>
@@ -69,6 +117,18 @@
 <section class="section" id="partenaires">
 <div class="wrap">
 <div class="sectionHead"><span class="eyebrow">Collaborations</span><h2 class="title">Ils nous font confiance</h2><p class="muted">Découvrez les organisations et professionnels qui construisent avec Bickri Service Agency. Chaque fiche présente son niveau de partenariat.</p></div>
+<div class="partnerTools" aria-label="Recherche et filtres des partenaires">
+  <div class="partnerFilters">
+    <input id="partnerSearch" type="search" placeholder="Rechercher un nom, un service…" aria-label="Rechercher un partenaire">
+    <select id="partnerCountryFilter" aria-label="Filtrer par pays"><option value="">Tous les pays</option><option value="Niger">Niger</option></select>
+    <select id="partnerCategoryFilter" aria-label="Filtrer par domaine"><option value="">Tous les domaines</option></select>
+    <select id="partnerBadgeFilter" aria-label="Filtrer par badge"><option value="">Tous les badges</option><option value="green">Vérifié</option><option value="blue">Certifié</option><option value="gold">Premium</option><option value="construction">BTP vérifié</option></select>
+  </div>
+  <div class="partnerToolsBottom"><span class="partnerResultsCount" id="partnerResultsCount" aria-live="polite">Chargement des partenaires…</span>
+    <div class="partnerToolsLinks"><a href="/partenaires/espace/">Espace partenaire</a><a class="secondary" href="/partenaires/admin/">Administration</a></div>
+  </div>
+</div>
+<div id="partnerDirectoryMessage" class="muted" role="status" aria-live="polite"></div>
 <div class="partnerGrid" id="partners"></div>
 <div class="partnerShare"><h3>Lien prêt à copier — Partenaires</h3><p>Partagez la page officielle de nos partenaires avec un lien propre.</p><div class="partnerShareRow"><input id="partnersShareLink" value="https://bickriservice-agency.org/partenaires/" readonly aria-label="Lien de la page partenaires"><button id="copyPartnersLink" type="button">Copier le lien</button></div></div>
 </div>
@@ -82,24 +142,30 @@
 <div class="levelCard"><img src="/assets/partners/badge-verified-blue.svg" alt="Badge bleu"><h3>Partenaire certifié</h3><p>Niveau destiné aux partenaires répondant à des critères de certification supplémentaires.</p></div>
 <div class="levelCard"><img src="/assets/partners/badge-verified-gold.svg" alt="Badge or"><h3>Partenaire Premium</h3><p>Niveau réservé aux collaborations stratégiques et premium.</p></div>
 </div>
+<div class="partnerBenefits" aria-label="Avantages partenaires">
+  <article class="partnerBenefit"><div class="partnerBenefitIcon" aria-hidden="true">🌍</div><h3>Visibilité professionnelle</h3><p>Une fiche publique partageable pour présenter votre organisation, vos domaines et vos liens officiels.</p></article>
+  <article class="partnerBenefit"><div class="partnerBenefitIcon" aria-hidden="true">🔗</div><h3>Recommandations traçables</h3><p>Un lien partenaire personnalisé et des statistiques de visites lorsque votre profil est actif.</p></article>
+  <article class="partnerBenefit"><div class="partnerBenefitIcon" aria-hidden="true">🤝</div><h3>Collaborations qualifiées</h3><p>Une candidature examinée, un statut clair et un canal pour échanger avec l’équipe Bickri Service Agency.</p></article>
+</div>
 <div class="cta"><div><h2>Construisons quelque chose de grand.</h2><p>Vous représentez une marque, une organisation ou un projet ? Échangeons sur une collaboration professionnelle.</p></div><a class="btn btnGold" href="#devenir-partenaire">Proposer un partenariat →</a></div>
 <div class="partnerApply" id="devenir-partenaire">
-  <div class="partnerApplyHead"><span class="eyebrow">Candidature</span><h2>Rejoignez le réseau Bickri Service Agency</h2><p>Présentez votre organisation et votre proposition. Notre équipe étudiera votre demande et vous recontactera sous 48 h.</p></div>
-  <div id="partnerFormSuccess" class="partnerFormStatus success" role="status" aria-live="polite" hidden>Demande envoyée avec succès ! Nous examinerons votre profil et vous contacterons sous peu.</div>
+  <div class="partnerApplyHead"><span class="eyebrow">Candidature</span><h2>Rejoignez le réseau Bickri Service Agency</h2><p>Présentez votre organisation et votre proposition. Vous recevrez un code de dossier pour suivre l’état de votre candidature.</p></div>
+  <div id="partnerFormSuccess" class="partnerFormStatus success" role="status" aria-live="polite" hidden>Votre candidature a été enregistrée.</div><div id="partnerApplicationCodePanel" class="partnerApplicationCode" hidden><span>Votre code de dossier :</span><code id="partnerApplicationCode"></code><button id="copyPartnerApplicationCode" type="button">Copier le code</button></div>
   <div id="partnerFormError" class="partnerFormStatus error" role="alert" aria-live="assertive" hidden></div>
   <form id="partnerApplicationForm" class="partnerForm">
     <div class="partnerField"><label for="partnerFullName">Nom complet <span>*</span></label><input id="partnerFullName" name="fullName" type="text" autocomplete="name" maxlength="120" required></div>
     <div class="partnerField"><label for="partnerEmail">Adresse e-mail <span>*</span></label><input id="partnerEmail" name="email" type="email" autocomplete="email" maxlength="254" required></div>
     <div class="partnerField"><label for="partnerCompany">Entreprise / organisation <span>*</span></label><input id="partnerCompany" name="companyName" type="text" autocomplete="organization" maxlength="160" required></div>
-    <div class="partnerField"><label for="partnerWebsite">Site web (facultatif)</label><input id="partnerWebsite" name="websiteUrl" type="url" placeholder="https://exemple.com" maxlength="500"></div>
+    <div class="partnerField"><label for="partnerWebsite">Site web (facultatif)</label><input id="partnerWebsite" name="websiteUrl" type="url" placeholder="https://exemple.com" maxlength="500"></div><div class="partnerField"><label for="partnerCountry">Pays <span>*</span></label><select id="partnerCountry" name="country" required><option value="Niger" selected>Niger</option><option value="Nigeria">Nigeria</option><option value="Mali">Mali</option><option value="Burkina Faso">Burkina Faso</option><option value="Bénin">Bénin</option><option value="Côte d’Ivoire">Côte d’Ivoire</option><option value="Sénégal">Sénégal</option><option value="Togo">Togo</option><option value="Ghana">Ghana</option><option value="Autre pays d’Afrique">Autre pays d’Afrique</option></select></div><div class="partnerField"><label for="partnerCity">Ville (facultatif)</label><input id="partnerCity" name="city" type="text" maxlength="100" placeholder="Niamey"></div><div class="partnerField full"><label for="partnerCategory">Domaine d’activité</label><select id="partnerCategory" name="category"><option value="">Sélectionner un domaine</option><option>Technologie & numérique</option><option>Marketing & communication</option><option>Entrepreneuriat & conseil</option><option>BTP & construction</option><option>Éducation & formation</option><option>Commerce & distribution</option><option>Création de contenu</option><option>Autre</option></select></div>
     <div class="partnerField full"><label for="partnerType">Type de partenariat <span>*</span></label><select id="partnerType" name="partnerType" required><option value="referral">Apporteur d’affaires</option><option value="technical">Partenaire technologique</option><option value="integrator">Intégrateur</option><option value="other">Autre partenariat</option></select></div>
     <div class="partnerField full"><label for="partnerMessage">Présentez votre proposition <span>*</span></label><textarea id="partnerMessage" name="message" minlength="10" maxlength="5000" required placeholder="Parlez-nous de votre organisation, de votre expertise et de la collaboration envisagée…"></textarea></div>
     <div class="partnerHoneypot" aria-hidden="true"><label for="partnerCompanyWebsite">Ne pas remplir</label><input id="partnerCompanyWebsite" name="website" type="text" tabindex="-1" autocomplete="off"></div>
-    <div class="partnerFormSubmit"><button class="btn btnGold" id="partnerSubmitButton" type="submit">Envoyer ma candidature →</button><span id="partnerFormProgress" class="partnerFormStatus" role="status" aria-live="polite"></span></div>
-  </form>
+    <input type="hidden" name="referralCode" id="partnerReferralCode" value=""><div class="partnerFormSubmit"><button class="btn btnGold" id="partnerSubmitButton" type="submit">Envoyer ma candidature →</button><span id="partnerFormProgress" class="partnerFormStatus" role="status" aria-live="polite"></span></div>
+  </form><div class="applicationTracker"><h3>Suivre ma candidature</h3><p>Renseignez le code reçu après l’envoi et l’adresse e-mail utilisée dans le formulaire.</p><form id="partnerStatusForm" class="trackerForm"><input name="code" id="partnerStatusCode" placeholder="Ex. BPA-12AB34CD56" maxlength="14" required aria-label="Code de dossier"><input name="email" type="email" placeholder="Votre adresse e-mail" required aria-label="Adresse e-mail de candidature"><button class="btn btnGold" type="submit">Vérifier le statut</button></form><div id="partnerStatusResult" class="partnerTrackerResult" role="status" aria-live="polite" hidden></div></div>
 </div>
 </div>
 </section>
+<dialog id="partnerShareDialog" class="partnerDialog" aria-labelledby="partnerDialogTitle"><div class="partnerDialogBody"><div class="partnerDialogHeader"><div><span class="eyebrow">Partager un partenaire</span><h2 id="partnerDialogTitle">Profil partenaire</h2><div class="muted" id="partnerDialogCaption"></div></div><button type="button" class="partnerDialogClose" id="partnerDialogClose" aria-label="Fermer">×</button></div><div class="partnerDialogUrl" id="partnerDialogUrl"></div><div class="partnerDialogGrid"><img class="partnerDialogQr" id="partnerDialogQr" alt="QR code du lien partenaire"><div class="partnerDialogButtons"><button type="button" id="partnerDialogCopy">Copier le lien</button><button type="button" id="partnerDialogNative">Partager…</button><a class="whatsapp" id="partnerDialogWhatsApp" href="#" target="_blank" rel="noopener">Partager sur WhatsApp</a><button type="button" id="partnerDialogDownloadQr">Télécharger le QR</button></div></div></div></dialog>
 </main>
 
 <footer class="footer"><div class="wrap"><div>Bickri Service Agency — Niamey, Niger</div><div class="copy"><div>© <span id="year"></span> Bickri Service Agency</div><div><a href="/">Accueil</a> · <a href="/partenaires/">Partenaires</a> · <a href="/rendez-vous/">Contact</a></div></div></div></footer>
