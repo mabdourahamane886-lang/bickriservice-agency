@@ -79,14 +79,17 @@ async function init(){
   if(website){$('profileWebsite').href=website;$('profileWebsite').hidden=false;$('profileWebsite').addEventListener('click',()=>record('website_click','website'));}
   for(const [key,label] of Object.entries({facebook:'Facebook',instagram:'Instagram',linkedin:'LinkedIn',whatsapp:'WhatsApp',tiktok:'TikTok',x:'X',telegram:'Telegram'}))addSocial(label,p.socialLinks?.[key]);
   const shareUrl=publicUrl();
+  const publicOrigin=location.hostname.endsWith('.vercel.app')?'https://bickriservice-agency.org':location.origin;
+  const canonicalUrl=new URL(location.pathname+'?slug='+encodeURIComponent(p.slug),publicOrigin).href;
+  const canonicalLink=document.querySelector('link[rel="canonical"]');if(canonicalLink)canonicalLink.href=canonicalUrl;
   $('profileShare').addEventListener('click',async()=>{record('share_click','share');if(navigator.share){try{await navigator.share({title:p.name,text:p.description||p.mission||'Profil partenaire',url:shareUrl});}catch{}}else{try{await copy(shareUrl);$('profileShare').textContent='Lien copié ✓';}catch{window.prompt('Copiez ce lien :',shareUrl);}setTimeout(()=>$('profileShare').textContent='Partager le profil',1600);}});
   $('profileCopy').addEventListener('click',async()=>{try{await copy(shareUrl);$('profileCopy').textContent='Lien copié ✓';record('share_click','copy');}catch{window.prompt('Copiez ce lien :',shareUrl);}setTimeout(()=>$('profileCopy').textContent='Copier le lien',1600);});
   setMeta('og:title',p.name+' — Partenaire Bickri Service Agency',true);
   setMeta('og:description',p.description||p.mission||'Profil partenaire vérifié de Bickri Service Agency.',true);
-  setMeta('og:url',shareUrl,true);setMeta('og:image',new URL(p.logoUrl||'/assets/bickri-b-logo.svg',location.origin).href,true);
+  setMeta('og:url',canonicalUrl,true);setMeta('og:image',new URL(p.logoUrl||'/assets/bickri-b-logo.svg',publicOrigin).href,true);
   setMeta('twitter:title',p.name+' — Partenaire Bickri Service Agency');
   setMeta('twitter:description',p.description||p.mission||'Profil partenaire de Bickri Service Agency.');
-  setMeta('twitter:image',new URL(p.logoUrl||'/assets/bickri-b-logo.svg',location.origin).href);
+  setMeta('twitter:image',new URL(p.logoUrl||'/assets/bickri-b-logo.svg',publicOrigin).href);
   document.title=p.name+' — Partenaire Bickri Service Agency';
   $('profileLoading').hidden=true;$('profileCard').hidden=false;$('profileDetails').hidden=false;
   record('profile_view','view');
