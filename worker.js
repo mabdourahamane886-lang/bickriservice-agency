@@ -246,6 +246,18 @@ async function partnerCount(resource, key) {
   } catch { return 0; }
 }
 
+async function recordPartnerAdminEvent(key, adminUserId, action, applicationId=null, partnerId=null, details={}) {
+  const response=await supabaseRequest('agency_partner_admin_events',key,{
+    method:'POST',headers:{Prefer:'return=minimal'},
+    body:JSON.stringify({
+      admin_user_id:adminUserId,action,
+      application_id:applicationId||null,partner_id:partnerId||null,
+      details:details&&typeof details==='object'&&!Array.isArray(details)?details:{}
+    })
+  });
+  return Boolean(response);
+}
+
 function publicPartner(row) {
   return {
     id:row.id, name:row.name, slug:row.slug, description:row.description || '',
@@ -345,11 +357,15 @@ export default {async fetch(request,env,ctx){
         const rows = await found.json().catch(()=>[]);
         if (Array.isArray(rows)) partner = rows[0] || null;
       }
-      let referralCode = partner?.referral_code || '';
+      let attributedPartnerId = partner?.id || null;
+      let referralCode = '';
       if (inputReferral) {
-        const ref = await supabaseRequest(`agency_partners?referral_code=eq.${encodeURIComponent(inputReferral)}&active=eq.true&select=referral_code&limit=1`,key,{method:'GET'});
+        const ref = await supabaseRequest(`agency_partners?referral_code=eq.${encodeURIComponent(inputReferral)}&active=eq.true&select=id,referral_code&limit=1`,key,{method:'GET'});
         const refs = await ref.json().catch(()=>[]);
-        if (Array.isArray(refs) && refs.length) referralCode = refs[0].referral_code;
+        if (Array.isArray(refs) && refs.length) {
+          referralCode = refs[0].referral_code;
+          attributedPartnerId = refs[0].id;
+        }
       }
       const landingPath = typeof body?.landingPath === 'string' && body.landingPath.startsWith('/') ? body.landingPath.slice(0,300) : '/partenaires/';
       const source = typeof body?.source === 'string' ? body.source.replace(/[^a-zA-Z0-9_-]/g,'').slice(0,50) : '';
@@ -358,7 +374,7 @@ export default {async fetch(request,env,ctx){
       await supabaseRequest('agency_partner_clicks',key,{
         method:'POST',
         headers:{Prefer:'return=minimal'},
-        body:JSON.stringify({partner_id:partner?.id || null,referral_code:referralCode || null,event_type:eventType,source:source || null,medium:medium || null,campaign:campaign || null,landing_path:landingPath})
+        body:JSON.stringify({partner_id:attributedPartnerId,referral_code:referralCode || null,event_type:eventType,source:source || null,medium:medium || null,campaign:campaign || null,landing_path:landingPath})
       });
       return partnerJson(request,{ok:true,tracking:true},202);
     } catch (error) {
@@ -467,20 +483,116 @@ export default {async fetch(request,env,ctx){
     const {user,key}=auth;
     if (!(await partnerIsAdmin(user.id,key))) return partnerJson(request,{error:'Accès réservé à l’administration.'},403);
     try {
-      const [appsR,partnersR,clicks] = await Promise.all([
+      const [appsR,partnersR,eventsR,clicks] = await Promise.all([
         supabaseRequest('agency_partner_applications?select=id,application_code,full_name,email,company_name,website_url,logo_url,public_description,public_mission,public_profile_consent,country,city,category,partner_type,social_links,message,referral_code,status,email_status,email_error_code,reviewer_notes,created_at,reviewed_at&order=created_at.desc&limit=150',key,{method:'GET'}),
-        supabaseRequest('agency_partners?select=id,name,slug,active,badge_level,badge_verified&limit=300',key,{method:'GET'}),
+        supabaseRequest('agency_partners?select=id,name,slug,description,logo_url,country,city,category,partner_type,active,badge_level,badge_label,badge_verified,public_id,referral_code,verified_at&order=name.asc&limit=300',key,{method:'GET'}),
+        supabaseRequest('agency_partner_admin_events?select=id,admin_user_id,action,application_id,partner_id,details,created_at&order=created_at.desc&limit=40',key,{method:'GET'}),
         partnerCount('agency_partner_clicks',key)
       ]);
       const applications=await appsR.json().catch(()=>[]);
       const partners=await partnersR.json().catch(()=>[]);
+      const events=await eventsR.json().catch(()=>[]);
       const safeApplications=Array.isArray(applications)?applications:[];
       const safePartners=Array.isArray(partners)?partners:[];
+      const safeEvents=Array.isArray(events)?events:[];
       const counts={pending:safeApplications.filter(a=>a.status==='pending').length,underReview:safeApplications.filter(a=>a.status==='under_review').length,approved:safeApplications.filter(a=>a.status==='approved').length,rejected:safeApplications.filter(a=>a.status==='rejected').length};
-      return partnerJson(request,{applications:safeApplications,stats:{applications:safeApplications.length,...counts,partners:safePartners.filter(p=>p.active).length,verified:safePartners.filter(p=>p.active&&p.badge_verified).length,trackedEvents:clicks}});
+      return partnerJson(request,{applications:safeApplications,partners:safePartners,events:safeEvents,stats:{applications:safeApplications.length,...counts,partners:safePartners.filter(p=>p.active).length,verified:safePartners.filter(p=>p.active&&p.badge_verified).length,trackedEvents:clicks}});
     } catch (error) {
       console.error('Partner admin read failed:',error?.message||'unknown error');
       return partnerJson(request,{error:'Impossible de charger le tableau de bord administrateur.'},503);
+    }
+  }
+
+  if (url.pathname === '/api/partner/admin/partner') {
+    if (!isAllowedOrigin(request)) return partnerJson(request,{error:'Origine non autorisée'},403);
+    if (request.method !== 'POST') return partnerJson(request,{error:'Méthode non autorisée'},405,{'Allow':'POST'});
+    const auth=await partnerAuthUser(request,env);
+    if(auth.error) return auth.error;
+    const {user,key}=auth;
+    if(!(await partnerIsAdmin(user.id,key))) return partnerJson(request,{error:'Accès réservé à l’administration.'},403);
+    let body;
+    try { body=await request.json(); } catch { return partnerJson(request,{error:'Requête JSON invalide.'},400); }
+    const action=body?.action;
+    const allowedActions=new Set(['create','suspend','activate','set_badge']);
+    if(!allowedActions.has(action)) return partnerJson(request,{error:'Action partenaire invalide.'},400);
+    const allowedBadges=new Set(['green','blue','gold','construction']);
+    const badgeLevel=allowedBadges.has(body.badgeLevel)?body.badgeLevel:'green';
+    const labelForBadge=(level)=>level==='gold'?'Partenaire Premium':level==='blue'?'Partenaire certifié':level==='construction'?'Partenaire BTP vérifié':'Partenaire vérifié';
+    const now=new Date().toISOString();
+    try {
+      if(action==='create') {
+        const name=typeof body.name==='string'?body.name.trim():'';
+        const country=typeof body.country==='string'?body.country.trim().slice(0,80):'Niger';
+        const city=typeof body.city==='string'?body.city.trim().slice(0,100):'';
+        const category=typeof body.category==='string'?body.category.trim().slice(0,100):'';
+        const description=typeof body.description==='string'?body.description.trim().slice(0,500):'';
+        const mission=typeof body.mission==='string'?body.mission.trim().slice(0,1500):'';
+        const websiteUrl=safePartnerUrl(body.websiteUrl);
+        const logoUrl=safePartnerUrl(body.logoUrl);
+        const websiteUrlInput=typeof body.websiteUrl==='string'?body.websiteUrl.trim():'';
+        const logoUrlInput=typeof body.logoUrl==='string'?body.logoUrl.trim():'';
+        const publicConsent=body.publicConsent===true;
+        const verificationConfirmed=body.verificationConfirmed===true;
+        if(name.length<2||name.length>160||!publicConsent||!verificationConfirmed||
+          (websiteUrlInput&&!websiteUrl)||(logoUrlInput&&!/^https:\/\//i.test(logoUrlInput))||
+          (logoUrlInput&&!logoUrl)||typeof body.partnerType!=='string'||body.partnerType.trim().length>120) {
+          return partnerJson(request,{error:'Vérifiez le nom, les liens, le consentement et les contrôles de vérification avant de publier.'},400);
+        }
+        let slug=typeof body.slug==='string'&&body.slug.trim()?partnerSlug(body.slug):partnerSlug(name);
+        const collisionR=await supabaseRequest(`agency_partners?slug=eq.${encodeURIComponent(slug)}&select=id&limit=1`,key,{method:'GET'});
+        const collisionRows=await collisionR.json().catch(()=>[]);
+        if(Array.isArray(collisionRows)&&collisionRows.length) slug=slug+'-'+crypto.randomUUID().replace(/-/g,'').slice(0,4).toLowerCase();
+        const generated=crypto.randomUUID().replace(/-/g,'').toUpperCase();
+        const inputSocial=body.socialLinks&&typeof body.socialLinks==='object'&&!Array.isArray(body.socialLinks)?body.socialLinks:{};
+        const profile={
+          name,slug,description:description||'Partenaire du réseau Bickri Service Agency.',
+          mission:mission||description||'',founder:null,logo_url:logoUrl||null,
+          country:country||'Niger',city:city||null,category:category||null,
+          website_url:websiteUrl||null,social_links:safePartnerLinks(inputSocial),
+          partner_type:body.partnerType.trim().slice(0,120),active:true,badge_level:badgeLevel,
+          badge_label:labelForBadge(badgeLevel),badge_verified:true,verified_at:now,
+          public_id:'BSP-'+generated.slice(0,8),referral_code:'REF-'+generated.slice(0,10)
+        };
+        const insertR=await supabaseRequest('agency_partners',key,{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(profile)});
+        const inserted=await insertR.json().catch(()=>[]);
+        const partner=Array.isArray(inserted)?inserted[0]||null:null;
+        if(!partner) return partnerJson(request,{error:'Le profil n’a pas été créé.'},503);
+        await recordPartnerAdminEvent(key,user.id,'partner_created',null,partner.id,{badgeLevel,slug:partner.slug,publicId:partner.public_id});
+        return partnerJson(request,{ok:true,partner:publicPartner(partner),message:'Partenaire ajouté à l’annuaire.'},201);
+      }
+      const partnerId=typeof body.partnerId==='string'?body.partnerId:'';
+      if(!isUuid(partnerId)) return partnerJson(request,{error:'Identifiant de partenaire invalide.'},400);
+      const foundR=await supabaseRequest(`agency_partners?id=eq.${encodeURIComponent(partnerId)}&select=id,name,slug,active,badge_level,badge_label,badge_verified,public_id,referral_code&limit=1`,key,{method:'GET'});
+      const found=await foundR.json().catch(()=>[]);
+      const current=Array.isArray(found)?found[0]||null:null;
+      if(!current) return partnerJson(request,{error:'Partenaire introuvable.'},404);
+      let patch={},auditAction='partner_badge_updated';
+      if(action==='suspend'){
+        patch={active:false,badge_verified:false,badge_label:'Profil suspendu',updated_at:now};
+        auditAction='partner_suspended';
+      } else if(action==='activate'){
+        patch={active:true,badge_verified:false,badge_label:'Profil actif — non vérifié',verified_at:null,updated_at:now};
+        auditAction='partner_activated';
+      } else {
+        const verified=body.badgeVerified===true;
+        patch={
+          badge_level:badgeLevel,
+          badge_label:verified?labelForBadge(badgeLevel):'Profil non vérifié',
+          badge_verified:verified,
+          verified_at:verified?now:null,
+          updated_at:now
+        };
+      }
+      await supabaseRequest(`agency_partners?id=eq.${encodeURIComponent(partnerId)}`,key,{
+        method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(patch)
+      });
+      await recordPartnerAdminEvent(key,user.id,auditAction,null,partnerId,{active:action==='suspend'?false:action==='activate'?true:current.active,badgeLevel:patch.badge_level||current.badge_level,badgeVerified:patch.badge_verified});
+      const freshR=await supabaseRequest(`agency_partners?id=eq.${encodeURIComponent(partnerId)}&select=id,name,slug,description,logo_url,founder,mission,country,city,partner_type,category,website_url,social_links,badge_level,badge_label,badge_verified,verified_at,public_id,referral_code,active&limit=1`,key,{method:'GET'});
+      const freshRows=await freshR.json().catch(()=>[]);
+      return partnerJson(request,{ok:true,partner:Array.isArray(freshRows)&&freshRows[0]?publicPartner(freshRows[0]):null,message:'Partenaire mis à jour.'});
+    } catch(error) {
+      console.error('Partner administration mutation failed:',error?.message||'unknown error');
+      return partnerJson(request,{error:'La modification n’a pas pu être terminée. Actualisez la page puis vérifiez le résultat.'},503);
     }
   }
 
@@ -526,6 +638,7 @@ export default {async fetch(request,env,ctx){
             body:JSON.stringify({active:false,badge_verified:false,updated_at:updatedAt})
           });
         }
+        await recordPartnerAdminEvent(key,user.id,action==='reject'?'application_rejected':'application_under_review',id,existing?.id||null,{status});
         return partnerJson(request,{ok:true,status,partner:null});
       }
       let slug=existing?.slug || partnerSlug(app.company_name);
@@ -559,6 +672,7 @@ export default {async fetch(request,env,ctx){
         const readRows=await readBack.json().catch(()=>[]);
         partner=Array.isArray(readRows)?readRows[0]||null:null;
       }
+      if (partner) await recordPartnerAdminEvent(key,user.id,'application_approved',id,partner.id,{status,badgeLevel});
       return partnerJson(request,{ok:true,status,partner:partner?publicPartner(partner):null});
     } catch (error) {
       console.error('Partner application review failed:',error?.message||'unknown error');
