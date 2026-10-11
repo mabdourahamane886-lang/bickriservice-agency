@@ -557,7 +557,7 @@ export default {async fetch(request,env,ctx){
         const inserted=await insertR.json().catch(()=>[]);
         const partner=Array.isArray(inserted)?inserted[0]||null:null;
         if(!partner) return partnerJson(request,{error:'Le profil n’a pas été créé.'},503);
-        await recordPartnerAdminEvent(key,user.id,'partner_created',null,partner.id,{badgeLevel,slug:partner.slug,publicId:partner.public_id});
+        await recordPartnerAdminEvent(key,user.id,'partner_created',null,partner.id,{badgeLevel,slug:partner.slug,publicId:partner.public_id,publicConsent:true,verificationConfirmed:true});
         return partnerJson(request,{ok:true,partner:publicPartner(partner),message:'Partenaire ajouté à l’annuaire.'},201);
       }
       const partnerId=typeof body.partnerId==='string'?body.partnerId:'';
@@ -672,8 +672,9 @@ export default {async fetch(request,env,ctx){
         const readRows=await readBack.json().catch(()=>[]);
         partner=Array.isArray(readRows)?readRows[0]||null:null;
       }
-      if (partner) await recordPartnerAdminEvent(key,user.id,'application_approved',id,partner.id,{status,badgeLevel});
-      return partnerJson(request,{ok:true,status,partner:partner?publicPartner(partner):null});
+      if (!partner) return partnerJson(request,{error:'Le profil partenaire n’a pas pu être publié. Réessayez cette approbation.',code:'PARTNER_PROFILE_NOT_CREATED'},503);
+      await recordPartnerAdminEvent(key,user.id,'application_approved',id,partner.id,{status,badgeLevel});
+      return partnerJson(request,{ok:true,status,partner:publicPartner(partner)});
     } catch (error) {
       console.error('Partner application review failed:',error?.message||'unknown error');
       return partnerJson(request,{error:'La mise à jour n’a pas pu être terminée. Vérifiez le dossier et réessayez.'},503);
@@ -697,7 +698,7 @@ export default {async fetch(request,env,ctx){
         typeof companyName !== 'string' || companyName.trim().length < 2 || companyName.trim().length > 160 ||
         typeof message !== 'string' || message.trim().length < 10 || message.trim().length > 5000 ||
         !allowedTypes.has(partnerType) || publicProfileConsent !== 'yes' ||
-        (websiteUrl && !safePartnerUrl(websiteUrl)) || (logoUrl && !safePartnerUrl(logoUrl)) ||
+        (websiteUrl && !safePartnerUrl(websiteUrl)) || (logoUrl && (!safePartnerUrl(logoUrl) || !/^https:\/\//i.test(logoUrl.trim()))) ||
         (typeof publicDescription !== 'string' || publicDescription.length > 500) ||
         (typeof publicMission !== 'string' || publicMission.length > 1500) ||
         (country && (typeof country!=='string'||country.trim().length>80)) ||
