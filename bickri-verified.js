@@ -57,16 +57,32 @@ function closeModal(){
   document.removeEventListener("keydown",escHandler);
 }
 function escHandler(e){if(e.key==="Escape")closeModal()}
+function isBadge(el){
+  return !!(el && el.matches && el.matches(".verifiedBadge,.metaStyleBadge,[data-bickri-verified],img[src*=\"/assets/partners/badge-verified-\\"],img[src*=\"/assets/partners/badge-construction\"]"));
+}
 function init(){
-  document.querySelectorAll(".verifiedBadge,.metaStyleBadge,[data-bickri-verified],img[src*=\"/assets/partners/badge-verified-\"],img[src*=\"/assets/partners/badge-construction\"]").forEach(el=>{
-    if(el.dataset.verifiedBound)return;
-    el.dataset.verifiedBound="1";
+  if(document.documentElement.dataset.bickriVerifiedDelegation==="1")return;
+  document.documentElement.dataset.bickriVerifiedDelegation="1";
+  document.addEventListener("click",function(e){
+    const badge=e.target.closest(".verifiedBadge,.metaStyleBadge,[data-bickri-verified],img[src*=\"/assets/partners/badge-verified-\\"],img[src*=\"/assets/partners/badge-construction\"]");
+    if(!badge)return;
+    e.preventDefault();
+    e.stopPropagation();
+    openModal(badge);
+  },true);
+  document.addEventListener("keydown",function(e){
+    const badge=e.target.closest&&e.target.closest(".verifiedBadge,.metaStyleBadge,[data-bickri-verified],img[src*=\"/assets/partners/badge-verified-\\"],img[src*=\"/assets/partners/badge-construction\"]");
+    if(!badge || (e.key!=="Enter" && e.key!==" "))return;
+    e.preventDefault();
+    e.stopPropagation();
+    openModal(badge);
+  },true);
+  document.querySelectorAll(".verifiedBadge,.metaStyleBadge,[data-bickri-verified],img[src*=\"/assets/partners/badge-verified-\\"],img[src*=\"/assets/partners/badge-construction\"]").forEach(el=>{
     el.setAttribute("role","button");
     el.setAttribute("tabindex","0");
-    el.setAttribute("aria-label","Voir la vérification Bickri Verified");
+    el.setAttribute("aria-label","Voir les informations du badge Bickri Verified");
     el.style.cursor="pointer";
-    el.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();openModal(el)});
-    el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();openModal(el)}});
+    el.style.touchAction="manipulation";
   });
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
