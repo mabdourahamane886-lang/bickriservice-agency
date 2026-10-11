@@ -377,6 +377,7 @@ export default {async fetch(request,env,ctx){
     if (auth.error) return auth.error;
     const {user,key} = auth;
     if (request.method === 'GET') {
+      if (!user.email_confirmed_at) return json({error:'Confirmez votre adresse e-mail avant d’accéder à vos candidatures.',code:'EMAIL_NOT_CONFIRMED'},403);
       try {
         const safeEmail = encodeURIComponent(String(user.email).toLowerCase());
         const appsR = await supabaseRequest(`agency_partner_applications?email=ilike.${safeEmail}&select=id,application_code,company_name,partner_type,country,city,status,email_status,created_at,reviewed_at&order=created_at.desc&limit=50`,key,{method:'GET'});
