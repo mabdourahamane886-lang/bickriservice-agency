@@ -489,6 +489,9 @@ export default {async fetch(request,env,ctx){
       const existingR=await supabaseRequest(`agency_partners?application_id=eq.${encodeURIComponent(id)}&select=id,slug,owner_user_id,public_id,referral_code,active&limit=1`,key,{method:'GET'});
       const existingRows=await existingR.json().catch(()=>[]);
       const existing=Array.isArray(existingRows)?existingRows[0]||null:null;
+      if (action==='approve' && app.public_profile_consent !== true) {
+        return json({error:'Impossible de publier ce profil : le consentement de publication n’a pas été enregistré.',code:'PUBLIC_PROFILE_CONSENT_REQUIRED'},409);
+      }
       const status=action==='approve'?'approved':action==='reject'?'rejected':'under_review';
       const updatedAt=new Date().toISOString();
       const patch={status,reviewer_notes:notes||null,reviewed_by:user.id,reviewed_at:updatedAt,updated_at:updatedAt};
@@ -506,9 +509,6 @@ export default {async fetch(request,env,ctx){
           });
         }
         return json({ok:true,status,partner:null});
-      }
-      if (app.public_profile_consent !== true) {
-        return json({error:'Impossible de publier ce profil : le consentement de publication n’a pas été enregistré.',code:'PUBLIC_PROFILE_CONSENT_REQUIRED'},409);
       }
       let slug=existing?.slug || partnerSlug(app.company_name);
       if (!existing) {
@@ -623,7 +623,8 @@ export default {async fetch(request,env,ctx){
             fullName:fullName.trim(),email:cleanEmail,companyName:companyName.trim(),
             websiteUrl:safePartnerUrl(websiteUrl),partnerType,message:message.trim(),
             country:(country||'Niger').trim(),city:typeof city==='string'?city.trim():'',
-            category:typeof category==='string'?category.trim():'',socialLinks:links,referralCode:validRef||''
+            category:typeof category==='string'?category.trim():'',socialLinks:links,referralCode:validRef||'',
+            logoUrl:safePartnerUrl(logoUrl),publicDescription:publicDescription.trim(),publicMission:publicMission.trim()
           });
           emailStatus='sent';
         } catch (error) {
