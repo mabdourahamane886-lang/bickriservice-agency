@@ -1,6 +1,8 @@
 (() => {
   'use strict';
   const $ = (id) => document.getElementById(id);
+  const API_BASE = location.hostname.endsWith('.vercel.app') ? 'https://bickriservice-agency.org' : '';
+  const apiUrl = (path) => API_BASE + path;
   const fallback = [
     {id:'impact-afriq',name:'Impact Afriq',slug:'impact-afriq',description:'Innovating · Inspiring · Transforming Africa',founder:'Abdoul Kader Abdourahamane',mission:'Innovation, inspiration et transformation de l’Afrique par les idées, les talents, la technologie et les collaborations.',country:'Niger',partnerType:'Collaboration',badgeLevel:'green',badgeLabel:'Partenaire vérifié',badgeVerified:true,logoUrl:'/assets/partners/impact-afriq.svg',publicId:'',referralCode:''},
     {id:'egan-btp',name:'EGAN BTP',slug:'egan-btp',description:'Construction · Rénovation · Plans · Hydraulique · Eau & assainissement',founder:'Garba Abdoul Nasser',mission:'Construction, fourniture de plans, rénovation, hydraulique de l’eau et assainissement.',country:'Niger',partnerType:'BTP & Construction',badgeLevel:'green',badgeLabel:'Partenaire vérifié',badgeVerified:true,logoUrl:'/assets/partners/egan-btp.svg',publicId:'',referralCode:''}
@@ -27,7 +29,7 @@
   };
   const recordClick = (p, eventType, medium='directory') => {
     const ref = new URL(location.href).searchParams.get('ref') || p?.referralCode || '';
-    fetch('/api/partner/click',{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,body:JSON.stringify({
+    fetch(apiUrl('/api/partner/click'),{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,body:JSON.stringify({
       slug:p?.slug || '', referralCode:ref, eventType, source:'partner-directory', medium,
       campaign:'partner-network', landingPath:location.pathname
     })}).catch(()=>{});
@@ -132,7 +134,7 @@
   async function loadDirectory(){
     if(!directory)return;
     try {
-      const response=await fetch('/api/partners',{headers:{Accept:'application/json'},cache:'no-store'});
+      const response=await fetch(apiUrl('/api/partners'),{headers:{Accept:'application/json'},cache:'no-store'});
       const data=await response.json().catch(()=>({}));
       if(!response.ok||!Array.isArray(data.partners))throw new Error(data.error||'Répertoire indisponible');
       const saved= data.partners;
@@ -144,7 +146,7 @@
     }
     rebuildFilters();render();
     try{
-      const response=await fetch('/api/partners/metrics',{cache:'no-store'});
+      const response=await fetch(apiUrl('/api/partners/metrics'),{cache:'no-store'});
       const data=await response.json();
       if(response.ok){if($('statPartners'))$('statPartners').textContent=String(data.partners??partners.length).padStart(2,'0');if($('statVerified'))$('statVerified').textContent=String(data.verified??partners.filter(p=>p.badgeVerified).length).padStart(2,'0');}
     }catch{}
@@ -165,7 +167,7 @@
       if(progress)progress.textContent='Envoi et enregistrement en cours…';if(submit)submit.disabled=true;
       const data=Object.fromEntries(new FormData(form).entries());
       try{
-        const response=await fetch('/api/partner',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)});
+        const response=await fetch(apiUrl('/api/partner'),{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)});
         const result=await response.json().catch(()=>({}));
         if(!response.ok||!result.ok)throw new Error(result.error||'La candidature n’a pas pu être enregistrée.');
         form.reset();if(refField)refField.value=ref;
@@ -191,7 +193,7 @@
     const data=Object.fromEntries(new FormData(statusForm).entries());
     try{
       const url='/api/partner/status?code='+encodeURIComponent(data.code.trim())+'&email='+encodeURIComponent(data.email.trim());
-      const response=await fetch(url,{headers:{Accept:'application/json'},cache:'no-store'});const body=await response.json().catch(()=>({}));
+      const response=await fetch(apiUrl(url),{headers:{Accept:'application/json'},cache:'no-store'});const body=await response.json().catch(()=>({}));
       if(!response.ok||!body.application)throw new Error(body.error||'Aucun dossier trouvé.');
       resultEl.className='partnerTrackerResult success';
       resultEl.textContent='Dossier '+body.application.code+' — '+body.application.companyName+' : '+body.application.statusLabel+'. Déposé le '+new Date(body.application.submittedAt).toLocaleDateString('fr-FR')+'.';
