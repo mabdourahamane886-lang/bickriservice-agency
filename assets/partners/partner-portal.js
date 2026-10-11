@@ -144,6 +144,8 @@
         edit.elements.mission.value=p.mission||'';
         edit.elements.country.value=p.country||'Niger';
         edit.elements.city.value=p.city||'';
+        edit.elements.logoUrl.value=p.logoUrl||'';
+        edit.elements.category.value=p.category||'';
         edit.elements.websiteUrl.value=p.websiteUrl||'';
         edit.elements.socialLinks.value=JSON.stringify(p.socialLinks||{},null,2);
       }
