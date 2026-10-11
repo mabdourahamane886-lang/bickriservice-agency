@@ -128,7 +128,7 @@ const SECURITY_HEADERS = {
   'X-DNS-Prefetch-Control':'off',
   'X-Permitted-Cross-Domain-Policies':'none',
   'Permissions-Policy':'camera=(), microphone=(), geolocation=()',
-  'Content-Security-Policy':"default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' https: data: blob:; connect-src 'self' https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; media-src 'self' https: blob:; worker-src 'self' blob:; upgrade-insecure-requests",
+  'Content-Security-Policy':"default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' https: data: blob:; connect-src 'self' https://okdohokhlkxrmxpevees.supabase.co https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; media-src 'self' https: blob:; worker-src 'self' blob:; upgrade-insecure-requests",
   'Cross-Origin-Opener-Policy':'same-origin-allow-popups',
   'Cross-Origin-Resource-Policy':'same-origin'
 };
