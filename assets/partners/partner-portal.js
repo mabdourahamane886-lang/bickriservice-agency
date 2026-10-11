@@ -7,6 +7,7 @@
   const API_BASE = location.hostname.endsWith('.vercel.app') ? 'https://bickriservice-agency.org' : '';
   const apiUrl = path => API_BASE + path;
   const mode=document.body.dataset.portalMode==='admin'?'admin':'member';
+  const ADMIN_EMAIL='mabdourahamane886@gmail.com';
   const TOKEN_KEY='bsa_partner_access_token';
   const REFRESH_KEY='bsa_partner_refresh_token';
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -57,12 +58,14 @@
   }
   function showAuth(text=''){
     if($('authCard'))$('authCard').hidden=false;
+    if($('passwordResetCard'))$('passwordResetCard').hidden=true;
     if($('portalDashboard'))$('portalDashboard').hidden=true;
     if($('adminDashboard'))$('adminDashboard').hidden=true;
     if(text)showMessage(text,'error');
   }
   function showDashboard(){
     if($('authCard'))$('authCard').hidden=true;
+    if($('passwordResetCard'))$('passwordResetCard').hidden=true;
     if(mode==='admin'){if($('adminDashboard'))$('adminDashboard').hidden=false;}
     else if($('portalDashboard'))$('portalDashboard').hidden=false;
     showMessage('','info');
@@ -101,12 +104,82 @@
   });
   $('forgotPassword')?.addEventListener('click',async()=>{
     const email=$('authEmail')?.value.trim();
-    if(!email){showMessage('Saisissez d’abord votre adresse e-mail.','error');return;}
+    if(!email){showMessage('Saisissez votre adresse e-mail administrateur.','error');return;}
+    if(mode==='admin' && email.toLowerCase()!==ADMIN_EMAIL){
+      showMessage('Pour cet accès administrateur, utilisez '+ADMIN_EMAIL+'.','error');return;
+    }
+    const redirectTo=new URL('/partenaires/admin/',location.origin).toString();
     try{
-      const response=await fetch(SUPABASE_URL+'/auth/v1/recover',{method:'POST',headers:{apikey:SUPABASE_PUBLIC_KEY,'Content-Type':'application/json'},body:JSON.stringify({email})});
-      if(!response.ok)throw new Error('La demande de réinitialisation n’a pas pu être envoyée.');
-      showMessage('Si cette adresse correspond à un compte, un message de réinitialisation sera envoyé.','success');
+      const url=SUPABASE_URL+'/auth/v1/recover?redirect_to='+encodeURIComponent(redirectTo);
+      const response=await fetch(url,{method:'POST',headers:{apikey:SUPABASE_PUBLIC_KEY,'Content-Type':'application/json'},body:JSON.stringify({email})});
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok)throw new Error(data.msg||data.message||data.error_description||'Le lien n’a pas pu être envoyé. Vérifiez la configuration des e-mails Supabase.');
+      showMessage('Demande envoyée pour '+email+'. Consultez votre boîte de réception et les courriers indésirables, puis ouvrez le lien sur cet appareil pour définir votre mot de passe.','success');
     }catch(error){showMessage(error.message||messages.server,'error');}
+  });
+
+  function initializePasswordRecovery(){
+    if(mode!=='admin')return false;
+    const hash=new URLSearchParams(location.hash.startsWith('#')?location.hash.slice(1):location.hash);
+    const accessToken=hash.get('access_token');
+    const recoveryType=hash.get('type');
+    if(hash.get('error')||hash.get('error_description')){
+      const message=hash.get('error_description')||'Le lien de récupération a expiré ou n’est plus valide.';
+      history.replaceState(null,document.title,location.pathname+location.search);
+      showAuth(decodeURIComponent(message.replace(/\+/g,' ')));
+      return true;
+    }
+    if(recoveryType!=='recovery'||!accessToken)return false;
+    clearSession();
+    saveSession({
+      access_token:accessToken,
+      refresh_token:hash.get('refresh_token')||'',
+      expires_in:Number(hash.get('expires_in')||3600)
+    });
+    history.replaceState(null,document.title,location.pathname+location.search);
+    if($('authCard'))$('authCard').hidden=true;
+    if($('passwordResetCard'))$('passwordResetCard').hidden=false;
+    if($('adminDashboard'))$('adminDashboard').hidden=true;
+    showMessage('Lien sécurisé reconnu. Choisissez maintenant un nouveau mot de passe.','success');
+    return true;
+  }
+
+  $('passwordResetForm')?.addEventListener('submit',async event=>{
+    event.preventDefault();
+    const form=event.currentTarget;
+    const password=String(form.elements.newPassword?.value||'');
+    const confirmation=String(form.elements.confirmPassword?.value||'');
+    const button=$('passwordResetSubmit');
+    if(password.length<8){showMessage('Le mot de passe doit contenir au moins 8 caractères.','error');return;}
+    if(password!==confirmation){showMessage('Les deux mots de passe ne correspondent pas.','error');return;}
+    const accessToken=token();
+    if(!accessToken){showMessage('Le lien a expiré. Demandez un nouveau lien sécurisé.','error');return;}
+    if(button)button.disabled=true;
+    showMessage('Mise à jour du mot de passe…','info');
+    try{
+      const response=await fetch(SUPABASE_URL+'/auth/v1/user',{
+        method:'PUT',
+        headers:{apikey:SUPABASE_PUBLIC_KEY,Authorization:'Bearer '+accessToken,'Content-Type':'application/json'},
+        body:JSON.stringify({password})
+      });
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok)throw new Error(data.msg||data.message||data.error_description||'Impossible de modifier le mot de passe. Demandez un nouveau lien.');
+      clearSession();
+      if($('authPassword'))$('authPassword').value='';
+      if($('authEmail')&&mode==='admin')$('authEmail').value=ADMIN_EMAIL;
+      if($('passwordResetCard'))$('passwordResetCard').hidden=true;
+      if($('authCard'))$('authCard').hidden=false;
+      showMessage('Mot de passe enregistré. Vous pouvez maintenant vous connecter avec '+ADMIN_EMAIL+'.','success');
+    }catch(error){showMessage(error.message||messages.server,'error');}
+    finally{if(button)button.disabled=false;}
+  });
+
+  $('cancelPasswordReset')?.addEventListener('click',()=>{
+    clearSession();
+    history.replaceState(null,document.title,location.pathname+location.search);
+    if($('passwordResetCard'))$('passwordResetCard').hidden=true;
+    showAuth();
+    showMessage('Réinitialisation annulée.','info');
   });
   $('logoutButton')?.addEventListener('click',async()=>{
     try{if(token())await fetch(SUPABASE_URL+'/auth/v1/logout',{method:'POST',headers:{apikey:SUPABASE_PUBLIC_KEY,Authorization:'Bearer '+token()}});}catch{}
@@ -290,8 +363,15 @@
     finally{button.disabled=false;}
   });
 
+  // Préremplit l’adresse principale et traite les liens de récupération Supabase.
+  if(mode==='admin'){
+    setAuthMode('login');
+    if($('authEmail')&&!$('authEmail').value)$('authEmail').value=ADMIN_EMAIL;
+  }
+  const recoveryHandled=initializePasswordRecovery();
   // Détecte une session déjà ouverte uniquement dans cet onglet.
-  if(token())loadDashboard().catch(error=>showAuth(error.message||messages.server));
-  else showAuth();
-  if(mode==='admin')setAuthMode('login');
+  if(!recoveryHandled){
+    if(token())loadDashboard().catch(error=>showAuth(error.message||messages.server));
+    else showAuth();
+  }
 })();
