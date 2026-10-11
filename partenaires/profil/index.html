@@ -38,7 +38,7 @@
 </div></div></section>
 <section class="main"><div class="wrap contentGrid" id="profileDetails" hidden>
 <article class="panel"><h2>À propos</h2><p id="profileMission"></p></article>
-<aside class="panel"><h2>Informations</h2><div class="details"><div class="detail"><span class="label">Pays / Ville</span><span class="value" id="profileLocation"></span></div><div class="detail"><span class="label">Domaine</span><span class="value" id="profileType"></span></div><div class="detail"><span class="label">Identifiant partenaire</span><span class="value" id="profileId"></span></div><div class="detail"><span class="label">Badge vérifié le</span><span class="value" id="profileVerifiedAt"></span></div></div><div id="profileSocials" class="actionsPanel"></div><p class="muted" style="margin-top:16px">Le badge atteste du statut affiché par Bickri Service Agency. Il ne constitue pas une garantie générale sur l’activité du partenaire.</p></aside>
+<aside class="panel"><h2>Informations</h2><div class="details"><div class="detail"><span class="label">Pays / Ville</span><span class="value" id="profileLocation"></span></div><div class="detail" id="profileFounderRow"><span class="label">Dirigeant / contact public</span><span class="value" id="profileFounder"></span></div><div class="detail"><span class="label">Domaine</span><span class="value" id="profileType"></span></div><div class="detail"><span class="label">Identifiant partenaire</span><span class="value" id="profileId"></span></div><div class="detail"><span class="label">Badge vérifié le</span><span class="value" id="profileVerifiedAt"></span></div></div><div id="profileSocials" class="actionsPanel"></div><p class="muted" style="margin-top:16px">Le badge atteste du statut affiché par Bickri Service Agency. Il ne constitue pas une garantie générale sur l’activité du partenaire.</p></aside>
 </div><div id="profileNotFound" class="panel notFound"><h1>Profil introuvable</h1><p>Ce profil n’est pas disponible ou a été désactivé.</p><a class="btn gold" href="/partenaires/">Retour à l’annuaire</a></div></section>
 </main>
 <footer class="footer"><div class="wrap">Bickri Service Agency — Niamey, Niger · <a href="/partenaires/">Annuaire des partenaires</a> · <a href="/partenaires/espace/">Espace partenaire</a></div></footer>
@@ -72,6 +72,7 @@ async function init(){
   $('profileTags').replaceChildren();
   [p.category||p.partnerType,p.city,p.country].filter(Boolean).forEach(value=>{const tag=document.createElement('span');tag.textContent=value;$('profileTags').appendChild(tag);});
   $('profileLocation').textContent=[p.city,p.country].filter(Boolean).join(', ')||'Non renseigné';
+  $('profileFounder').textContent=p.founder||'';$('profileFounderRow').hidden=!p.founder;
   $('profileType').textContent=p.category||p.partnerType||'Partenariat';
   $('profileId').textContent=p.publicId||'Non renseigné';
   $('profileVerifiedAt').textContent=p.verifiedAt?new Date(p.verifiedAt).toLocaleDateString('fr-FR'):'Statut affiché par l’agence';
