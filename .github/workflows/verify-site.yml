@@ -39,4 +39,13 @@ jobs:
           fi
           echo "No production environment file is tracked."
 
+      - name: Check JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check worker.js
+          node --check assets/partners/partner-directory.js
+          node --check assets/partners/partner-portal.js
+          echo "Partner portal JavaScript syntax passed."
+
 # Deployment trigger: push to main to trigger connected hosting deployments.
