@@ -531,7 +531,7 @@ export default {async fetch(request,env,ctx){
     if (!rate.allowed) return json({error:'Trop de candidatures depuis cet accès. Réessayez dans quelques minutes.'},429,{'Retry-After':String(rate.retryAfter)});
     let body;
     try { body = await request.json(); } catch { return json({error:'Requête JSON invalide.'},400); }
-    const {fullName,email,companyName,websiteUrl='',partnerType,message,website='',country='Niger',city='',category='',socialLinks={},referralCode=''} = body || {};
+    const {fullName,email,companyName,websiteUrl='',partnerType,message,website='',country='Niger',city='',category='',socialLinks={},socialFacebook='',socialInstagram='',socialLinkedIn='',socialWhatsApp='',referralCode=''} = body || {};
     if (website) return json({ok:true,message:'Demande reçue.'},201);
     const allowedTypes = new Set(['technical','referral','integrator','other']);
     if (typeof fullName !== 'string' || fullName.trim().length < 2 || fullName.trim().length > 120 ||
@@ -551,7 +551,14 @@ export default {async fetch(request,env,ctx){
       return json({error:'Le formulaire est temporairement indisponible. Réessayez plus tard.'},503);
     }
     const cleanEmail=email.trim().toLowerCase();
-    const links=safePartnerLinks(socialLinks);
+    const rawLinks=socialLinks && typeof socialLinks==='object' && !Array.isArray(socialLinks) ? socialLinks : {};
+    const links=safePartnerLinks({
+      ...rawLinks,
+      facebook:typeof socialFacebook==='string'&&socialFacebook.trim()?socialFacebook:rawLinks.facebook,
+      instagram:typeof socialInstagram==='string'&&socialInstagram.trim()?socialInstagram:rawLinks.instagram,
+      linkedin:typeof socialLinkedIn==='string'&&socialLinkedIn.trim()?socialLinkedIn:rawLinks.linkedin,
+      whatsapp:typeof socialWhatsApp==='string'&&socialWhatsApp.trim()?socialWhatsApp:rawLinks.whatsapp
+    });
     const refInput=typeof referralCode==='string'?referralCode.trim().slice(0,80):'';
     try {
       let validRef=null;
