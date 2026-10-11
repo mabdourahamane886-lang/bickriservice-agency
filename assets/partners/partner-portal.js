@@ -4,6 +4,8 @@
   // Supabase publishable key intended for browser clients; no service-role key is exposed here.
   const SUPABASE_PUBLIC_KEY='sb_publishable_EiTruyR5fwwHpS_PzO5_iA_d1i4iMCP';
   const $=id=>document.getElementById(id);
+  const API_BASE = location.hostname.endsWith('.vercel.app') ? 'https://bickriservice-agency.org' : '';
+  const apiUrl = path => API_BASE + path;
   const mode=document.body.dataset.portalMode==='admin'?'admin':'member';
   const TOKEN_KEY='bsa_partner_access_token';
   const REFRESH_KEY='bsa_partner_refresh_token';
@@ -39,7 +41,7 @@
     const headers={'Accept':'application/json',...(options.headers||{})};
     if(token())headers.Authorization='Bearer '+token();
     if(options.body&&!headers['Content-Type'])headers['Content-Type']='application/json';
-    const response=await fetch(path,{...options,headers,cache:options.cache||'no-store'});
+    const response=await fetch(apiUrl(path),{...options,headers,cache:options.cache||'no-store'});
     const data=await response.json().catch(()=>({}));
     if(!response.ok){
       if(response.status===401){clearSession();showAuth('Votre session est terminée. Reconnectez-vous.');}
