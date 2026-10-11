@@ -288,6 +288,9 @@ function fallbackAnswer(message){
 
 export default {async fetch(request,env,ctx){
   const url=new URL(request.url);
+  if (url.pathname.startsWith('/api/partner') && request.headers.get('Origin') && !isAllowedOrigin(request)) {
+    return json({error:'Origine non autorisée'},403);
+  }
   if (url.pathname.startsWith('/api/partner') && request.method === 'OPTIONS') {
     if (!isAllowedOrigin(request)) return json({error:'Origine non autorisée'},403);
     return partnerJson(request,{},204);
@@ -392,7 +395,7 @@ export default {async fetch(request,env,ctx){
     const key = env.SUPABASE_SERVICE_ROLE_KEY;
     if (!key) return partnerJson(request,{error:'Le suivi des candidatures est momentanément indisponible.'},503);
     try {
-      const path = `agency_partner_applications?application_code=eq.${encodeURIComponent(code)}&email=ilike.${encodeURIComponent(email)}&select=application_code,company_name,status,created_at,reviewed_at&limit=1`;
+      const path = `agency_partner_applications?application_code=eq.${encodeURIComponent(code)}&email=eq.${encodeURIComponent(email)}&select=application_code,company_name,status,created_at,reviewed_at&limit=1`;
       const r = await supabaseRequest(path,key,{method:'GET'});
       const rows = await r.json().catch(()=>[]);
       if (!Array.isArray(rows) || !rows.length) return partnerJson(request,{error:'Aucun dossier trouvé avec ces informations.'},404);
@@ -414,7 +417,7 @@ export default {async fetch(request,env,ctx){
       if (!user.email_confirmed_at) return partnerJson(request,{error:'Confirmez votre adresse e-mail avant d’accéder à vos candidatures.',code:'EMAIL_NOT_CONFIRMED'},403);
       try {
         const safeEmail = encodeURIComponent(String(user.email).toLowerCase());
-        const appsR = await supabaseRequest(`agency_partner_applications?email=ilike.${safeEmail}&select=id,application_code,company_name,partner_type,country,city,status,email_status,created_at,reviewed_at&order=created_at.desc&limit=50`,key,{method:'GET'});
+        const appsR = await supabaseRequest(`agency_partner_applications?email=eq.${safeEmail}&select=id,application_code,company_name,partner_type,country,city,status,email_status,created_at,reviewed_at&order=created_at.desc&limit=50`,key,{method:'GET'});
         const applications = await appsR.json().catch(()=>[]);
         const safeApps = Array.isArray(applications)?applications.map(a=>({
           id:a.id,code:a.application_code,companyName:a.company_name,partnerType:a.partner_type,
