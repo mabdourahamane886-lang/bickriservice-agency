@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: cloudflare-production
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -35,7 +35,7 @@ jobs:
       - name: Verify Cloudflare access
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CLOUDFLARD_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID || 'ac74cb0ae880fb837da6033568a5a930' }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID || 'c2c79f6fe0e620dbbcc2c45f3d623d67' }}
         run: |
           wrangler whoami
           echo "Checking Workers Scripts asset-upload permission..."
@@ -49,6 +49,7 @@ jobs:
       - name: Deploy Worker and assets
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CLOUDFLARD_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID || 'c2c79f6fe0e620dbbcc2c45f3d623d67' }}
         run: wrangler deploy
 
 # Manual production redeployment requested on 2026-10-10.
