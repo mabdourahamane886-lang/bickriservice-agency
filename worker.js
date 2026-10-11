@@ -41,6 +41,7 @@ function isAllowedOrigin(request) {
       host === 'bickriservice-agency.org' ||
       host.endsWith('.bickriservice-agency.org') ||
       host === 'bickriservice-agency.vercel.app' ||
+      host.endsWith('-bickri-service-agency.vercel.app') ||
       host === 'bickriservice-agency.bickriserviceagency.dev'
     );
   } catch {
@@ -377,12 +378,12 @@ export default {async fetch(request,env,ctx){
     if (request.method === 'GET') {
       try {
         const safeEmail = encodeURIComponent(String(user.email).toLowerCase());
-        const appsR = await supabaseRequest(`agency_partner_applications?email=ilike.${safeEmail}&select=id,application_code,company_name,partner_type,country,city,status,email_status,created_at,reviewed_at,reviewer_notes&order=created_at.desc&limit=50`,key,{method:'GET'});
+        const appsR = await supabaseRequest(`agency_partner_applications?email=ilike.${safeEmail}&select=id,application_code,company_name,partner_type,country,city,status,email_status,created_at,reviewed_at&order=created_at.desc&limit=50`,key,{method:'GET'});
         const applications = await appsR.json().catch(()=>[]);
         const safeApps = Array.isArray(applications)?applications.map(a=>({
           id:a.id,code:a.application_code,companyName:a.company_name,partnerType:a.partner_type,
           country:a.country,city:a.city,status:a.status,emailStatus:a.email_status,
-          submittedAt:a.created_at,reviewedAt:a.reviewed_at,reviewerNotes:a.reviewer_notes||''
+          submittedAt:a.created_at,reviewedAt:a.reviewed_at
         })):[];
         const partnerR = await supabaseRequest(`agency_partners?owner_user_id=eq.${encodeURIComponent(user.id)}&select=id,name,slug,description,mission,country,city,website_url,social_links,badge_level,badge_label,badge_verified,verified_at,public_id,referral_code&active=eq.true&limit=1`,key,{method:'GET'});
         let partners = await partnerR.json().catch(()=>[]);
