@@ -16,9 +16,7 @@
   const escapeHtml = (v) => String(v ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const PUBLIC_ORIGIN = location.hostname.endsWith('.vercel.app') ? 'https://bickriservice-agency.org' : location.origin;
   const fullUrl = (path) => new URL(path, PUBLIC_ORIGIN).href;
-  const profilePath = (p) => ['impact-afriq','egan-btp'].includes(p.slug)
-    ? '/partenaires/' + encodeURIComponent(p.slug) + '/'
-    : '/partenaires/profil/?slug=' + encodeURIComponent(p.slug);
+  const profilePath = (p) => '/partenaires/profil/?slug=' + encodeURIComponent(p.slug);
   const copyText = async (text) => {
     try {
       if (navigator.clipboard && window.isSecureContext) return await navigator.clipboard.writeText(text);
