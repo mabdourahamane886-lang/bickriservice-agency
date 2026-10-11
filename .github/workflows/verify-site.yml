@@ -27,7 +27,17 @@ jobs:
           test -s robots.txt
           test -s sitemap.xml
           test -s vercel.json
-          echo "Static site files are present."
+          test -s partenaires/index.html
+          test -s partenaires/profil/index.html
+          test -s partenaires/espace/index.html
+          test -s partenaires/admin/index.html
+          test -s assets/partners/partner-directory.js
+          test -s assets/partners/partner-portal.js
+          test -s supabase/migrations/20261011095026_agency_partner_portal_v1.sql
+          test -s supabase/migrations/20261011100500_agency_partner_public_profile_fields.sql
+          test -s supabase/migrations/20261011100600_agency_partner_profile_publication_consent.sql
+          test -s supabase/migrations/20261011101000_agency_partner_admin_audit_log.sql
+          echo "Partner portal pages, scripts and database migrations are present."
 
       - name: Check for committed environment files
         shell: bash
@@ -46,6 +56,27 @@ jobs:
           node --check worker.js
           node --check assets/partners/partner-directory.js
           node --check assets/partners/partner-portal.js
-          echo "Partner portal JavaScript syntax passed."
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const pages = [
+            'partenaires/index.html',
+            'partenaires/profil/index.html',
+            'partenaires/espace/index.html',
+            'partenaires/admin/index.html'
+          ];
+          let checked = 0;
+          for (const page of pages) {
+            const html = fs.readFileSync(page, 'utf8');
+            const blocks = [...html.matchAll(/<script\\b([^>]*)>([\\s\\S]*?)<\\/script>/gi)];
+            for (const [, attributes, source] of blocks) {
+              if (/\\bsrc\\s*=/.test(attributes) || !source.trim()) continue;
+              new Function(source);
+              checked += 1;
+            }
+          }
+          if (!checked) throw new Error('No inline partner scripts were syntax-checked.');
+          console.log(`Checked ${checked} inline HTML script block(s).`);
+          NODE
+          echo "Partner portal JavaScript and inline HTML scripts passed syntax checks."
 
 # Deployment trigger: push to main to trigger connected hosting deployments.
