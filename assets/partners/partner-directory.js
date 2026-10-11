@@ -28,7 +28,7 @@
     } catch (error) { throw error; }
   };
   const recordClick = (p, eventType, medium='directory') => {
-    const ref = new URL(location.href).searchParams.get('ref') || p?.referralCode || '';
+    const ref = new URL(location.href).searchParams.get('ref') || '';
     fetch(apiUrl('/api/partner/click'),{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,body:JSON.stringify({
       slug:p?.slug || '', referralCode:ref, eventType, source:'partner-directory', medium,
       campaign:'partner-network', landingPath:location.pathname
