@@ -47,6 +47,8 @@
 'use strict';
 const $=id=>document.getElementById(id);
 const API_BASE=location.hostname.endsWith('.vercel.app')?'https://bickriservice-agency.org':'';const apiUrl=path=>API_BASE+path;
+const SUPABASE_URL='https://okdohokhlkxrmxpevees.supabase.co';
+const SUPABASE_PUBLIC_KEY='sb_publishable_EiTruyR5fwwHpS_PzO5_iA_d1i4iMCP';
 const params=new URLSearchParams(location.search),slug=(params.get('slug')||'').trim(),ref=(params.get('ref')||'').trim();
 const badges={green:'badge-verified-green.svg',blue:'badge-verified-blue.svg',gold:'badge-verified-gold.svg',construction:'badge-construction.svg'};
 const escUrl=value=>{try{const u=new URL(value);return ['https:','http:'].includes(u.protocol)&&!u.username&&!u.password?u.href:''}catch{return ''}};
@@ -68,6 +70,31 @@ async function init(){
    const data=await response.json().catch(()=>({}));
    if(response.ok&&data.partner)p=data.partner;
   }catch{}
+  if(!p){
+   try{
+    const params=new URLSearchParams({
+     active:'eq.true',slug:'eq.'+slug,
+     select:'id,name,slug,description,company_about,logo_url,founder,mission,country,city,partner_type,category,website_url,social_links,badge_level,badge_label,badge_verified,verified_at,public_id,referral_code',
+     limit:'1'
+    });
+    const direct=await fetch(SUPABASE_URL+'/rest/v1/agency_partners?'+params.toString(),{
+     headers:{apikey:SUPABASE_PUBLIC_KEY,Authorization:'Bearer '+SUPABASE_PUBLIC_KEY,Accept:'application/json'},
+     cache:'no-store'
+    });
+    const rows=await direct.json().catch(()=>[]);
+    const row=direct.ok&&Array.isArray(rows)?rows[0]:null;
+    if(row)p={
+     id:row.id,name:row.name,slug:row.slug,description:row.description||'',
+     about:row.company_about||'',logoUrl:row.logo_url||'',founder:row.founder||'',
+     mission:row.mission||'',country:row.country||'Niger',city:row.city||'',
+     partnerType:row.partner_type||'',category:row.category||row.partner_type||'',
+     websiteUrl:row.website_url||'',socialLinks:row.social_links||{},
+     badgeLevel:row.badge_level||'green',badgeLabel:row.badge_label||'Partenaire vérifié',
+     badgeVerified:Boolean(row.badge_verified),verifiedAt:row.verified_at||null,
+     publicId:row.public_id||'',referralCode:row.referral_code||''
+    };
+   }catch{}
+  }
   if(!p)p=fallbackPartners.find(item=>item.slug===slug)||null;
   if(!p)throw new Error('not found');
   const badge=p.badgeLevel||'green';
