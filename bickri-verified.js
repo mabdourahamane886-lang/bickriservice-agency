@@ -15,7 +15,9 @@ function getName(el){
   return el.dataset.verifiedName||"Cette entreprise";
 }
 function getBadgeConfig(trigger){
-  const category=trigger?.dataset?.badgeCategory||"green";
+  const source=(trigger?.getAttribute("src")||"").toLowerCase();
+  const inferred=source.includes("badge-verified-blue")?"blue":source.includes("badge-verified-gold")?"gold":source.includes("badge-construction")?"construction":"green";
+  const category=trigger?.dataset?.badgeCategory||inferred;
   return {green:{file:"badge-verified-green.svg",label:"Partenaire vérifié",title:"Partenaire vérifié",color:"#159447"},blue:{file:"badge-verified-blue.svg",label:"Partenaire certifié",title:"Partenaire certifié",color:"#2563eb"},gold:{file:"badge-verified-gold.svg",label:"Partenaire Premium",title:"Partenaire Premium",color:"#b88918"},construction:{file:"badge-construction.svg",label:"Partenaire BTP",title:"Partenaire BTP · Construction",color:"#b88918"}}[category]||{file:"badge-verified-green.svg",label:"Partenaire vérifié",title:"Partenaire vérifié",color:"#159447"};
 }
 function openModal(trigger){
@@ -56,7 +58,7 @@ function closeModal(){
 }
 function escHandler(e){if(e.key==="Escape")closeModal()}
 function init(){
-  document.querySelectorAll(".verifiedBadge,.metaStyleBadge,[data-bickri-verified]").forEach(el=>{
+  document.querySelectorAll(".verifiedBadge,.metaStyleBadge,[data-bickri-verified],img[src*=\"/assets/partners/badge-verified-\"],img[src*=\"/assets/partners/badge-construction\"]").forEach(el=>{
     if(el.dataset.verifiedBound)return;
     el.dataset.verifiedBound="1";
     el.setAttribute("role","button");
