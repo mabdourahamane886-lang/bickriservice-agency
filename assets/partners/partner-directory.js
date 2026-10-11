@@ -3,6 +3,9 @@
   const $ = (id) => document.getElementById(id);
   const API_BASE = location.hostname.endsWith('.vercel.app') ? 'https://bickriservice-agency.org' : '';
   const apiUrl = (path) => API_BASE + path;
+  const SUPABASE_URL='https://okdohokhlkxrmxpevees.supabase.co';
+  // Publishable key, protected by the agency_partners RLS public-read policy.
+  const SUPABASE_PUBLIC_KEY='sb_publishable_EiTruyR5fwwHpS_PzO5_iA_d1i4iMCP';
   const fallback = [
     {id:'impact-afriq',name:'Impact Afriq',slug:'impact-afriq',description:'Innovating · Inspiring · Transforming Africa',founder:'Abdoul Kader Abdourahamane',mission:'Innovation, inspiration et transformation de l’Afrique par les idées, les talents, la technologie et les collaborations.',country:'Niger',partnerType:'Collaboration',badgeLevel:'green',badgeLabel:'Partenaire vérifié',badgeVerified:true,logoUrl:'/assets/partners/impact-afriq.svg',publicId:'',referralCode:''},
     {id:'egan-btp',name:'EGAN BTP',slug:'egan-btp',description:'Construction · Rénovation · Plans · Hydraulique · Eau & assainissement',founder:'Garba Abdoul Nasser',mission:'Construction, fourniture de plans, rénovation, hydraulique de l’eau et assainissement.',country:'Niger',partnerType:'BTP & Construction',badgeLevel:'green',badgeLabel:'Partenaire vérifié',badgeVerified:true,logoUrl:'/assets/partners/egan-btp.svg',publicId:'',referralCode:''}
@@ -58,7 +61,7 @@
   function filteredPartners() {
     const q=(search?.value||'').trim().toLocaleLowerCase('fr');
     return partners.filter(p=>{
-      const hay=[p.name,p.description,p.founder,p.mission,p.country,p.city,p.partnerType,p.category].join(' ').toLocaleLowerCase('fr');
+      const hay=[p.name,p.description,p.about,p.founder,p.mission,p.country,p.city,p.partnerType,p.category].join(' ').toLocaleLowerCase('fr');
       return (!q||hay.includes(q)) && (!countryFilter?.value||p.country===countryFilter.value)
         && (!categoryFilter?.value||(p.category||p.partnerType)===categoryFilter.value)
         && (!badgeFilter?.value||(badgeFilter.value==='unverified'?!p.badgeVerified:(p.badgeVerified&&(p.badgeLevel||'green')===badgeFilter.value)));
@@ -140,8 +143,34 @@
       partners=saved.length?saved:fallback.slice();
       message.textContent=saved.length?'Profils publics chargés depuis le répertoire Bickri.':'Les profils officiels seront affichés ici dès leur publication.';
     } catch(error) {
-      partners=fallback.slice();
-      message.textContent='Affichage de secours : le répertoire dynamique est momentanément indisponible.';
+      // Read the public directory directly from Supabase if the Worker API is temporarily unavailable.
+      // RLS only exposes active partner profiles; the publishable key never grants privileged access.
+      try {
+        const params=new URLSearchParams({
+          active:'eq.true',
+          select:'id,name,slug,description,company_about,logo_url,founder,mission,country,city,partner_type,category,website_url,social_links,badge_level,badge_label,badge_verified,verified_at,public_id,referral_code',
+          order:'name.asc',
+          limit:'300'
+        });
+        const direct=await fetch(SUPABASE_URL+'/rest/v1/agency_partners?'+params.toString(),{
+          headers:{apikey:SUPABASE_PUBLIC_KEY,Authorization:'Bearer '+SUPABASE_PUBLIC_KEY,Accept:'application/json'},
+          cache:'no-store'
+        });
+        const rows=await direct.json().catch(()=>[]);
+        if(!direct.ok||!Array.isArray(rows))throw new Error('Supabase public directory unavailable');
+        partners=rows.map(row=>({
+          id:row.id,name:row.name,slug:row.slug,description:row.description||'',about:row.company_about||'',
+          logoUrl:row.logo_url||'',founder:row.founder||'',mission:row.mission||'',
+          country:row.country||'Niger',city:row.city||'',partnerType:row.partner_type||'',
+          category:row.category||row.partner_type||'',websiteUrl:row.website_url||'',socialLinks:row.social_links||{},
+          badgeLevel:row.badge_level||'green',badgeLabel:row.badge_label||'Partenaire vérifié',
+          badgeVerified:Boolean(row.badge_verified),verifiedAt:row.verified_at||null,publicId:row.public_id||'',referralCode:row.referral_code||''
+        }));
+        message.textContent='Répertoire chargé depuis la base de données.';
+      } catch(directError) {
+        partners=fallback.slice();
+        message.textContent='Affichage de secours : le répertoire dynamique est momentanément indisponible.';
+      }
     }
     rebuildFilters();render();
     try{
