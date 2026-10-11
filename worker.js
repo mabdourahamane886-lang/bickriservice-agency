@@ -262,7 +262,7 @@ async function recordPartnerAdminEvent(key, adminUserId, action, applicationId=n
 
 function publicPartner(row) {
   return {
-    id:row.id, name:row.name, slug:row.slug, description:row.description || '',
+    id:row.id, name:row.name, slug:row.slug, description:row.description || '', about:row.company_about || '',
     logoUrl:row.logo_url || '', founder:row.founder || '', mission:row.mission || '',
     country:row.country || 'Niger', city:row.city || '', partnerType:row.partner_type || '',
     category:row.category || row.partner_type || '', websiteUrl:row.website_url || '',
@@ -305,7 +305,7 @@ export default {async fetch(request,env,ctx){
     try {
       const params = new URLSearchParams({
         active:'eq.true',
-        select:'id,name,slug,description,logo_url,founder,mission,country,city,partner_type,category,website_url,social_links,badge_level,badge_label,badge_verified,verified_at,public_id,referral_code',
+        select:'id,name,slug,description,company_about,logo_url,founder,mission,country,city,partner_type,category,website_url,social_links,badge_level,badge_label,badge_verified,verified_at,public_id,referral_code',
         order:'name.asc',
         limit:'300'
       });
@@ -426,7 +426,7 @@ export default {async fetch(request,env,ctx){
           country:a.country,city:a.city,status:a.status,emailStatus:a.email_status,
           submittedAt:a.created_at,reviewedAt:a.reviewed_at
         })):[];
-        const partnerR = await supabaseRequest(`agency_partners?owner_user_id=eq.${encodeURIComponent(user.id)}&select=id,name,slug,description,mission,country,city,logo_url,category,partner_type,website_url,social_links,badge_level,badge_label,badge_verified,verified_at,public_id,referral_code&active=eq.true&limit=1`,key,{method:'GET'});
+        const partnerR = await supabaseRequest(`agency_partners?owner_user_id=eq.${encodeURIComponent(user.id)}&select=id,name,slug,description,company_about,mission,country,city,logo_url,category,partner_type,website_url,social_links,badge_level,badge_label,badge_verified,verified_at,public_id,referral_code&active=eq.true&limit=1`,key,{method:'GET'});
         let partners = await partnerR.json().catch(()=>[]);
         if (!Array.isArray(partners)) partners=[];
         if (!partners.length && user.email_confirmed_at) {
@@ -442,7 +442,7 @@ export default {async fetch(request,env,ctx){
               await supabaseRequest(`agency_partners?id=eq.${encodeURIComponent(profile.id)}&owner_user_id=is.null`,key,{
                 method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({owner_user_id:user.id,updated_at:new Date().toISOString()})
               });
-              const refresh = await supabaseRequest(`agency_partners?owner_user_id=eq.${encodeURIComponent(user.id)}&select=id,name,slug,description,mission,country,city,logo_url,category,partner_type,website_url,social_links,badge_level,badge_label,badge_verified,verified_at,public_id,referral_code&active=eq.true&limit=1`,key,{method:'GET'});
+              const refresh = await supabaseRequest(`agency_partners?owner_user_id=eq.${encodeURIComponent(user.id)}&select=id,name,slug,description,company_about,mission,country,city,logo_url,category,partner_type,website_url,social_links,badge_level,badge_label,badge_verified,verified_at,public_id,referral_code&active=eq.true&limit=1`,key,{method:'GET'});
               partners=await refresh.json().catch(()=>[]);
             }
           }
@@ -468,6 +468,7 @@ export default {async fetch(request,env,ctx){
       if (!partner) return partnerJson(request,{error:'Aucun profil partenaire actif n’est associé à votre compte.'},403);
       const description=typeof body.description==='string'?body.description.trim().slice(0,500):partner.description;
       const mission=typeof body.mission==='string'?body.mission.trim().slice(0,1500):partner.mission;
+      const companyAbout=typeof body.about==='string'?body.about.trim().slice(0,5000):(partner.company_about||'');
       const country=typeof body.country==='string'?body.country.trim().slice(0,80):partner.country;
       const city=typeof body.city==='string'?body.city.trim().slice(0,100):partner.city;
       const category=typeof body.category==='string'?body.category.trim().slice(0,100):partner.category;
@@ -477,7 +478,7 @@ export default {async fetch(request,env,ctx){
       if (body.websiteUrl!==undefined && String(body.websiteUrl||'').trim() && !websiteUrl) return partnerJson(request,{error:'Le site web doit être une URL valide.'},400);
       const socialLinks=body.socialLinks===undefined?safePartnerLinks(partner.social_links):safePartnerLinks(body.socialLinks);
       await supabaseRequest(`agency_partners?id=eq.${encodeURIComponent(partner.id)}&owner_user_id=eq.${encodeURIComponent(user.id)}`,key,{
-        method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({description,mission,country,city,category:category||null,logo_url:logoUrl||null,website_url:websiteUrl||null,social_links:socialLinks,updated_at:new Date().toISOString()})
+        method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({description,mission,company_about:companyAbout||null,country,city,category:category||null,logo_url:logoUrl||null,website_url:websiteUrl||null,social_links:socialLinks,updated_at:new Date().toISOString()})
       });
       return partnerJson(request,{ok:true,message:'Profil partenaire mis à jour.'});
     } catch (error) {
@@ -493,8 +494,8 @@ export default {async fetch(request,env,ctx){
     if (!(await partnerIsAdmin(user.id,key))) return partnerJson(request,{error:'Accès réservé à l’administration.'},403);
     try {
       const [appsR,partnersR,eventsR,clicks] = await Promise.all([
-        supabaseRequest('agency_partner_applications?select=id,application_code,full_name,email,company_name,website_url,logo_url,public_description,public_mission,public_profile_consent,country,city,category,partner_type,social_links,message,referral_code,status,email_status,email_error_code,reviewer_notes,created_at,reviewed_at&order=created_at.desc&limit=150',key,{method:'GET'}),
-        supabaseRequest('agency_partners?select=id,name,slug,description,logo_url,country,city,category,partner_type,active,badge_level,badge_label,badge_verified,public_id,referral_code,verified_at&order=name.asc&limit=300',key,{method:'GET'}),
+        supabaseRequest('agency_partner_applications?select=id,application_code,full_name,email,company_name,website_url,logo_url,public_description,public_mission,public_about,public_profile_consent,country,city,category,partner_type,social_links,message,referral_code,status,email_status,email_error_code,reviewer_notes,created_at,reviewed_at&order=created_at.desc&limit=150',key,{method:'GET'}),
+        supabaseRequest('agency_partners?select=id,name,slug,description,company_about,mission,logo_url,country,city,category,partner_type,active,badge_level,badge_label,badge_verified,public_id,referral_code,verified_at&order=name.asc&limit=300',key,{method:'GET'}),
         supabaseRequest('agency_partner_admin_events?select=id,admin_user_id,action,application_id,partner_id,details,created_at&order=created_at.desc&limit=40',key,{method:'GET'}),
         partnerCount('agency_partner_clicks',key)
       ]);
@@ -522,7 +523,7 @@ export default {async fetch(request,env,ctx){
     let body;
     try { body=await request.json(); } catch { return partnerJson(request,{error:'Requête JSON invalide.'},400); }
     const action=body?.action;
-    const allowedActions=new Set(['create','suspend','activate','set_badge']);
+    const allowedActions=new Set(['create','update_details','suspend','activate','set_badge']);
     if(!allowedActions.has(action)) return partnerJson(request,{error:'Action partenaire invalide.'},400);
     const allowedBadges=new Set(['green','blue','gold','construction']);
     const badgeLevel=allowedBadges.has(body.badgeLevel)?body.badgeLevel:'green';
@@ -536,13 +537,14 @@ export default {async fetch(request,env,ctx){
         const category=typeof body.category==='string'?body.category.trim().slice(0,100):'';
         const description=typeof body.description==='string'?body.description.trim().slice(0,500):'';
         const mission=typeof body.mission==='string'?body.mission.trim().slice(0,1500):'';
+        const companyAbout=typeof body.about==='string'?body.about.trim():'';
         const websiteUrl=safePartnerUrl(body.websiteUrl);
         const logoUrl=safePartnerUrl(body.logoUrl);
         const websiteUrlInput=typeof body.websiteUrl==='string'?body.websiteUrl.trim():'';
         const logoUrlInput=typeof body.logoUrl==='string'?body.logoUrl.trim():'';
         const publicConsent=body.publicConsent===true;
         const verificationConfirmed=body.verificationConfirmed===true;
-        if(name.length<2||name.length>160||!publicConsent||!verificationConfirmed||
+        if(name.length<2||name.length>160||companyAbout.length>5000||!publicConsent||!verificationConfirmed||
           (websiteUrlInput&&!websiteUrl)||(logoUrlInput&&!/^https:\/\//i.test(logoUrlInput))||
           (logoUrlInput&&!logoUrl)||typeof body.partnerType!=='string'||body.partnerType.trim().length>120) {
           return partnerJson(request,{error:'Vérifiez le nom, les liens, le consentement et les contrôles de vérification avant de publier.'},400);
@@ -555,7 +557,7 @@ export default {async fetch(request,env,ctx){
         const inputSocial=body.socialLinks&&typeof body.socialLinks==='object'&&!Array.isArray(body.socialLinks)?body.socialLinks:{};
         const profile={
           name,slug,description:description||'Partenaire du réseau Bickri Service Agency.',
-          mission:mission||description||'',founder:null,logo_url:logoUrl||null,
+          company_about:companyAbout||null,mission:mission||description||'',founder:null,logo_url:logoUrl||null,
           country:country||'Niger',city:city||null,category:category||null,
           website_url:websiteUrl||null,social_links:safePartnerLinks(inputSocial),
           partner_type:body.partnerType.trim().slice(0,120),active:true,badge_level:badgeLevel,
@@ -571,10 +573,35 @@ export default {async fetch(request,env,ctx){
       }
       const partnerId=typeof body.partnerId==='string'?body.partnerId:'';
       if(!isUuid(partnerId)) return partnerJson(request,{error:'Identifiant de partenaire invalide.'},400);
-      const foundR=await supabaseRequest(`agency_partners?id=eq.${encodeURIComponent(partnerId)}&select=id,name,slug,active,badge_level,badge_label,badge_verified,public_id,referral_code&limit=1`,key,{method:'GET'});
+      const foundR=await supabaseRequest(`agency_partners?id=eq.${encodeURIComponent(partnerId)}&select=id,name,slug,description,company_about,mission,founder,logo_url,country,city,category,partner_type,website_url,social_links,active,badge_level,badge_label,badge_verified,public_id,referral_code&limit=1`,key,{method:'GET'});
       const found=await foundR.json().catch(()=>[]);
       const current=Array.isArray(found)?found[0]||null:null;
       if(!current) return partnerJson(request,{error:'Partenaire introuvable.'},404);
+      if(action==='update_details') {
+        const name=typeof body.name==='string'?body.name.trim():current.name;
+        const description=typeof body.description==='string'?body.description.trim():String(current.description||'');
+        const companyAbout=typeof body.about==='string'?body.about.trim():String(current.company_about||'');
+        const mission=typeof body.mission==='string'?body.mission.trim():String(current.mission||'');
+        const country=typeof body.country==='string'?body.country.trim():String(current.country||'Niger');
+        const city=typeof body.city==='string'?body.city.trim():String(current.city||'');
+        const category=typeof body.category==='string'?body.category.trim():String(current.category||'');
+        const partnerType=typeof body.partnerType==='string'?body.partnerType.trim():String(current.partner_type||'');
+        const websiteInput=typeof body.websiteUrl==='string'?body.websiteUrl.trim():String(current.website_url||'');
+        const logoInput=typeof body.logoUrl==='string'?body.logoUrl.trim():String(current.logo_url||'');
+        const websiteUrl=safePartnerUrl(websiteInput), logoUrl=safePartnerUrl(logoInput);
+        if(name.length<2||name.length>160||description.length>500||companyAbout.length>5000||mission.length>1500||
+          country.length>80||city.length>100||category.length>100||partnerType.length>120||
+          (websiteInput&&!websiteUrl)||(logoInput&&(!logoUrl||!/^https:\/\//i.test(logoInput)))) {
+          return partnerJson(request,{error:'Vérifiez les champs : description 500 caractères, présentation détaillée 5000 caractères maximum, mission 1500 caractères maximum et liens valides.'},400);
+        }
+        const socialLinks=body.socialLinks===undefined?safePartnerLinks(current.social_links):safePartnerLinks(body.socialLinks);
+        const patchDetails={name,description:description||null,company_about:companyAbout||null,mission:mission||null,country:country||'Niger',city:city||null,category:category||null,partner_type:partnerType||'Collaboration',website_url:websiteUrl||null,logo_url:logoUrl||null,social_links:socialLinks,updated_at:now};
+        await supabaseRequest(`agency_partners?id=eq.${encodeURIComponent(partnerId)}`,key,{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(patchDetails)});
+        await recordPartnerAdminEvent(key,user.id,'partner_details_updated',null,partnerId,{name,aboutCharacters:companyAbout.length});
+        const freshR=await supabaseRequest(`agency_partners?id=eq.${encodeURIComponent(partnerId)}&select=id,name,slug,description,company_about,logo_url,founder,mission,country,city,partner_type,category,website_url,social_links,badge_level,badge_label,badge_verified,verified_at,public_id,referral_code,active&limit=1`,key,{method:'GET'});
+        const freshRows=await freshR.json().catch(()=>[]);
+        return partnerJson(request,{ok:true,partner:Array.isArray(freshRows)&&freshRows[0]?publicPartner(freshRows[0]):null,message:'Informations du partenaire mises à jour.'});
+      }
       let patch={},auditAction='partner_badge_updated';
       if(action==='suspend'){
         patch={active:false,badge_verified:false,badge_label:'Profil suspendu',updated_at:now};
@@ -660,7 +687,7 @@ export default {async fetch(request,env,ctx){
       const profile={
         application_id:id,name:app.company_name,slug,
         description:(app.public_description||'Partenaire du réseau Bickri Service Agency.').slice(0,500),
-        founder:null,mission:(app.public_mission||app.public_description||'').slice(0,1500),
+        company_about:(app.public_about||'').slice(0,5000),founder:null,mission:(app.public_mission||app.public_description||'').slice(0,1500),
         logo_url:safePartnerUrl(app.logo_url)||null,
         country:app.country||'Niger',city:app.city||null,website_url:safePartnerUrl(app.website_url)||null,
         category:app.category||null,social_links:safePartnerLinks(app.social_links||{}),
@@ -699,7 +726,7 @@ export default {async fetch(request,env,ctx){
     if (!rate.allowed) return partnerJson(request,{error:'Trop de candidatures depuis cet accès. Réessayez dans quelques minutes.'},429,{'Retry-After':String(rate.retryAfter)});
     let body;
     try { body = await request.json(); } catch { return partnerJson(request,{error:'Requête JSON invalide.'},400); }
-    const {fullName,email,companyName,websiteUrl='',logoUrl='',publicDescription='',publicMission='',publicProfileConsent='',partnerType,message,website='',country='Niger',city='',category='',socialLinks={},socialFacebook='',socialInstagram='',socialLinkedIn='',socialWhatsApp='',referralCode=''} = body || {};
+    const {fullName,email,companyName,websiteUrl='',logoUrl='',publicDescription='',publicMission='',publicAbout='',publicProfileConsent='',partnerType,message,website='',country='Niger',city='',category='',socialLinks={},socialFacebook='',socialInstagram='',socialLinkedIn='',socialWhatsApp='',referralCode=''} = body || {};
     if (website) return partnerJson(request,{ok:true,message:'Demande reçue.'},201);
     const allowedTypes = new Set(['technical','referral','integrator','other']);
     if (typeof fullName !== 'string' || fullName.trim().length < 2 || fullName.trim().length > 120 ||
@@ -710,6 +737,7 @@ export default {async fetch(request,env,ctx){
         (websiteUrl && !safePartnerUrl(websiteUrl)) || (logoUrl && (!safePartnerUrl(logoUrl) || !/^https:\/\//i.test(logoUrl.trim()))) ||
         (typeof publicDescription !== 'string' || publicDescription.length > 500) ||
         (typeof publicMission !== 'string' || publicMission.length > 1500) ||
+        (typeof publicAbout !== 'string' || publicAbout.length > 5000) ||
         (country && (typeof country!=='string'||country.trim().length>80)) ||
         (city && (typeof city!=='string'||city.trim().length>100)) ||
         (category && (typeof category!=='string'||category.trim().length>100))) {
@@ -742,7 +770,7 @@ export default {async fetch(request,env,ctx){
         body:JSON.stringify({
           full_name:fullName.trim(),email:cleanEmail,company_name:companyName.trim(),
           website_url:safePartnerUrl(websiteUrl)||null,logo_url:safePartnerUrl(logoUrl)||null,
-          public_description:publicDescription.trim()||null,public_mission:publicMission.trim()||null,
+          public_description:publicDescription.trim()||null,public_mission:publicMission.trim()||null,public_about:publicAbout.trim()||null,
           public_profile_consent:true,public_profile_consented_at:new Date().toISOString(),
           country:(country||'Niger').trim().slice(0,80),
           city:typeof city==='string'?city.trim().slice(0,100)||null:null,
