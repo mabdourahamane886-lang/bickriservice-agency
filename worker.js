@@ -450,7 +450,7 @@ export default {async fetch(request,env,ctx){
     if (!(await partnerIsAdmin(user.id,key))) return json({error:'Accès réservé à l’administration.'},403);
     try {
       const [appsR,partnersR,clicks] = await Promise.all([
-        supabaseRequest('agency_partner_applications?select=id,application_code,full_name,email,company_name,website_url,country,city,category,partner_type,social_links,message,referral_code,status,email_status,email_error_code,reviewer_notes,created_at,reviewed_at&order=created_at.desc&limit=150',key,{method:'GET'}),
+        supabaseRequest('agency_partner_applications?select=id,application_code,full_name,email,company_name,website_url,logo_url,public_description,public_mission,public_profile_consent,country,city,category,partner_type,social_links,message,referral_code,status,email_status,email_error_code,reviewer_notes,created_at,reviewed_at&order=created_at.desc&limit=150',key,{method:'GET'}),
         supabaseRequest('agency_partners?select=id,name,slug,active,badge_level,badge_verified&limit=300',key,{method:'GET'}),
         partnerCount('agency_partner_clicks',key)
       ]);
@@ -531,15 +531,17 @@ export default {async fetch(request,env,ctx){
     if (!rate.allowed) return json({error:'Trop de candidatures depuis cet accès. Réessayez dans quelques minutes.'},429,{'Retry-After':String(rate.retryAfter)});
     let body;
     try { body = await request.json(); } catch { return json({error:'Requête JSON invalide.'},400); }
-    const {fullName,email,companyName,websiteUrl='',partnerType,message,website='',country='Niger',city='',category='',socialLinks={},socialFacebook='',socialInstagram='',socialLinkedIn='',socialWhatsApp='',referralCode=''} = body || {};
+    const {fullName,email,companyName,websiteUrl='',logoUrl='',publicDescription='',publicMission='',publicProfileConsent='',partnerType,message,website='',country='Niger',city='',category='',socialLinks={},socialFacebook='',socialInstagram='',socialLinkedIn='',socialWhatsApp='',referralCode=''} = body || {};
     if (website) return json({ok:true,message:'Demande reçue.'},201);
     const allowedTypes = new Set(['technical','referral','integrator','other']);
     if (typeof fullName !== 'string' || fullName.trim().length < 2 || fullName.trim().length > 120 ||
         typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) || email.trim().length > 254 ||
         typeof companyName !== 'string' || companyName.trim().length < 2 || companyName.trim().length > 160 ||
         typeof message !== 'string' || message.trim().length < 10 || message.trim().length > 5000 ||
-        !allowedTypes.has(partnerType) ||
-        (websiteUrl && !safePartnerUrl(websiteUrl)) ||
+        !allowedTypes.has(partnerType) || publicProfileConsent !== 'yes' ||
+        (websiteUrl && !safePartnerUrl(websiteUrl)) || (logoUrl && !safePartnerUrl(logoUrl)) ||
+        (typeof publicDescription !== 'string' || publicDescription.length > 500) ||
+        (typeof publicMission !== 'string' || publicMission.length > 1500) ||
         (country && (typeof country!=='string'||country.trim().length>80)) ||
         (city && (typeof city!=='string'||city.trim().length>100)) ||
         (category && (typeof category!=='string'||category.trim().length>100))) {
@@ -571,7 +573,10 @@ export default {async fetch(request,env,ctx){
         method:'POST',headers:{Prefer:'return=representation'},
         body:JSON.stringify({
           full_name:fullName.trim(),email:cleanEmail,company_name:companyName.trim(),
-          website_url:safePartnerUrl(websiteUrl)||null,country:(country||'Niger').trim().slice(0,80),
+          website_url:safePartnerUrl(websiteUrl)||null,logo_url:safePartnerUrl(logoUrl)||null,
+          public_description:publicDescription.trim()||null,public_mission:publicMission.trim()||null,
+          public_profile_consent:true,public_profile_consented_at:new Date().toISOString(),
+          country:(country||'Niger').trim().slice(0,80),
           city:typeof city==='string'?city.trim().slice(0,100)||null:null,
           category:typeof category==='string'?category.trim().slice(0,100)||null:null,
           partner_type:partnerType,social_links:links,message:message.trim(),
@@ -592,7 +597,7 @@ export default {async fetch(request,env,ctx){
             fullName:fullName.trim(),email:cleanEmail,companyName:companyName.trim(),
             websiteUrl:safePartnerUrl(websiteUrl),partnerType,message:message.trim(),
             country:(country||'Niger').trim(),city:typeof city==='string'?city.trim():'',
-            category:typeof category==='string'?category.trim():'',referralCode:validRef||''
+            category:typeof category==='string'?category.trim():'',socialLinks:links,referralCode:validRef||''
           });
           emailStatus='sent';
         } catch (error) {
