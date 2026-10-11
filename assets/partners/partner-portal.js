@@ -145,7 +145,8 @@
         edit.elements.websiteUrl.value=p.websiteUrl||'';
         edit.elements.socialLinks.value=JSON.stringify(p.socialLinks||{},null,2);
       }
-      const link=location.origin+'/partenaires/profil/?slug='+encodeURIComponent(p.slug)+(p.referralCode?'&ref='+encodeURIComponent(p.referralCode):'');
+      const publicOrigin=location.hostname.endsWith('.vercel.app')?'https://bickriservice-agency.org':location.origin;
+      const link=publicOrigin+'/partenaires/profil/?slug='+encodeURIComponent(p.slug)+(p.referralCode?'&ref='+encodeURIComponent(p.referralCode):'');
       if($('partnerReferralUrl'))$('partnerReferralUrl').value=link;
       if($('partnerProfileLink')){$('partnerProfileLink').href='/partenaires/profil/?slug='+encodeURIComponent(p.slug);$('partnerProfileLink').textContent='Ouvrir mon profil public ↗';}
       if($('portalPartnerName'))$('portalPartnerName').textContent=p.name;
