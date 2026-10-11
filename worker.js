@@ -125,6 +125,123 @@ async function ensureConversation(sessionId,key){if(!key||!sessionId)return null
 async function loadConversationHistory(id,key){if(!key||!id)return[];const r=await supabaseRequest(`agency_ai_messages?conversation_id=eq.${encodeURIComponent(id)}&select=role,content&order=created_at.desc&limit=8`,key,{method:'GET'});const rows=await r.json().catch(()=>[]);return Array.isArray(rows)?rows.reverse().filter(x=>(x?.role==='user'||x?.role==='assistant')&&typeof x?.content==='string').map(x=>({role:x.role,content:x.content.slice(0,2000)})):[]}
 async function saveConversationExchange(id,key,user,assistant){if(!key||!id)return;await supabaseRequest('agency_ai_messages',key,{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify([{conversation_id:id,role:'user',content:user.slice(0,4000)},{conversation_id:id,role:'assistant',content:assistant.slice(0,4000)}])});await supabaseRequest(`agency_ai_conversations?id=eq.${encodeURIComponent(id)}`,key,{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({updated_at:new Date().toISOString()})})}
 function secureCookie(id){return `bickri_ai_session=${id}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`}
+
+const partnerSubmissionBuckets = globalThis.__bsaPartnerSubmissionBuckets || new Map();
+globalThis.__bsaPartnerSubmissionBuckets = partnerSubmissionBuckets;
+const partnerClickBuckets = globalThis.__bsaPartnerClickBuckets || new Map();
+globalThis.__bsaPartnerClickBuckets = partnerClickBuckets;
+
+function checkPartnerLimit(request, buckets, max, windowMs) {
+  const ip = request.headers.get('CF-Connecting-IP') ||
+    String(request.headers.get('X-Forwarded-For') || '').split(',')[0].trim() || 'unknown';
+  const now = Date.now();
+  const current = buckets.get(ip);
+  if (!current || now - current.startedAt >= windowMs) {
+    buckets.set(ip, {startedAt: now, count: 1});
+    return {allowed: true, retryAfter: Math.ceil(windowMs / 1000)};
+  }
+  current.count += 1;
+  if (buckets.size > 5000) {
+    for (const [key, value] of buckets) {
+      if (now - value.startedAt >= windowMs) buckets.delete(key);
+    }
+  }
+  return {
+    allowed: current.count <= max,
+    retryAfter: Math.max(1, Math.ceil((windowMs - (now - current.startedAt)) / 1000))
+  };
+}
+
+function partnerSlug(value) {
+  return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 65) || 'partenaire';
+}
+
+function safePartnerLinks(value) {
+  let input = value;
+  if (typeof input === 'string') {
+    try { input = JSON.parse(input || '{}'); } catch { input = {}; }
+  }
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return {};
+  const result = {};
+  for (const key of ['website','facebook','instagram','linkedin','whatsapp','tiktok','x','telegram']) {
+    const raw = input[key];
+    if (typeof raw !== 'string' || !raw.trim()) continue;
+    try {
+      const u = new URL(raw.trim());
+      if (u.protocol === 'https:' && !u.username && !u.password) result[key] = u.href.slice(0, 500);
+    } catch {}
+  }
+  return result;
+}
+
+function safePartnerUrl(value) {
+  if (typeof value !== 'string' || !value.trim()) return '';
+  try {
+    const u = new URL(value.trim());
+    return (u.protocol === 'https:' || u.protocol === 'http:') && !u.username && !u.password ? u.href.slice(0, 500) : '';
+  } catch { return ''; }
+}
+
+async function partnerAuthUser(request, env) {
+  const key = env.SUPABASE_SERVICE_ROLE_KEY;
+  const authorization = request.headers.get('Authorization') || '';
+  const token = authorization.match(/^Bearer\s+(.+)$/i)?.[1];
+  if (!key) return {error: json({error:'Le service de compte partenaire n’est pas configuré.',code:'PARTNER_AUTH_UNCONFIGURED'},503)};
+  if (!token || token.length > 8192) return {error: json({error:'Connectez-vous pour accéder à cet espace.',code:'AUTH_REQUIRED'},401)};
+  try {
+    const r = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      headers: {apikey:key, Authorization:`Bearer ${token}`}
+    });
+    const user = await r.json().catch(() => ({}));
+    if (!r.ok || !user?.id || !user?.email) return {error: json({error:'Votre session a expiré. Reconnectez-vous.',code:'AUTH_INVALID'},401)};
+    return {user,key};
+  } catch {
+    return {error: json({error:'Le service d’authentification est momentanément indisponible.',code:'AUTH_UNAVAILABLE'},503)};
+  }
+}
+
+async function partnerIsAdmin(userId, key) {
+  const path = `profiles?id=eq.${encodeURIComponent(userId)}&select=role&limit=1`;
+  try {
+    const r = await supabaseRequest(path,key,{method:'GET'});
+    const rows = await r.json().catch(() => []);
+    if (Array.isArray(rows) && rows.some(row => row.role === 'admin')) return true;
+  } catch {}
+  for (const table of ['bickri_admin_users','niger_admins']) {
+    try {
+      const r = await supabaseRequest(`${table}?user_id=eq.${encodeURIComponent(userId)}&select=user_id&limit=1`,key,{method:'GET'});
+      const rows = await r.json().catch(() => []);
+      if (Array.isArray(rows) && rows.length) return true;
+    } catch {}
+  }
+  return false;
+}
+
+async function partnerCount(resource, key) {
+  try {
+    const r = await supabaseRequest(`${resource}?select=id`,key,{
+      method:'GET',
+      headers:{Prefer:'count=exact',Range:'0-0'}
+    });
+    const range = r.headers.get('Content-Range') || '';
+    const total = Number(range.split('/').pop());
+    return Number.isFinite(total) ? total : 0;
+  } catch { return 0; }
+}
+
+function publicPartner(row) {
+  return {
+    id:row.id, name:row.name, slug:row.slug, description:row.description || '',
+    logoUrl:row.logo_url || '', founder:row.founder || '', mission:row.mission || '',
+    country:row.country || 'Niger', city:row.city || '', partnerType:row.partner_type || '',
+    category:row.category || row.partner_type || '', websiteUrl:row.website_url || '',
+    socialLinks:safePartnerLinks(row.social_links || {}),
+    badgeLevel:row.badge_level || 'green', badgeLabel:row.badge_label || 'Partenaire vérifié',
+    badgeVerified:Boolean(row.badge_verified), verifiedAt:row.verified_at || null,
+    publicId:row.public_id || '', referralCode:row.referral_code || ''
+  };
+}
 function fallbackAnswer(message){
   const q=message.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   if(/^(bonjour|salut|salam|assalam|hello|bonsoir|coucou)/.test(q)) return 'Bonjour 👋 Je suis Bickri IA. Je peux vous renseigner sur nos services, les sites web, l’e-commerce, les réseaux sociaux, l’IA, le design, la publicité, les formations et le coaching.';
@@ -144,61 +261,356 @@ function fallbackAnswer(message){
 export default {async fetch(request,env,ctx){
   const url=new URL(request.url);
   // Candidatures partenaires : envoi natif avec Cloudflare Email Service, sans Resend ni Google.
+  
+  if (url.pathname === '/api/partners' && request.method === 'GET') {
+    const key = env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!key) return json({error:'Le répertoire des partenaires est momentanément indisponible.'},503);
+    try {
+      const params = new URLSearchParams({
+        active:'eq.true',
+        select:'id,name,slug,description,logo_url,founder,mission,country,city,partner_type,category,website_url,social_links,badge_level,badge_label,badge_verified,verified_at,public_id,referral_code',
+        order:'name.asc',
+        limit:'300'
+      });
+      const slug = (url.searchParams.get('slug') || '').trim();
+      if (slug) params.set('slug',`eq.${slug.slice(0,90)}`);
+      const r = await supabaseRequest(`agency_partners?${params.toString()}`,key,{method:'GET'});
+      const rows = await r.json().catch(() => []);
+      const partners = Array.isArray(rows) ? rows.map(publicPartner) : [];
+      if (slug) return partners.length ? json({partner:partners[0]}) : json({error:'Partenaire introuvable.'},404);
+      return json({partners, total:partners.length, verified:partners.filter(p=>p.badgeVerified).length, version:SITE_VERSION});
+    } catch (error) {
+      console.error('Partner directory read failed:',error?.message||'unknown error');
+      return json({error:'Impossible de charger le répertoire pour le moment.'},503);
+    }
+  }
+
+  if (url.pathname === '/api/partners/metrics' && request.method === 'GET') {
+    const key = env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!key) return json({error:'Statistiques temporairement indisponibles.'},503);
+    try {
+      const r = await supabaseRequest('agency_partners?active=eq.true&select=id,badge_verified',key,{method:'GET'});
+      const rows = await r.json().catch(() => []);
+      const partners = Array.isArray(rows) ? rows : [];
+      const clicks = await partnerCount('agency_partner_clicks',key);
+      return json({
+        partners:partners.length,
+        verified:partners.filter(p=>p.badge_verified===true).length,
+        trackedEvents:clicks,
+        levels:3
+      });
+    } catch (error) {
+      console.error('Partner metrics read failed:',error?.message||'unknown error');
+      return json({error:'Statistiques temporairement indisponibles.'},503);
+    }
+  }
+
+  if (url.pathname === '/api/partner/click') {
+    if (!isAllowedOrigin(request)) return json({error:'Origine non autorisée'},403);
+    if (request.method !== 'POST') return json({error:'Méthode non autorisée'},405,{'Allow':'POST'});
+    const rate = checkPartnerLimit(request,partnerClickBuckets,60,60*1000);
+    if (!rate.allowed) return json({error:'Trop de clics. Réessayez dans un instant.'},429,{'Retry-After':String(rate.retryAfter)});
+    let body;
+    try { body = await request.json(); } catch { return json({error:'Requête JSON invalide.'},400); }
+    const allowedEvents = new Set(['profile_view','share_click','website_click','contact_click']);
+    const eventType = allowedEvents.has(body?.eventType) ? body.eventType : 'profile_view';
+    const slug = typeof body?.slug === 'string' ? body.slug.trim().slice(0,90) : '';
+    const inputReferral = typeof body?.referralCode === 'string' ? body.referralCode.trim().slice(0,80) : '';
+    const key = env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!key) return json({ok:false,tracking:false},200);
+    try {
+      let partner = null;
+      if (slug) {
+        const found = await supabaseRequest(`agency_partners?slug=eq.${encodeURIComponent(slug)}&active=eq.true&select=id,referral_code&limit=1`,key,{method:'GET'});
+        const rows = await found.json().catch(()=>[]);
+        if (Array.isArray(rows)) partner = rows[0] || null;
+      }
+      let referralCode = partner?.referral_code || '';
+      if (inputReferral) {
+        const ref = await supabaseRequest(`agency_partners?referral_code=eq.${encodeURIComponent(inputReferral)}&active=eq.true&select=referral_code&limit=1`,key,{method:'GET'});
+        const refs = await ref.json().catch(()=>[]);
+        if (Array.isArray(refs) && refs.length) referralCode = refs[0].referral_code;
+      }
+      const landingPath = typeof body?.landingPath === 'string' && body.landingPath.startsWith('/') ? body.landingPath.slice(0,300) : '/partenaires/';
+      const source = typeof body?.source === 'string' ? body.source.replace(/[^a-zA-Z0-9_-]/g,'').slice(0,50) : '';
+      const medium = typeof body?.medium === 'string' ? body.medium.replace(/[^a-zA-Z0-9_-]/g,'').slice(0,50) : '';
+      const campaign = typeof body?.campaign === 'string' ? body.campaign.replace(/[^a-zA-Z0-9_-]/g,'').slice(0,80) : '';
+      await supabaseRequest('agency_partner_clicks',key,{
+        method:'POST',
+        headers:{Prefer:'return=minimal'},
+        body:JSON.stringify({partner_id:partner?.id || null,referral_code:referralCode || null,event_type:eventType,source:source || null,medium:medium || null,campaign:campaign || null,landing_path:landingPath})
+      });
+      return json({ok:true,tracking:true},202);
+    } catch (error) {
+      console.error('Partner click tracking failed:',error?.message||'unknown error');
+      return json({ok:false,tracking:false},200);
+    }
+  }
+
+  if (url.pathname === '/api/partner/status' && request.method === 'GET') {
+    const code = (url.searchParams.get('code') || '').trim().toUpperCase();
+    const email = (url.searchParams.get('email') || '').trim().toLowerCase();
+    if (!/^BPA-[A-F0-9]{10}$/.test(code) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
+      return json({error:'Saisissez un code de dossier et une adresse e-mail valides.'},400);
+    }
+    const key = env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!key) return json({error:'Le suivi des candidatures est momentanément indisponible.'},503);
+    try {
+      const path = `agency_partner_applications?application_code=eq.${encodeURIComponent(code)}&email=ilike.${encodeURIComponent(email)}&select=application_code,company_name,status,created_at,reviewed_at&limit=1`;
+      const r = await supabaseRequest(path,key,{method:'GET'});
+      const rows = await r.json().catch(()=>[]);
+      if (!Array.isArray(rows) || !rows.length) return json({error:'Aucun dossier trouvé avec ces informations.'},404);
+      const a=rows[0];
+      const labels={pending:'En attente',under_review:'En cours d’examen',approved:'Approuvée',rejected:'Refusée'};
+      return json({application:{code:a.application_code,companyName:a.company_name,status:a.status,statusLabel:labels[a.status]||a.status,submittedAt:a.created_at,reviewedAt:a.reviewed_at}});
+    } catch (error) {
+      console.error('Partner application status lookup failed:',error?.message||'unknown error');
+      return json({error:'Impossible de vérifier votre dossier pour le moment.'},503);
+    }
+  }
+
+  if (url.pathname === '/api/partner/me') {
+    if (!['GET','PATCH'].includes(request.method)) return json({error:'Méthode non autorisée'},405,{'Allow':'GET, PATCH'});
+    const auth = await partnerAuthUser(request,env);
+    if (auth.error) return auth.error;
+    const {user,key} = auth;
+    if (request.method === 'GET') {
+      try {
+        const safeEmail = encodeURIComponent(String(user.email).toLowerCase());
+        const appsR = await supabaseRequest(`agency_partner_applications?email=ilike.${safeEmail}&select=id,application_code,company_name,partner_type,country,city,status,email_status,created_at,reviewed_at,reviewer_notes&order=created_at.desc&limit=50`,key,{method:'GET'});
+        const applications = await appsR.json().catch(()=>[]);
+        const safeApps = Array.isArray(applications)?applications.map(a=>({
+          id:a.id,code:a.application_code,companyName:a.company_name,partnerType:a.partner_type,
+          country:a.country,city:a.city,status:a.status,emailStatus:a.email_status,
+          submittedAt:a.created_at,reviewedAt:a.reviewed_at,reviewerNotes:a.reviewer_notes||''
+        })):[];
+        const partnerR = await supabaseRequest(`agency_partners?owner_user_id=eq.${encodeURIComponent(user.id)}&select=id,name,slug,description,mission,country,city,website_url,social_links,badge_level,badge_label,badge_verified,verified_at,public_id,referral_code&active=eq.true&limit=1`,key,{method:'GET'});
+        let partners = await partnerR.json().catch(()=>[]);
+        if (!Array.isArray(partners)) partners=[];
+        if (!partners.length && user.email_confirmed_at) {
+          const approved = safeApps.find(a=>a.status==='approved');
+          if (approved) {
+            const appR = await supabaseRequest(`agency_partner_applications?id=eq.${encodeURIComponent(approved.id)}&select=id,owner_user_id&limit=1`,key,{method:'GET'});
+            const appRows = await appR.json().catch(()=>[]);
+            const app = Array.isArray(appRows)?appRows[0]:null;
+            const profileR = await supabaseRequest(`agency_partners?application_id=eq.${encodeURIComponent(approved.id)}&select=id,owner_user_id&active=eq.true&limit=1`,key,{method:'GET'});
+            const profileRows = await profileR.json().catch(()=>[]);
+            const profile = Array.isArray(profileRows)?profileRows[0]:null;
+            if (profile && !profile.owner_user_id) {
+              await supabaseRequest(`agency_partners?id=eq.${encodeURIComponent(profile.id)}&owner_user_id=is.null`,key,{
+                method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({owner_user_id:user.id,updated_at:new Date().toISOString()})
+              });
+              const refresh = await supabaseRequest(`agency_partners?owner_user_id=eq.${encodeURIComponent(user.id)}&select=id,name,slug,description,mission,country,city,website_url,social_links,badge_level,badge_label,badge_verified,verified_at,public_id,referral_code&active=eq.true&limit=1`,key,{method:'GET'});
+              partners=await refresh.json().catch(()=>[]);
+            }
+          }
+        }
+        const partner = Array.isArray(partners) && partners[0] ? publicPartner(partners[0]) : null;
+        let clickStats={total:0,last7Days:0};
+        if (partner?.id) {
+          clickStats.total=await partnerCount(`agency_partner_clicks?partner_id=eq.${encodeURIComponent(partner.id)}`,key);
+          clickStats.last7Days=await partnerCount(`agency_partner_clicks?partner_id=eq.${encodeURIComponent(partner.id)}&created_at=gte.${encodeURIComponent(new Date(Date.now()-7*86400000).toISOString())}`,key);
+        }
+        return json({user:{id:user.id,email:user.email,emailConfirmed:Boolean(user.email_confirmed_at)},applications:safeApps,partner,clickStats});
+      } catch (error) {
+        console.error('Partner dashboard read failed:',error?.message||'unknown error');
+        return json({error:'Impossible de charger votre espace partenaire.'},503);
+      }
+    }
+    let body;
+    try { body=await request.json(); } catch { return json({error:'Requête JSON invalide.'},400); }
+    try {
+      const partnerR = await supabaseRequest(`agency_partners?owner_user_id=eq.${encodeURIComponent(user.id)}&active=eq.true&select=id,name,slug,description,mission,country,city,website_url,social_links&limit=1`,key,{method:'GET'});
+      const rows=await partnerR.json().catch(()=>[]);
+      const partner=Array.isArray(rows)?rows[0]:null;
+      if (!partner) return json({error:'Aucun profil partenaire actif n’est associé à votre compte.'},403);
+      const description=typeof body.description==='string'?body.description.trim().slice(0,500):partner.description;
+      const mission=typeof body.mission==='string'?body.mission.trim().slice(0,1500):partner.mission;
+      const country=typeof body.country==='string'?body.country.trim().slice(0,80):partner.country;
+      const city=typeof body.city==='string'?body.city.trim().slice(0,100):partner.city;
+      const websiteUrl=body.websiteUrl===undefined?partner.website_url:safePartnerUrl(body.websiteUrl);
+      const socialLinks=body.socialLinks===undefined?safePartnerLinks(partner.social_links):safePartnerLinks(body.socialLinks);
+      await supabaseRequest(`agency_partners?id=eq.${encodeURIComponent(partner.id)}&owner_user_id=eq.${encodeURIComponent(user.id)}`,key,{
+        method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({description,mission,country,city,website_url:websiteUrl||null,social_links:socialLinks,updated_at:new Date().toISOString()})
+      });
+      return json({ok:true,message:'Profil partenaire mis à jour.'});
+    } catch (error) {
+      console.error('Partner profile update failed:',error?.message||'unknown error');
+      return json({error:'Impossible d’enregistrer vos modifications.'},503);
+    }
+  }
+
+  if (url.pathname === '/api/partner/admin' && request.method === 'GET') {
+    const auth = await partnerAuthUser(request,env);
+    if (auth.error) return auth.error;
+    const {user,key}=auth;
+    if (!(await partnerIsAdmin(user.id,key))) return json({error:'Accès réservé à l’administration.'},403);
+    try {
+      const [appsR,partnersR,clicks] = await Promise.all([
+        supabaseRequest('agency_partner_applications?select=id,application_code,full_name,email,company_name,website_url,country,city,category,partner_type,social_links,message,referral_code,status,email_status,email_error_code,reviewer_notes,created_at,reviewed_at&order=created_at.desc&limit=150',key,{method:'GET'}),
+        supabaseRequest('agency_partners?select=id,name,slug,active,badge_level,badge_verified&limit=300',key,{method:'GET'}),
+        partnerCount('agency_partner_clicks',key)
+      ]);
+      const applications=await appsR.json().catch(()=>[]);
+      const partners=await partnersR.json().catch(()=>[]);
+      const safeApplications=Array.isArray(applications)?applications:[];
+      const safePartners=Array.isArray(partners)?partners:[];
+      const counts={pending:safeApplications.filter(a=>a.status==='pending').length,underReview:safeApplications.filter(a=>a.status==='under_review').length,approved:safeApplications.filter(a=>a.status==='approved').length,rejected:safeApplications.filter(a=>a.status==='rejected').length};
+      return json({applications:safeApplications,stats:{applications:safeApplications.length,...counts,partners:safePartners.filter(p=>p.active).length,verified:safePartners.filter(p=>p.active&&p.badge_verified).length,trackedEvents:clicks}});
+    } catch (error) {
+      console.error('Partner admin read failed:',error?.message||'unknown error');
+      return json({error:'Impossible de charger le tableau de bord administrateur.'},503);
+    }
+  }
+
+  if (url.pathname === '/api/partner/admin/review' && request.method === 'POST') {
+    if (!isAllowedOrigin(request)) return json({error:'Origine non autorisée'},403);
+    const auth = await partnerAuthUser(request,env);
+    if (auth.error) return auth.error;
+    const {user,key}=auth;
+    if (!(await partnerIsAdmin(user.id,key))) return json({error:'Accès réservé à l’administration.'},403);
+    let body;
+    try { body=await request.json(); } catch { return json({error:'Requête JSON invalide.'},400); }
+    const id=typeof body?.applicationId==='string'?body.applicationId:'';
+    const action=body?.action;
+    const allowedStatuses=new Set(['under_review','approve','reject']);
+    if (!isUuid(id)||!allowedStatuses.has(action)) return json({error:'Action de validation invalide.'},400);
+    const notes=typeof body.reviewerNotes==='string'?body.reviewerNotes.trim().slice(0,2000):'';
+    const badgeLevel=['green','blue','gold','construction'].includes(body.badgeLevel)?body.badgeLevel:'green';
+    try {
+      const appR=await supabaseRequest(`agency_partner_applications?id=eq.${encodeURIComponent(id)}&select=*&limit=1`,key,{method:'GET'});
+      const found=await appR.json().catch(()=>[]);
+      const app=Array.isArray(found)?found[0]:null;
+      if (!app) return json({error:'Candidature introuvable.'},404);
+      const status=action==='approve'?'approved':action==='reject'?'rejected':'under_review';
+      const updatedAt=new Date().toISOString();
+      const patch={status,reviewer_notes:notes||null,reviewed_by:user.id,reviewed_at:updatedAt,updated_at:updatedAt};
+      const updateR=await supabaseRequest(`agency_partner_applications?id=eq.${encodeURIComponent(id)}`,key,{
+        method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify(patch)
+      });
+      await updateR.json().catch(()=>[]);
+      let partner=null;
+      if (action==='approve') {
+        let slug=partnerSlug(app.company_name);
+        const existingSlugR=await supabaseRequest(`agency_partners?slug=eq.${encodeURIComponent(slug)}&select=id,application_id&limit=1`,key,{method:'GET'});
+        const existingSlugs=await existingSlugR.json().catch(()=>[]);
+        if (Array.isArray(existingSlugs)&&existingSlugs[0]&&existingSlugs[0].application_id!==id) slug=`${slug}-${app.application_code.slice(-4).toLowerCase()}`;
+        const partnerTypeLabel={technical:'Partenaire technologique',referral:'Apporteur d’affaires',integrator:'Intégrateur',other:'Autre partenariat'}[app.partner_type]||'Partenaire';
+        const profile={
+          application_id:id,name:app.company_name,slug,description:(app.message||'').slice(0,500),
+          founder:app.full_name,mission:app.message,country:app.country||'Niger',city:app.city||null,
+          website_url:app.website_url||null,category:app.category||null,social_links:safePartnerLinks(app.social_links||{}),
+          partner_type:partnerTypeLabel,active:true,badge_level:badgeLevel,
+          badge_label:badgeLevel==='gold'?'Partenaire Premium':badgeLevel==='blue'?'Partenaire certifié':badgeLevel==='construction'?'Partenaire BTP vérifié':'Partenaire vérifié',
+          badge_verified:true,verified_at:updatedAt,owner_user_id:app.owner_user_id||null,
+          public_id:'BSP-'+app.application_code.replace(/[^A-Z0-9]/g,'').slice(-8),
+          referral_code:'REF-'+app.application_code.replace(/[^A-Z0-9]/g,'').slice(-10)
+        };
+        const upsertR=await supabaseRequest('agency_partners?on_conflict=application_id',key,{
+          method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(profile)
+        });
+        const upsertRows=await upsertR.json().catch(()=>[]);
+        partner=Array.isArray(upsertRows)?upsertRows[0]||null:null;
+      }
+      return json({ok:true,status,partner:partner?publicPartner(partner):null});
+    } catch (error) {
+      console.error('Partner application review failed:',error?.message||'unknown error');
+      return json({error:'La mise à jour n’a pas pu être terminée. Vérifiez le dossier et réessayez.'},503);
+    }
+  }
+
   if (url.pathname === '/api/partner') {
     if (!isAllowedOrigin(request)) return json({error:'Origine non autorisée'},403);
     if (request.method !== 'POST') return json({error:'Méthode non autorisée'},405,{'Allow':'POST'});
     const contentLength = Number(request.headers.get('Content-Length') || 0);
     if (Number.isFinite(contentLength) && contentLength > 32 * 1024) return json({error:'Requête trop volumineuse'},413);
+    const rate=checkPartnerLimit(request,partnerSubmissionBuckets,5,10*60*1000);
+    if (!rate.allowed) return json({error:'Trop de candidatures depuis cet accès. Réessayez dans quelques minutes.'},429,{'Retry-After':String(rate.retryAfter)});
     let body;
     try { body = await request.json(); } catch { return json({error:'Requête JSON invalide.'},400); }
-    const {fullName,email,companyName,websiteUrl='',partnerType,message,website=''} = body || {};
-    if (website) return json({ok:true});
+    const {fullName,email,companyName,websiteUrl='',partnerType,message,website='',country='Niger',city='',category='',socialLinks={},referralCode=''} = body || {};
+    if (website) return json({ok:true,message:'Demande reçue.'},201);
     const allowedTypes = new Set(['technical','referral','integrator','other']);
-    if (typeof fullName !== 'string' || fullName.trim().length < 2 || fullName.length > 120 ||
-        typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 ||
-        typeof companyName !== 'string' || companyName.trim().length < 2 || companyName.length > 160 ||
-        typeof message !== 'string' || message.trim().length < 10 || message.length > 5000 ||
+    if (typeof fullName !== 'string' || fullName.trim().length < 2 || fullName.trim().length > 120 ||
+        typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) || email.trim().length > 254 ||
+        typeof companyName !== 'string' || companyName.trim().length < 2 || companyName.trim().length > 160 ||
+        typeof message !== 'string' || message.trim().length < 10 || message.trim().length > 5000 ||
         !allowedTypes.has(partnerType) ||
-        (websiteUrl && (typeof websiteUrl !== 'string' || websiteUrl.length > 500 || !/^https?:\/\//i.test(websiteUrl)))) {
+        (websiteUrl && !safePartnerUrl(websiteUrl)) ||
+        (country && (typeof country!=='string'||country.trim().length>80)) ||
+        (city && (typeof city!=='string'||city.trim().length>100)) ||
+        (category && (typeof category!=='string'||category.trim().length>100))) {
       return json({error:'Vérifiez les champs du formulaire puis réessayez.'},400);
     }
-    if (!env.PARTNER_EMAIL || typeof env.PARTNER_EMAIL.send !== 'function') {
-      console.error('Cloudflare Email Service binding PARTNER_EMAIL is not configured.');
-      return json({error:'Le service e-mail n’est pas encore activé sur le site.'},503);
+    const key=env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!key) {
+      console.error('Bickri Mail partner submission has no Supabase persistence key.');
+      return json({error:'Le formulaire est temporairement indisponible. Réessayez plus tard.'},503);
     }
+    const cleanEmail=email.trim().toLowerCase();
+    const links=safePartnerLinks(socialLinks);
+    const refInput=typeof referralCode==='string'?referralCode.trim().slice(0,80):'';
     try {
-      const result = await sendPartnerApplication(env.PARTNER_EMAIL, {
-        fullName: fullName.trim(),
-        email: email.trim(),
-        companyName: companyName.trim(),
-        websiteUrl: websiteUrl.trim(),
-        partnerType,
-        message: message.trim()
+      let validRef=null;
+      if (refInput) {
+        const refR=await supabaseRequest(`agency_partners?referral_code=eq.${encodeURIComponent(refInput)}&active=eq.true&select=referral_code&limit=1`,key,{method:'GET'});
+        const refRows=await refR.json().catch(()=>[]);
+        if (Array.isArray(refRows)&&refRows[0]) validRef=refRows[0].referral_code;
+      }
+      const insertR=await supabaseRequest('agency_partner_applications',key,{
+        method:'POST',headers:{Prefer:'return=representation'},
+        body:JSON.stringify({
+          full_name:fullName.trim(),email:cleanEmail,company_name:companyName.trim(),
+          website_url:safePartnerUrl(websiteUrl)||null,country:(country||'Niger').trim().slice(0,80),
+          city:typeof city==='string'?city.trim().slice(0,100)||null:null,
+          category:typeof category==='string'?category.trim().slice(0,100)||null:null,
+          partner_type:partnerType,social_links:links,message:message.trim(),
+          referral_code:validRef,status:'pending',email_status:env.PARTNER_EMAIL?'pending':'not_configured'
+        })
       });
-      return json(result, 200);
+      const inserted=await insertR.json().catch(()=>[]);
+      const application=Array.isArray(inserted)?inserted[0]:null;
+      if (!application?.id||!application?.application_code) {
+        console.error('Bickri Mail application persistence returned no application identifier.');
+        return json({error:'La candidature n’a pas pu être enregistrée. Réessayez plus tard.'},503);
+      }
+      let emailStatus='not_configured';
+      let emailErrorCode=null;
+      if (env.PARTNER_EMAIL && typeof env.PARTNER_EMAIL.send==='function') {
+        try {
+          await sendPartnerApplication(env.PARTNER_EMAIL,{
+            fullName:fullName.trim(),email:cleanEmail,companyName:companyName.trim(),
+            websiteUrl:safePartnerUrl(websiteUrl),partnerType,message:message.trim(),
+            country:(country||'Niger').trim(),city:typeof city==='string'?city.trim():'',
+            category:typeof category==='string'?category.trim():'',referralCode:validRef||''
+          });
+          emailStatus='sent';
+        } catch (error) {
+          emailStatus='failed';
+          emailErrorCode=typeof error?.code==='string'&&/^[A-Z0-9_]{3,80}$/.test(error.code)?error.code:'BICKRI_MAIL_SEND_FAILED';
+          console.error('Bickri Mail notification failed for saved application:',emailErrorCode,error?.message||'unknown error');
+        }
+      } else {
+        console.error('Bickri Mail Email Service binding PARTNER_EMAIL is not configured; application was saved.');
+      }
+      try {
+        await supabaseRequest(`agency_partner_applications?id=eq.${encodeURIComponent(application.id)}`,key,{
+          method:'PATCH',headers:{Prefer:'return=minimal'},
+          body:JSON.stringify({email_status:emailStatus,email_error_code:emailErrorCode,updated_at:new Date().toISOString()})
+        });
+      } catch (error) {
+        console.error('Could not update partner email status:',error?.message||'unknown error');
+      }
+      return json({
+        ok:true,saved:true,applicationCode:application.application_code,emailStatus,
+        message:'Votre candidature a été enregistrée. Conservez votre code de dossier pour suivre son état.'
+      },201);
     } catch (error) {
-      const knownCode = typeof error?.code === 'string' && /^[A-Z0-9_]{3,80}$/.test(error.code)
-        ? error.code
-        : 'BICKRI_MAIL_SEND_FAILED';
-      console.error('Bickri Mail send failed:', knownCode, error?.message || 'unknown error');
-      const mailErrors = {
-        E_SENDER_NOT_VERIFIED: {status:503, message:'Le domaine expéditeur de Bickri Mail doit être vérifié dans Cloudflare Email Service.'},
-        E_SENDER_DOMAIN_NOT_AVAILABLE: {status:503, message:'Le domaine bickriservice-agency.org doit être activé dans Cloudflare Email Service.'},
-        E_RECIPIENT_NOT_ALLOWED: {status:503, message:'L’adresse de réception n’est pas autorisée dans Cloudflare Email Service.'},
-        E_RECIPIENT_SUPPRESSED: {status:503, message:'L’adresse de réception est bloquée par le service e-mail. Vérifiez les suppressions et les rebonds dans Cloudflare.'},
-        E_RATE_LIMIT_EXCEEDED: {status:429, message:'La limite d’envoi Bickri Mail est atteinte. Réessayez plus tard.'},
-        E_DAILY_LIMIT_EXCEEDED: {status:429, message:'Le quota quotidien Bickri Mail est atteint. Vérifiez le quota Email Service dans Cloudflare.'},
-        E_DELIVERY_FAILED: {status:502, message:'Le serveur de réception a refusé le message. Vérifiez la délivrabilité et les journaux Email Service.'},
-        E_VALIDATION_ERROR: {status:400, message:'Cloudflare a refusé le format du message. Vérifiez la configuration de Bickri Mail.'},
-        E_FIELD_MISSING: {status:400, message:'Un champ obligatoire du message est manquant dans la configuration de Bickri Mail.'}
-      };
-      const knownError = mailErrors[knownCode] || {
-        status:502,
-        message:'Bickri Mail n’a pas pu envoyer le message. Consultez le code de diagnostic et les journaux Email Service dans Cloudflare.'
-      };
-      return json({error:knownError.message, code:knownCode}, knownError.status);
+      console.error('Partner application storage failed:',error?.message||'unknown error');
+      return json({error:'Impossible d’enregistrer la candidature. Le service de données est momentanément indisponible.'},503);
     }
   }
+
   if (url.pathname === '/api/turnstile-sitekey') {
     if (request.method !== 'GET') return json({error:'Method not allowed'},405);
     return json({siteKey: env.TURNSTILE_SITE_KEY || '0x4AAAAAAFSQKBE9BhCCTI8Qc1vlZ_sojAI'},200,{'Cache-Control':'no-store'});
