@@ -46,10 +46,11 @@
 (() => {
 'use strict';
 const $=id=>document.getElementById(id);
+const API_BASE=location.hostname.endsWith('.vercel.app')?'https://bickriservice-agency.org':'';const apiUrl=path=>API_BASE+path;
 const params=new URLSearchParams(location.search),slug=(params.get('slug')||'').trim(),ref=(params.get('ref')||'').trim();
 const badges={green:'badge-verified-green.svg',blue:'badge-verified-blue.svg',gold:'badge-verified-gold.svg',construction:'badge-construction.svg'};
 const escUrl=value=>{try{const u=new URL(value);return ['https:','http:'].includes(u.protocol)&&!u.username&&!u.password?u.href:''}catch{return ''}};
-const record=(type,medium='profile')=>fetch('/api/partner/click',{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,body:JSON.stringify({slug,referralCode:ref,eventType:type,source:'partner-profile',medium,campaign:'partner-network',landingPath:location.pathname})}).catch(()=>{});
+const record=(type,medium='profile')=>fetch(apiUrl('/api/partner/click'),{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,body:JSON.stringify({slug,referralCode:ref,eventType:type,source:'partner-profile',medium,campaign:'partner-network',landingPath:location.pathname})}).catch(()=>{});
 const publicUrl=()=>{const url=new URL(location.href);url.searchParams.delete('ref');if(ref)url.searchParams.set('ref',ref);return url.href;};
 async function copy(text){if(navigator.clipboard&&isSecureContext)return navigator.clipboard.writeText(text);const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();if(!ok)throw new Error('copy failed');}
 function setMeta(name,content,property=false){const selector=(property?'meta[property="':'meta[name="')+name+'"]';let el=document.querySelector(selector);if(!el){el=document.createElement('meta');if(property)el.setAttribute('property',name);else el.setAttribute('name',name);document.head.appendChild(el);}el.setAttribute('content',content);}
@@ -57,7 +58,7 @@ function addSocial(label,url){const href=escUrl(url);if(!href)return;const a=doc
 async function init(){
  if(!slug){$('profileLoading').hidden=true;$('profileNotFound').style.display='block';return;}
  try{
-  const response=await fetch('/api/partners?slug='+encodeURIComponent(slug),{cache:'no-store',headers:{Accept:'application/json'}});
+  const response=await fetch(apiUrl('/api/partners?slug='+encodeURIComponent(slug),{cache:'no-store',headers:{Accept:'application/json'}});
   const data=await response.json().catch(()=>({}));if(!response.ok||!data.partner)throw new Error('not found');
   const p=data.partner;const badge=p.badgeLevel||'green';
   $('profileName').textContent=p.name||'Partenaire';
