@@ -63,7 +63,7 @@
       const hay=[p.name,p.description,p.founder,p.mission,p.country,p.city,p.partnerType,p.category].join(' ').toLocaleLowerCase('fr');
       return (!q||hay.includes(q)) && (!countryFilter?.value||p.country===countryFilter.value)
         && (!categoryFilter?.value||(p.category||p.partnerType)===categoryFilter.value)
-        && (!badgeFilter?.value||(p.badgeLevel||'green')===badgeFilter.value);
+        && (!badgeFilter?.value||(badgeFilter.value==='unverified'?!p.badgeVerified:(p.badgeVerified&&(p.badgeLevel||'green')===badgeFilter.value)));
     });
   }
   function render() {
@@ -82,8 +82,8 @@
       const href=fullUrl(profilePath(p));
       return '<article class="partner" data-partner-card="'+escapeHtml(p.slug)+'">'+
         '<img class="partnerLogo" src="'+escapeHtml(logo)+'" alt="'+escapeHtml(p.name)+'" loading="lazy" onerror="this.onerror=null;this.src=\'/assets/bickri-b-logo.svg\'">'+
-        '<h2>'+escapeHtml(p.name)+'<img class="verifiedBadge" src="/assets/partners/'+cfg.file+'" alt="'+escapeHtml(p.badgeLabel||cfg.label)+'" title="'+escapeHtml(p.badgeLabel||cfg.label)+'"></h2>'+
-        '<span class="partnerLiveBadge">'+(p.badgeVerified?'✓ ':'')+escapeHtml(p.badgeLabel||cfg.label)+'</span>'+
+        '<h2>'+escapeHtml(p.name)+(p.badgeVerified?'<img class="verifiedBadge" src="/assets/partners/'+cfg.file+'" alt="'+escapeHtml(p.badgeLabel||cfg.label)+'" title="'+escapeHtml(p.badgeLabel||cfg.label)+'">':'')+'</h2>'+
+        '<span class="partnerLiveBadge"'+(p.badgeVerified?'':' style="background:#f8fafc;color:#64748b;border-color:#e2e8f0"')+'>'+(p.badgeVerified?'✓ ':'')+escapeHtml(p.badgeVerified?(p.badgeLabel||cfg.label):'Profil actif — non vérifié')+'</span>'+
         '<p style="margin-top:12px">'+escapeHtml(p.description||p.mission||'Partenaire de Bickri Service Agency')+'</p>'+
         (p.founder?'<div class="partnerFounder">Dirigeant : <strong>'+escapeHtml(p.founder)+'</strong></div>':'')+
         '<div class="partnerMeta"><span class="chip">'+escapeHtml(p.category||p.partnerType||'Collaboration')+'</span><span class="chip">'+escapeHtml([p.city,p.country||'Niger'].filter(Boolean).join(' · '))+'</span></div>'+
