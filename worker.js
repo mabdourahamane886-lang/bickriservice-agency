@@ -119,14 +119,14 @@ const SECURITY_HEADERS = {
 };
 function json(body,status=200,extra={}){const h=new Headers({...SECURITY_HEADERS,'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store',...extra});return new Response(JSON.stringify(body),{status,headers:h})}
 function isUuid(v){return typeof v==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v)}
-function getSessionId(req){const c=req.headers.get('Cookie')||'';const m=c.match(/(?:^|;\\s*)bickri_ai_session=([^;]+)/i);return m&&isUuid(m[1])?m[1]:null}
+function getSessionId(req){const c=req.headers.get('Cookie')||'';const m=c.match(/(?:^|;\s*)bickri_ai_session=([^;]+)/i);return m&&isUuid(m[1])?m[1]:null}
 async function supabaseRequest(path,key,opt={}){if(!key)return null;const h=new Headers(opt.headers||{});h.set('apikey',key);h.set('Authorization',`Bearer ${key}`);h.set('Content-Type','application/json');const r=await fetch(`${SUPABASE_URL}/rest/v1/${path}`,{...opt,headers:h});if(!r.ok)throw new Error(`Supabase ${r.status}`);return r}
 async function ensureConversation(sessionId,key){if(!key||!sessionId)return null;const r=await supabaseRequest('agency_ai_conversations?on_conflict=session_id',key,{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify({session_id:sessionId,updated_at:new Date().toISOString()})});const rows=await r.json().catch(()=>[]);return rows?.[0]?.id||null}
 async function loadConversationHistory(id,key){if(!key||!id)return[];const r=await supabaseRequest(`agency_ai_messages?conversation_id=eq.${encodeURIComponent(id)}&select=role,content&order=created_at.desc&limit=8`,key,{method:'GET'});const rows=await r.json().catch(()=>[]);return Array.isArray(rows)?rows.reverse().filter(x=>(x?.role==='user'||x?.role==='assistant')&&typeof x?.content==='string').map(x=>({role:x.role,content:x.content.slice(0,2000)})):[]}
 async function saveConversationExchange(id,key,user,assistant){if(!key||!id)return;await supabaseRequest('agency_ai_messages',key,{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify([{conversation_id:id,role:'user',content:user.slice(0,4000)},{conversation_id:id,role:'assistant',content:assistant.slice(0,4000)}])});await supabaseRequest(`agency_ai_conversations?id=eq.${encodeURIComponent(id)}`,key,{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({updated_at:new Date().toISOString()})})}
 function secureCookie(id){return `bickri_ai_session=${id}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`}
 function fallbackAnswer(message){
-  const q=message.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'');
+  const q=message.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   if(/^(bonjour|salut|salam|assalam|hello|bonsoir|coucou)/.test(q)) return 'Bonjour 👋 Je suis Bickri IA. Je peux vous renseigner sur nos services, les sites web, l’e-commerce, les réseaux sociaux, l’IA, le design, la publicité, les formations et le coaching.';
   if(/prix|tarif|cout|combien|devis|budget/.test(q)) return 'Nos tarifs dépendent du projet et de ses fonctionnalités. Bickri Service Agency prépare un devis personnalisé après analyse de votre besoin. Décrivez votre projet et nous vous orienterons.';
   if(/site|web|plateforme|application/.test(q)) return 'Nous créons des sites web professionnels, des plateformes et des expériences responsive. Nous pouvons aussi intégrer des fonctionnalités comme formulaires, espace client, paiements, IA et connexion à Supabase.';
@@ -155,11 +155,11 @@ export default {async fetch(request,env,ctx){
     if (website) return json({ok:true});
     const allowedTypes = new Set(['technical','referral','integrator','other']);
     if (typeof fullName !== 'string' || fullName.trim().length < 2 || fullName.length > 120 ||
-        typeof email !== 'string' || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email) || email.length > 254 ||
+        typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 ||
         typeof companyName !== 'string' || companyName.trim().length < 2 || companyName.length > 160 ||
         typeof message !== 'string' || message.trim().length < 10 || message.length > 5000 ||
         !allowedTypes.has(partnerType) ||
-        (websiteUrl && (typeof websiteUrl !== 'string' || websiteUrl.length > 500 || !/^https?:\\/\\//i.test(websiteUrl)))) {
+        (websiteUrl && (typeof websiteUrl !== 'string' || websiteUrl.length > 500 || !/^https?:\/\//i.test(websiteUrl)))) {
       return json({error:'Vérifiez les champs du formulaire puis réessayez.'},400);
     }
     if (!env.PARTNER_EMAIL || typeof env.PARTNER_EMAIL.send !== 'function') {
