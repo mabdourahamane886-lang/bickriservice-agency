@@ -424,7 +424,7 @@ export default {async fetch(request,env,ctx){
           country:a.country,city:a.city,status:a.status,emailStatus:a.email_status,
           submittedAt:a.created_at,reviewedAt:a.reviewed_at
         })):[];
-        const partnerR = await supabaseRequest(`agency_partners?owner_user_id=eq.${encodeURIComponent(user.id)}&select=id,name,slug,description,mission,country,city,website_url,social_links,badge_level,badge_label,badge_verified,verified_at,public_id,referral_code&active=eq.true&limit=1`,key,{method:'GET'});
+        const partnerR = await supabaseRequest(`agency_partners?owner_user_id=eq.${encodeURIComponent(user.id)}&select=id,name,slug,description,mission,country,city,logo_url,category,partner_type,website_url,social_links,badge_level,badge_label,badge_verified,verified_at,public_id,referral_code&active=eq.true&limit=1`,key,{method:'GET'});
         let partners = await partnerR.json().catch(()=>[]);
         if (!Array.isArray(partners)) partners=[];
         if (!partners.length && user.email_confirmed_at) {
@@ -440,7 +440,7 @@ export default {async fetch(request,env,ctx){
               await supabaseRequest(`agency_partners?id=eq.${encodeURIComponent(profile.id)}&owner_user_id=is.null`,key,{
                 method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({owner_user_id:user.id,updated_at:new Date().toISOString()})
               });
-              const refresh = await supabaseRequest(`agency_partners?owner_user_id=eq.${encodeURIComponent(user.id)}&select=id,name,slug,description,mission,country,city,website_url,social_links,badge_level,badge_label,badge_verified,verified_at,public_id,referral_code&active=eq.true&limit=1`,key,{method:'GET'});
+              const refresh = await supabaseRequest(`agency_partners?owner_user_id=eq.${encodeURIComponent(user.id)}&select=id,name,slug,description,mission,country,city,logo_url,category,partner_type,website_url,social_links,badge_level,badge_label,badge_verified,verified_at,public_id,referral_code&active=eq.true&limit=1`,key,{method:'GET'});
               partners=await refresh.json().catch(()=>[]);
             }
           }
@@ -460,7 +460,7 @@ export default {async fetch(request,env,ctx){
     let body;
     try { body=await request.json(); } catch { return partnerJson(request,{error:'Requête JSON invalide.'},400); }
     try {
-      const partnerR = await supabaseRequest(`agency_partners?owner_user_id=eq.${encodeURIComponent(user.id)}&active=eq.true&select=id,name,slug,description,mission,country,city,website_url,social_links&limit=1`,key,{method:'GET'});
+      const partnerR = await supabaseRequest(`agency_partners?owner_user_id=eq.${encodeURIComponent(user.id)}&active=eq.true&select=id,name,slug,description,mission,country,city,logo_url,category,website_url,social_links&limit=1`,key,{method:'GET'});
       const rows=await partnerR.json().catch(()=>[]);
       const partner=Array.isArray(rows)?rows[0]:null;
       if (!partner) return partnerJson(request,{error:'Aucun profil partenaire actif n’est associé à votre compte.'},403);
@@ -468,10 +468,14 @@ export default {async fetch(request,env,ctx){
       const mission=typeof body.mission==='string'?body.mission.trim().slice(0,1500):partner.mission;
       const country=typeof body.country==='string'?body.country.trim().slice(0,80):partner.country;
       const city=typeof body.city==='string'?body.city.trim().slice(0,100):partner.city;
+      const category=typeof body.category==='string'?body.category.trim().slice(0,100):partner.category;
       const websiteUrl=body.websiteUrl===undefined?partner.website_url:safePartnerUrl(body.websiteUrl);
+      const logoUrl=body.logoUrl===undefined?partner.logo_url:safePartnerUrl(body.logoUrl);
+      if (body.logoUrl!==undefined && String(body.logoUrl||'').trim() && (!logoUrl || !/^https:\/\//i.test(String(body.logoUrl).trim()))) return partnerJson(request,{error:'Le logo doit utiliser une URL HTTPS valide.'},400);
+      if (body.websiteUrl!==undefined && String(body.websiteUrl||'').trim() && !websiteUrl) return partnerJson(request,{error:'Le site web doit être une URL valide.'},400);
       const socialLinks=body.socialLinks===undefined?safePartnerLinks(partner.social_links):safePartnerLinks(body.socialLinks);
       await supabaseRequest(`agency_partners?id=eq.${encodeURIComponent(partner.id)}&owner_user_id=eq.${encodeURIComponent(user.id)}`,key,{
-        method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({description,mission,country,city,website_url:websiteUrl||null,social_links:socialLinks,updated_at:new Date().toISOString()})
+        method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({description,mission,country,city,category:category||null,logo_url:logoUrl||null,website_url:websiteUrl||null,social_links:socialLinks,updated_at:new Date().toISOString()})
       });
       return partnerJson(request,{ok:true,message:'Profil partenaire mis à jour.'});
     } catch (error) {
