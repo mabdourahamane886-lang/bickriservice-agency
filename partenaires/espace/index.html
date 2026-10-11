@@ -37,7 +37,9 @@
 <section class="panel" id="partnerManagementPanel" hidden><h2>Gérer mon profil public</h2><p class="muted">Modifiez votre présentation et vos liens professionnels. Les badges et décisions de vérification sont gérés par l’administration.</p><form id="partnerProfileForm" class="portalForm">
 <div class="field full"><label>Nom de l’organisation</label><input id="portalPartnerName" type="text" disabled></div>
 <div class="field"><label>Pays</label><input name="country" maxlength="80" required></div><div class="field"><label>Ville</label><input name="city" maxlength="100"></div>
-<div class="field full"><label>Site web</label><input name="websiteUrl" type="url" placeholder="https://exemple.com"></div>
+<div class="field full"><label>URL du logo (HTTPS)</label><input name="logoUrl" type="url" placeholder="https://exemple.com/logo.png" maxlength="500"></div>
+<div class="field"><label>Domaine / catégorie</label><input name="category" maxlength="100" placeholder="Technologie, BTP, formation…"></div>
+<div class="field"><label>Site web</label><input name="websiteUrl" type="url" placeholder="https://exemple.com" maxlength="500"></div>
 <div class="field full"><label>Description courte</label><textarea name="description" maxlength="500" required></textarea></div>
 <div class="field full"><label>Présentation détaillée</label><textarea name="mission" maxlength="1500"></textarea></div>
 <div class="field full"><label>Liens sociaux (JSON)</label><textarea name="socialLinks" rows="4" spellcheck="false" placeholder='{"facebook":"https://…","linkedin":"https://…"}'></textarea><small class="muted">Seuls les liens HTTPS reconnus sont enregistrés.</small></div>
