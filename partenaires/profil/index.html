@@ -67,7 +67,8 @@ async function init(){
   $('profileLogo').src=p.logoUrl||('/assets/partners/'+(slug==='impact-afriq'?'impact-afriq.svg':slug==='egan-btp'?'egan-btp.svg':'badge-verified-green.svg'));
   $('profileLogo').alt='Logo '+(p.name||'partenaire');
   $('profileBadgeIcon').src='/assets/partners/'+(badges[badge]||badges.green);
-  $('profileBadgeLabel').textContent=p.badgeLabel||'Partenaire vérifié';
+  $('profileBadgeIcon').hidden=!p.badgeVerified;
+  $('profileBadgeLabel').textContent=p.badgeVerified?(p.badgeLabel||'Partenaire vérifié'):'Profil actif — non vérifié';
   $('profileTags').replaceChildren();
   [p.category||p.partnerType,p.city,p.country].filter(Boolean).forEach(value=>{const tag=document.createElement('span');tag.textContent=value;$('profileTags').appendChild(tag);});
   $('profileLocation').textContent=[p.city,p.country].filter(Boolean).join(', ')||'Non renseigné';
