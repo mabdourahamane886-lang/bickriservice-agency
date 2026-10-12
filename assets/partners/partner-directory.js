@@ -20,7 +20,7 @@
   const escapeHtml = (v) => String(v ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const PUBLIC_ORIGIN = location.hostname.endsWith('.vercel.app') ? 'https://bickriservice-agency.org' : location.origin;
   const fullUrl = (path) => new URL(path, PUBLIC_ORIGIN).href;
-  const profilePath = (p) => '/partenaires/profil/?slug=' + encodeURIComponent(p.slug);
+  const profilePath = (p) => '/partenaires/profil/' + encodeURIComponent(p.slug) + '/';
   const copyText = async (text) => {
     try {
       if (navigator.clipboard && window.isSecureContext) return await navigator.clipboard.writeText(text);
@@ -171,7 +171,7 @@
         if(!direct.ok||!Array.isArray(rows))throw new Error('Supabase public directory unavailable');
         partners=mergeCuratedPartners(rows.map(row=>({
           id:row.id,name:row.name,slug:row.slug,description:row.description||'',about:row.company_about||'',
-          logoUrl:row.logo_url||'',founder:row.founder||'',mission:row.mission||'',
+          logoUrl:row.slug==='sahelia-fresh'?'https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/053dc7b0-1a6c-4685-84a3-08595451a656.png':(row.logo_url||''),founder:row.founder||'',mission:row.mission||'',
           country:row.country||'Niger',city:row.city||'',partnerType:row.partner_type||'',
           category:row.category||row.partner_type||'',websiteUrl:row.website_url||'',socialLinks:row.social_links||{},
           badgeLevel:row.badge_level||'green',badgeLabel:row.badge_label||'Partenaire vérifié',
