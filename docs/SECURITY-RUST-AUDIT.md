@@ -21,6 +21,21 @@ This audit and its tests are isolated on a separate branch. No production deploy
 9. The inspected schema enables RLS and revokes access to `bickri_ai_knowledge`; memory and conversation tables also have RLS enabled. No public policies were found for those AI tables in the inspected schema. This is fail-closed, but server-side AI routes and service-role use must be audited from the full repository.
 10. The publishable Supabase key in `api/service.js` is not a service-role key by name. Publishable keys are designed for client use; protection depends on RLS, grants and database policies. Never expose a service-role/secret key.
 
+## Live Supabase checks (read-only, 2026-10-12)
+
+The connected Supabase project `okdohokhlkxrmxpevees` is active and shared by multiple Bickri applications. Read-only inspection of the live database and Supabase security advisor returned these findings:
+
+1. **High priority — profile role self-escalation risk:** `public.profiles` has an authenticated policy allowing users to update their own row, and the `authenticated` role currently has table-level and column-level UPDATE privileges on `role`. The same role can also INSERT a profile row with the `role` column because it has broad INSERT privileges and the own-row INSERT policy checks only `id = auth.uid()`. No trigger on `profiles` was found that blocks a user changing `role`. This combination may allow an authenticated user to self-assign `admin`. Treat this as a high-priority privilege-escalation risk until verified and remediated.
+2. A branch-only migration was added at `supabase/migrations/20261012170000_harden_profile_role_and_public_profile_grants.sql`. It removes broad profile INSERT/UPDATE/TRUNCATE grants and allows authenticated users to insert basic profile fields and update only `full_name`, `avatar_url`, `phone` and `learning_path`. **It has not been applied to the live database.** Because `profiles` is shared by several apps, test sign-up, profile editing, OAuth/social login and admin workflows before applying.
+3. Supabase's security advisor reports RLS-enabled tables without policies: `agency_leads`, `agency_partner_admin_events`, `agency_partner_applications`, `agency_partner_clicks`, `agency_settings`, `bickri_ai_knowledge` and `impact_afriq_contact_messages`. No-policy RLS is default-deny, so this is not by itself evidence of public exposure; it may intentionally block direct client access. Confirm each table's intended server-side access before adding any policy.
+4. Supabase Auth reports leaked-password protection is disabled. Enable it in Auth password security settings after assessing the effect on sign-up/password flows across all apps sharing this project.
+5. The public/authenticated roles have broad table grants on several agency content tables, including mutation privileges, while the visible RLS policies only allow active-row SELECT. RLS should block those mutations, but excess grants (especially TRUNCATE) should be reduced after confirming no existing admin flow relies on direct client writes.
+6. Supabase's performance advisor reports 87 foreign keys without covering indexes across the shared database. This is a broad performance backlog, not a reason to add indexes indiscriminately; prioritize hot tables and verify query plans.
+
+Relevant Supabase guidance:
+- RLS advisor: https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy
+- Leaked password protection: https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection
+
 ## Priority checks and remediation
 
 - Obtain the full repository tree and identify all API routes, admin flows, dependency manifests, build entry points and runtime configuration.
