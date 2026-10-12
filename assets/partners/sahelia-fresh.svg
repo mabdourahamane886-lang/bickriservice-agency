@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-labelledby="title desc">
+<title>Sahelia Fresh</title><desc>Logo Sahelia Fresh, produits naturels du Sahel.</desc>
+<rect width="480" height="300" rx="22" fill="#fff"/>
+<circle cx="240" cy="92" r="62" fill="#ffa500"/>
+<path d="M145 112 Q190 88 240 110 T335 108 L335 140 L145 140Z" fill="#c96a12"/>
+<path d="M140 118 Q180 145 225 130 T330 125" fill="none" stroke="#fff" stroke-width="5"/>
+<path d="M240 124V78 M240 90Q210 58 185 75Q206 96 240 95 M240 92Q267 56 294 73Q275 98 240 98" fill="#07572d"/>
+<path d="M325 115Q344 52 405 30Q408 99 343 137Z" fill="#138b35"/>
+<path d="M337 132Q371 104 392 59" fill="none" stroke="#fff" stroke-width="4"/>
+<path d="M325 135Q361 113 403 117Q379 154 337 151Z" fill="#58a91c"/>
+<text x="240" y="207" text-anchor="middle" font-family="Arial,sans-serif" font-weight="800" font-size="51" fill="#064b29">Sahelia</text>
+<text x="240" y="250" text-anchor="middle" font-family="Arial,sans-serif" font-weight="800" font-size="43" fill="#50a51d">Fresh</text>
+<text x="240" y="278" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" letter-spacing="1" fill="#064b29">La fraîcheur de nos terres</text>
+</svg>
