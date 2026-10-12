@@ -105,7 +105,7 @@
   }
   function openShare(p) {
     selectedForShare=p;
-    const shareTarget=new URL(profilePath(p),PUBLIC_ORIGIN);if(p.referralCode)shareTarget.searchParams.set('ref',p.referralCode);const link=shareTarget.href;
+    const shareTarget=new URL('/partenaires/partage/'+encodeURIComponent(p.slug)+'/',PUBLIC_ORIGIN);if(p.referralCode)shareTarget.searchParams.set('ref',p.referralCode);const link=shareTarget.href;
     if($('partnerDialogTitle')) $('partnerDialogTitle').textContent=p.name;
     if($('partnerDialogCaption')) $('partnerDialogCaption').textContent=[p.partnerType||p.category,p.city,p.country].filter(Boolean).join(' · ');
     if($('partnerDialogUrl')) $('partnerDialogUrl').textContent=link;
