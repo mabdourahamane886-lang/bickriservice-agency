@@ -7,6 +7,7 @@ const catalog = JSON.parse(await read("../services-share.json"));
 const vercel = JSON.parse(await read("../vercel.json"));
 const api = await read("../api/service.js");
 const schema = await read("../supabase/schema.sql");
+const profileHardening = await read("../supabase/migrations/20261012170000_harden_profile_role_and_public_profile_grants.sql");
 
 test("service catalog keeps all 37 entries", () => {
   assert.equal(catalog.length, 37);
@@ -70,4 +71,11 @@ test("service share links route through the existing API", () => {
   ));
   assert.match(api, /statusCode = 400/);
   assert.match(api, /statusCode = 404/);
+});
+
+test("profile hardening migration removes self-assigned role writes", () => {
+  assert.match(profileHardening, /revoke insert, update, truncate on table public\\.profiles from authenticated/i);
+  assert.match(profileHardening, /revoke update \\(id, email, full_name, avatar_url, provider, created_at, updated_at, role, account_code, phone, learning_path\\)/i);
+  assert.match(profileHardening, /grant update \\(full_name, avatar_url, phone, learning_path\\) on table public\\.profiles to authenticated/i);
+  assert.doesNotMatch(profileHardening, /grant update \\([^)]*\\brole\\b[^)]*\\) on table public\\.profiles to authenticated/i);
 });
