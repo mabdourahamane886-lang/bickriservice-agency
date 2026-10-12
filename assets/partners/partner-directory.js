@@ -96,7 +96,7 @@
         '<img class="partnerLogo" src="'+escapeHtml(logo)+'" alt="'+escapeHtml(p.name)+'" loading="lazy" onerror="this.onerror=null;this.src=\'/assets/bickri-b-logo.svg\'">'+
         '<h2>'+escapeHtml(p.name)+(p.badgeVerified?'<img class="verifiedBadge" src="/assets/partners/'+cfg.file+'" alt="'+escapeHtml(p.badgeLabel||cfg.label)+'" title="'+escapeHtml(p.badgeLabel||cfg.label)+'">':'')+'</h2>'+
         '<span class="partnerLiveBadge"'+(p.badgeVerified?'':' style="background:#f8fafc;color:#64748b;border-color:#e2e8f0"')+'>'+(p.badgeVerified?'✓ ':'')+escapeHtml(p.badgeVerified?(p.badgeLabel||cfg.label):'Profil actif — non vérifié')+'</span>'+
-        '<p style="margin-top:12px">'+escapeHtml(p.description||p.mission||'Partenaire de Bickri Service Agency')+'</p>'+ 
+        '<p style="margin-top:12px">'+escapeHtml(p.slug==='sahelia-fresh'?'Yaourts et jus naturels · Formations pratiques · Livraison':(p.description||p.mission||'Partenaire de Bickri Service Agency'))+'</p>'+ 
         (p.founder?'<div class="partnerFounder">Dirigeant : <strong>'+escapeHtml(p.founder)+'</strong></div>':'')+
         '<div class="partnerMeta"><span class="chip">'+escapeHtml(p.category||p.partnerType||'Collaboration')+'</span><span class="chip">'+escapeHtml([p.city,p.country||'Niger'].filter(Boolean).join(' · '))+'</span></div>'+
         (p.publicId?'<div class="partnerPublicId">Identifiant de vérification : '+escapeHtml(p.publicId)+'</div>':'')+
