@@ -21,7 +21,7 @@
   const escapeHtml = (v) => String(v ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const PUBLIC_ORIGIN = location.hostname.endsWith('.vercel.app') ? 'https://bickriservice-agency.org' : location.origin;
   const fullUrl = (path) => new URL(path, PUBLIC_ORIGIN).href;
-  const profilePath = (p) => '/partenaires/profil/?slug=' + encodeURIComponent(p.slug);
+  const profilePath = (p) => '/partenaires/#' + encodeURIComponent(p.slug);
   const copyText = async (text) => {
     try {
       if (navigator.clipboard && window.isSecureContext) return await navigator.clipboard.writeText(text);
@@ -93,16 +93,16 @@
       const badge=p.badgeLevel||'green', cfg=configs[badge]||configs.green;
       const logo=p.logoUrl||p.logo_url||('/assets/partners/'+(p.slug==='impact-afriq'?'impact-afriq.svg':p.slug==='egan-btp'?'egan-btp.svg':'badge-verified-green.svg'));
       const href=fullUrl(profilePath(p));
-      return '<article class="partner" data-partner-card="'+escapeHtml(p.slug)+'">'+
+      return '<article class="partner" id="'+escapeHtml(p.slug)+'" data-partner-card="'+escapeHtml(p.slug)+'">'+
         '<img class="partnerLogo" src="'+escapeHtml(logo)+'" alt="'+escapeHtml(p.name)+'" loading="lazy" onerror="this.onerror=null;this.src=\'/assets/bickri-b-logo.svg\'">'+
         '<h2>'+escapeHtml(p.name)+(p.badgeVerified?'<img class="verifiedBadge" src="/assets/partners/'+cfg.file+'" alt="'+escapeHtml(p.badgeLabel||cfg.label)+'" title="'+escapeHtml(p.badgeLabel||cfg.label)+'">':'')+'</h2>'+
         '<span class="partnerLiveBadge"'+(p.badgeVerified?'':' style="background:#f8fafc;color:#64748b;border-color:#e2e8f0"')+'>'+(p.badgeVerified?'✓ ':'')+escapeHtml(p.badgeVerified?(p.badgeLabel||cfg.label):'Profil actif — non vérifié')+'</span>'+
         (p.fullDescription ? '<div class="partnerLongDescription" style="text-align:left;margin-top:16px;font-size:13px;line-height:1.75;color:#536077">'+p.fullDescription.split(/\\n\\n/).map(part=>'<p style="margin:0 0 12px">'+escapeHtml(part)+'</p>').join('')+'</div>' : '<p style="margin-top:12px">'+escapeHtml(p.description||p.mission||'Partenaire de Bickri Service Agency')+'</p>')+
-        (p.slug==='sahelia-fresh'?'<div class="partnerMission" style="text-align:left;white-space:normal;margin-top:14px"><strong>Yaourts et jus naturels, formation pratique et livraison</strong><p style="margin-top:8px">'+escapeHtml(saheliaDescription)+'</p></div>':'')+
+        
         (p.founder?'<div class="partnerFounder">Dirigeant : <strong>'+escapeHtml(p.founder)+'</strong></div>':'')+
         '<div class="partnerMeta"><span class="chip">'+escapeHtml(p.category||p.partnerType||'Collaboration')+'</span><span class="chip">'+escapeHtml([p.city,p.country||'Niger'].filter(Boolean).join(' · '))+'</span></div>'+
         (p.publicId?'<div class="partnerPublicId">Identifiant de vérification : '+escapeHtml(p.publicId)+'</div>':'')+
-        '<div class="partnerCardActions"><a class="primary" href="'+escapeHtml(href)+'" data-open-partner="'+escapeHtml(p.slug)+'">Voir le profil</a><button class="share" type="button" data-share-partner="'+escapeHtml(p.slug)+'">Partager</button><button class="qr" type="button" data-qr-partner="'+escapeHtml(p.slug)+'">QR code</button></div></article>';
+        '<div class="partnerCardActions"><a class="primary" href="'+escapeHtml(href)+'" data-open-partner="'+escapeHtml(p.slug)+'">Voir sur la page</a><button class="share" type="button" data-share-partner="'+escapeHtml(p.slug)+'">Partager</button><button class="qr" type="button" data-qr-partner="'+escapeHtml(p.slug)+'">QR code</button></div></article>';
     }).join('');
   }
   function openShare(p) {
