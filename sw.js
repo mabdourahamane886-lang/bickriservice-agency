@@ -1,6 +1,6 @@
-const CACHE_NAME = "bickri-service-agency-pwa-v1";
+const CACHE_NAME = "bickri-service-agency-pwa-v2";
 const OFFLINE_URL = "/offline.html";
-const CORE_ASSETS = [OFFLINE_URL, "/manifest.webmanifest", "/app-icon-192.svg", "/app-icon-512.svg"];
+const CORE_ASSETS = [OFFLINE_URL, "/manifest.webmanifest", "/app-icon-192.png", "/app-icon-512.png", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
