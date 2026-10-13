@@ -9,7 +9,7 @@ function getClientIp(req) {
 }
 
 function allowedOrigin(origin) {
-  return !origin || /^https:\/\/([^/]+\.)?bickriservice-agency\.org$/i.test(origin) || /^https:\/\/bickriservice-agency\.vercel\.app$/i.test(origin);
+  return !origin || /^https:\/\/([^/]+\.)?bickriservice-agency\.org$/i.test(origin) || /^https:\/\/bickriservice-agency(?:-[a-z0-9-]+-bickri-service-agency)?\.vercel\.app$/i.test(origin);
 }
 
 module.exports = async function handler(req, res) {
@@ -20,7 +20,9 @@ module.exports = async function handler(req, res) {
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
 
   if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', 'https://bickriservice-agency.org');
+    const origin = String(req.headers.origin || '');
+    if (origin && !allowedOrigin(origin)) return res.status(403).end();
+    res.setHeader('Access-Control-Allow-Origin', origin || 'https://bickriservice-agency.org');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     return res.status(204).end();
