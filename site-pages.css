@@ -37,5 +37,6 @@ body.service-detail-mode{overflow-x:hidden}.serviceDetailLead{max-width:850px;fo
 @media(max-width:520px){.serviceLongDetails .wrap{padding:0 16px}.serviceDetailHero>div,.serviceDetailGrid .card,.serviceDetailLong{padding:22px}.serviceDetailHero img{min-height:240px;border-radius:20px}}
 
 /* BSA subtle global entrance animation — 1–2% visual intensity */
-@keyframes bsa-soft-entrance{from{opacity:.98;translate:0 2px}to{opacity:1;translate:0 0}}
+/* Animation douce sans translate sur body : préserve position:fixed des boutons flottants */
+@keyframes bsa-soft-entrance{from{opacity:.98}to{opacity:1}}
 @media (prefers-reduced-motion:no-preference){body{animation:bsa-soft-entrance 350ms ease-out both}}
