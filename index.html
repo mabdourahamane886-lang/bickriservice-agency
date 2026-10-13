@@ -47,7 +47,8 @@
 .serviceModalWhatsApp{display:inline-block;margin-top:10px;color:#8a6416;font-size:11px;font-weight:900}
 @media(max-width:700px){.serviceModalShareRow{flex-direction:column;align-items:stretch}.serviceModalShareUrl{display:block}.serviceModalShareRow button{width:100%}}
 /* BSA subtle global entrance animation — 1–2% visual intensity */
-@keyframes bsa-soft-entrance{from{opacity:.98;translate:0 2px}to{opacity:1;translate:0 0}}
+/* Animation douce sans translate sur body : préserve position:fixed des boutons flottants */
+@keyframes bsa-soft-entrance{from{opacity:.98}to{opacity:1}}
 @media (prefers-reduced-motion:no-preference){body{animation:bsa-soft-entrance 350ms ease-out both}}
 </style><style id="bsa-mobile-final">
 @media (max-width:700px){
