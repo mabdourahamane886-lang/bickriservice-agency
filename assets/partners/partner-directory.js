@@ -58,16 +58,26 @@
   const count = $('partnerResultsCount');
   const message = $('partnerDirectoryMessage');
 
-  function fillFilter(select, values, defaultLabel) {
+  // ISO 3166-1 alpha-2 country/territory codes; flag emojis are rendered as symbols on supported devices.
+  const COUNTRY_CODES = ('AD AE AF AG AI AL AM AO AQ AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BV BW BY BZ CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FM FO FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GS GT GU GW GY HK HM HN HR HT HU ID IE IL IM IN IO IQ IR IS IT JE JM JO JP KE KG KH KI KM KN KP KR KW KY KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ NA NC NE NF NG NI NL NO NP NR NU NZ OM PA PE PF PG PH PK PL PM PN PR PS PT PW PY QA RE RO RS RU RW SA SB SC SD SE SG SH SI SJ SK SL SM SN SO SR SS ST SV SX SY SZ TC TD TF TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA UG UM US UY UZ VA VC VE VG VI VN VU WF WS XK YE YT ZA ZM ZW').split(' ');
+  const REGION_NAMES = new Intl.DisplayNames(['fr'], {type:'region'});
+  const flagFor = code => [...code.toUpperCase()].map(ch=>String.fromCodePoint(127397+ch.charCodeAt(0))).join('');
+  const ALL_COUNTRIES = COUNTRY_CODES.map(code=>({code, name:REGION_NAMES.of(code), flag:flagFor(code)}))
+    .filter(c=>c.name && c.name!==c.code).sort((a,b)=>a.name.localeCompare(b.name,'fr'));
+  function fillFilter(select, values, defaultLabel, withFlags=false) {
     if (!select) return;
     const current=select.value;
-    select.innerHTML='<option value="">' + escapeHtml(defaultLabel) + '</option>' + values.map(v=>'<option value="'+escapeHtml(v)+'">'+escapeHtml(v)+'</option>').join('');
+    select.innerHTML='<option value="">'+escapeHtml(defaultLabel)+'</option>'+values.map(v=>{
+      const country=withFlags?ALL_COUNTRIES.find(c=>c.name===v):null;
+      return '<option value="'+escapeHtml(v)+'">'+(country?country.flag+' ':'')+escapeHtml(v)+'</option>';
+    }).join('');
     if(values.includes(current)) select.value=current;
   }
   function rebuildFilters() {
-    fillFilter(countryFilter,[...new Set(partners.map(p=>p.country).filter(Boolean))].sort(),'Tous les pays');
+    fillFilter(countryFilter,ALL_COUNTRIES.map(c=>c.name),'🌍 Tous les pays',true);
     fillFilter(categoryFilter,[...new Set(partners.map(p=>p.category || p.partnerType).filter(Boolean))].sort(),'Tous les domaines');
-    if(countryFilter && ![...countryFilter.options].some(o=>o.value==='Niger')) countryFilter.insertAdjacentHTML('beforeend','<option value="Niger">Niger</option>');
+    // Keep legacy database country names selectable where browser locale data differs.
+    for(const p of partners){if(p.country&&! [...countryFilter.options].some(o=>o.value===p.country)){const opt=document.createElement('option');opt.value=p.country;opt.textContent=(p.country==='Niger'?'🇳🇪 ':'🌐 ')+p.country;countryFilter.appendChild(opt);}}
   }
   function filteredPartners() {
     const q=(search?.value||'').trim().toLocaleLowerCase('fr');
