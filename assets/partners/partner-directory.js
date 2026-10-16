@@ -210,7 +210,7 @@
     try{
       const response=await fetch(apiUrl('/api/partners/metrics'),{cache:'no-store'});
       const data=await response.json();
-      if(response.ok){if($('statPartners'))$('statPartners').textContent=String(Math.max(Number(data.partners)||0,partners.length)).padStart(2,'0');if($('statVerified'))$('statVerified').textContent=String(data.verified??partners.filter(p=>p.badgeVerified).length).padStart(2,'0');}
+      if(response.ok && $('statPartners')) $('statPartners').textContent=String(Math.max(Number(data.partners)||0,partners.length)).padStart(2,'0'); updateStats();
     }catch{}
   }
 
