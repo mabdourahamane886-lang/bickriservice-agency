@@ -95,9 +95,9 @@
     const activeLevels = partners.filter(p => p.badgeVerified === true).length;
     const profilesWithStatus = partners.filter(p => typeof p.badgeVerified === 'boolean').length;
     const statusPercent = total ? Math.round((profilesWithStatus / total) * 100) : 0;
-    if ($('statPartners')) $('statPartners').textContent = String(total).padStart(2, '0');
-    if ($('statVerified')) $('statVerified').textContent = String(verified).padStart(2, '0');
-    if ($('statLevels')) $('statLevels').textContent = String(activeLevels).padStart(2, '0');
+    if ($('statPartners')) $('statPartners').textContent = String(total);
+    if ($('statVerified')) $('statVerified').textContent = String(verified);
+    if ($('statLevels')) $('statLevels').textContent = String(activeLevels);
     if ($('statStatus')) $('statStatus').textContent = statusPercent + '%';
   }
 
@@ -210,7 +210,7 @@
     try{
       const response=await fetch(apiUrl('/api/partners/metrics'),{cache:'no-store'});
       const data=await response.json();
-      if(response.ok){if($('statPartners'))$('statPartners').textContent=String(Math.max(Number(data.partners)||0,partners.length)).padStart(2,'0');if($('statVerified'))$('statVerified').textContent=String(data.verified??partners.filter(p=>p.badgeVerified).length).padStart(2,'0');}
+      if(response.ok){if($('statPartners'))$('statPartners').textContent=String(Math.max(Number(data.partners)||0,partners.length));if($('statVerified'))$('statVerified').textContent=String(data.verified??partners.filter(p=>p.badgeVerified).length);}
     }catch{}
   }
 
