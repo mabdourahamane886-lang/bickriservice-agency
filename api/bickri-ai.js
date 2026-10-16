@@ -275,6 +275,39 @@ async function callProvider(endpoint, apiKey, model, systemPrompt, history, mess
   return typeof content === 'string' ? content.trim() : null;
 }
 
+
+function getRelevantImages(message, answer) {
+  const text = normalizeForImages(String(message || '') + ' ' + String(answer || ''));
+  const rules = [
+    { terms: ['site web','site internet','creation web','landing page','plateforme web','developpement web','website'], names: ['creation-sites-web','plateformes-web','landing-pages'] },
+    { terms: ['ecommerce','e-commerce','boutique en ligne','vente en ligne','catalogue produit','paiement en ligne'], names: ['e-commerce','produits-numeriques'] },
+    { terms: ['reseaux sociaux','instagram','facebook','tiktok','whatsapp','communaute','audience','contenu social'], names: ['reseaux-sociaux','community-management','marketing-whatsapp'] },
+    { terms: ['intelligence artificielle','assistant ia','chatbot','automatisation','ia','llm','agent ia'], names: ['intelligence-artificielle','automatisation-digitale','chatbots-assistants-ia'] },
+    { terms: ['logo','branding','identite visuelle','design','affiche','charte graphique'], names: ['branding-design','design-ui-ux','motion-design'] },
+    { terms: ['publicite','campagne publicitaire','ads','meta ads','facebook ads','sponsorise'], names: ['publicite-digitale','analytics-reporting'] },
+    { terms: ['formation','coaching','apprendre','cours','entrepreneuriat'], names: ['formation-coaching','intelligence-artificielle','reseaux-sociaux'] },
+    { terms: ['seo','referencement','google','visibilite web'], names: ['seo-referencement','google-business-profile','analytics-reporting'] },
+    { terms: ['video','montage video','reel','youtube','creation de contenu','photo'], names: ['montage-video','creation-contenu','production-photo'] }
+  ];
+  const catalog = Array.isArray(SERVICES_SHARE) ? SERVICES_SHARE : [];
+  const matched = [];
+  for (const rule of rules) {
+    if (!rule.terms.some(term => text.includes(normalizeForImages(term)))) continue;
+    for (const slug of rule.names) {
+      const item = catalog.find(x => x.slug === slug);
+      if (item && item.img && !matched.some(x => x.url === item.img)) {
+        matched.push({ title: item.name, description: item.desc || '', url: item.img });
+      }
+      if (matched.length >= 3) break;
+    }
+    if (matched.length >= 3) break;
+  }
+  return matched.slice(0, 3);
+}
+function normalizeForImages(value) {
+  return String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9 -]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
 module.exports = async function handler(req, res) {
   if (req.method === 'GET' && req.query?.code) {
     const code = String(req.query.code).trim().toUpperCase();
@@ -405,8 +438,10 @@ module.exports = async function handler(req, res) {
 
     res.setHeader('Cache-Control','no-store');
     if (sessionId) await saveConversation(sessionId, 'assistant', answer);
+    const images = getRelevantImages(message, answer);
     return json(res, 200, {
       answer,
+      images,
       mode:'openai',
       knowledgeLoaded:db.knowledge.length > 0,
       servicesLoaded:db.services.length
