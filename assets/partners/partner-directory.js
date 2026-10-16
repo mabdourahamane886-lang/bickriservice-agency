@@ -89,12 +89,24 @@
         && (!badgeFilter?.value||(badgeFilter.value==='unverified'?!p.badgeVerified:(p.badgeVerified&&(p.badgeLevel||'green')===badgeFilter.value)));
     });
   }
+  function updateStats() {
+    const total = partners.length;
+    const verified = partners.filter(p => p.badgeVerified === true).length;
+    const activeLevels = new Set(partners.filter(p => p.badgeVerified === true).map(p => p.badgeLevel || 'green')).size;
+    const profilesWithStatus = partners.filter(p => typeof p.badgeVerified === 'boolean').length;
+    const statusPercent = total ? Math.round((profilesWithStatus / total) * 100) : 0;
+    if ($('statPartners')) $('statPartners').textContent = String(total).padStart(2, '0');
+    if ($('statVerified')) $('statVerified').textContent = String(verified).padStart(2, '0');
+    if ($('statLevels')) $('statLevels').textContent = String(activeLevels).padStart(2, '0');
+    if ($('statStatus')) $('statStatus').textContent = statusPercent + '%';
+  }
+
   function render() {
     if(!directory) return;
     const rows=filteredPartners();
     if(count) count.textContent=rows.length+' partenaire(s) affiché(s) sur '+partners.length;
-    if($('statPartners')) $('statPartners').textContent=String(partners.length).padStart(2,'0');
-    if($('statVerified')) $('statVerified').textContent=String(partners.filter(p=>p.badgeVerified).length).padStart(2,'0');
+    updateStats();
+
     if(!rows.length) {
       directory.innerHTML='<div class="empty"><strong>Aucun partenaire trouvé</strong><span>Modifiez vos critères ou effacez la recherche.</span></div>';
       return;
