@@ -92,7 +92,7 @@
   function updateStats() {
     const total = partners.length;
     const verified = partners.filter(p => p.badgeVerified === true).length;
-    const activeLevels = new Set(partners.filter(p => p.badgeVerified === true).map(p => p.badgeLevel || 'green')).size;
+    const activeLevels = partners.filter(p => p.badgeVerified === true).length;
     const profilesWithStatus = partners.filter(p => typeof p.badgeVerified === 'boolean').length;
     const statusPercent = total ? Math.round((profilesWithStatus / total) * 100) : 0;
     if ($('statPartners')) $('statPartners').textContent = String(total).padStart(2, '0');
