@@ -1016,17 +1016,17 @@ export default {async fetch(request,env,ctx){
   if(response.ok && request.method==='GET' && (headers.get('Content-Type')||'').toLowerCase().includes('text/html')){
     try{
       let html=await response.text();
-      const headMatch=html.match(/<head\\b[^>]*>/i);
+      const headMatch=html.match(/<head\b[^>]*>/i);
       if(headMatch){
         const safe=(value)=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-        const titleMatch=html.match(/<title[^>]*>([\\s\\S]*?)<\\/title>/i);
-        const title=safe((titleMatch?.[1]||'Bickri Service Agency').replace(/<[^>]*>/g,' ').replace(/\\s+/g,' ').trim());
-        const descMatch=html.match(/<meta\\b[^>]*name=["']description["'][^>]*content=["']([^"']*)["'][^>]*>/i)||html.match(/<meta\\b[^>]*content=["']([^"']*)["'][^>]*name=["']description["'][^>]*>/i);
+        const titleMatch=html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+        const title=safe((titleMatch?.[1]||'Bickri Service Agency').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim());
+        const descMatch=html.match(/<meta\b[^>]*name=["']description["'][^>]*content=["']([^"']*)["'][^>]*>/i)||html.match(/<meta\b[^>]*content=["']([^"']*)["'][^>]*name=["']description["'][^>]*>/i);
         const description=safe(descMatch?.[1]||'Découvrez les services, projets et solutions de Bickri Service Agency, agence digitale à Niamey, Niger.');
-        const canonicalMatch=html.match(/<link\\b[^>]*rel=["']canonical["'][^>]*href=["']([^"']+)["'][^>]*>/i);
+        const canonicalMatch=html.match(/<link\b[^>]*rel=["']canonical["'][^>]*href=["']([^"']+)["'][^>]*>/i);
         const canonical=safe(canonicalMatch?.[1]||new URL(url.pathname+url.search,url.origin).href);
-        const existingOgImage=html.match(/<meta\\b[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["'][^>]*>/i)||html.match(/<meta\\b[^>]*content=["']([^"']+)["'][^>]*property=["']og:image["'][^>]*>/i);
-        const existingTwitterImage=html.match(/<meta\\b[^>]*name=["']twitter:image["'][^>]*content=["']([^"']+)["'][^>]*>/i);
+        const existingOgImage=html.match(/<meta\b[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["'][^>]*>/i)||html.match(/<meta\b[^>]*content=["']([^"']+)["'][^>]*property=["']og:image["'][^>]*>/i);
+        const existingTwitterImage=html.match(/<meta\b[^>]*name=["']twitter:image["'][^>]*content=["']([^"']+)["'][^>]*>/i);
         const image=safe(existingOgImage?.[1]||existingTwitterImage?.[1]||new URL('/assets/bickri-logo-final.jpg?v=20261011',url.origin).href);
         const metas=[
           !/property=["']og:type["']/.test(html)?'<meta property="og:type" content="website">':'',
