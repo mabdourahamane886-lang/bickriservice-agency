@@ -121,7 +121,23 @@ async function init(){
   const badge=p.badgeLevel||'green';
   $('profileName').textContent=p.name||'Partenaire';
   $('profileDescription').textContent=p.description||p.mission||'Partenaire de Bickri Service Agency';
-  $('profileAbout').textContent=p.about||p.description||'Présentation détaillée non renseignée.';
+  const aboutText=p.about||p.description||'Présentation détaillée non renseignée.';
+  if(slug==='tourisme-au-niger'){
+   const aboutEl=$('profileAbout');
+   aboutEl.replaceChildren();
+   const urlPattern=/(https:\/\/[^\s;]+(?:\?[^\s;]*)?)/g;
+   let cursor=0, match;
+   while((match=urlPattern.exec(aboutText))!==null){
+    if(match.index>cursor)aboutEl.appendChild(document.createTextNode(aboutText.slice(cursor,match.index)));
+    const url=match[0].replace(/[.,]+$/,'');
+    const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=url;
+    a.style.cssText='color:#b88622;text-decoration:underline;font-weight:700;overflow-wrap:anywhere';
+    aboutEl.appendChild(a);
+    if(url.length<match[0].length)aboutEl.appendChild(document.createTextNode(match[0].slice(url.length)));
+    cursor=match.index+match[0].length;
+   }
+   if(cursor<aboutText.length)aboutEl.appendChild(document.createTextNode(aboutText.slice(cursor)));
+  }else $('profileAbout').textContent=aboutText;
   $('profileMission').textContent=p.mission||p.description||'Mission non renseignée.';
   $('profileLogo').src=p.logoUrl||('/assets/partners/'+(slug==='impact-afriq'?'impact-afriq.svg':slug==='egan-btp'?'egan-btp.svg':'badge-verified-green.svg'));
   $('profileLogo').alt='Logo '+(p.name||'partenaire');
