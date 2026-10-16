@@ -1011,6 +1011,44 @@ export default {async fetch(request,env,ctx){
       }
     }catch(e){console.error('Service OG metadata failed',e)}
   }
+  // Open Graph permanent : toutes les pages HTML servies par le Worker doivent avoir des métadonnées de partage.
+  // Les métadonnées spécifiques déjà présentes (services, partenaires, projets) sont conservées.
+  if(response.ok && request.method==='GET' && (headers.get('Content-Type')||'').toLowerCase().includes('text/html')){
+    try{
+      let html=await response.text();
+      const headMatch=html.match(/<head\\b[^>]*>/i);
+      if(headMatch){
+        const safe=(value)=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+        const titleMatch=html.match(/<title[^>]*>([\\s\\S]*?)<\\/title>/i);
+        const title=safe((titleMatch?.[1]||'Bickri Service Agency').replace(/<[^>]*>/g,' ').replace(/\\s+/g,' ').trim());
+        const descMatch=html.match(/<meta\\b[^>]*name=["']description["'][^>]*content=["']([^"']*)["'][^>]*>/i)||html.match(/<meta\\b[^>]*content=["']([^"']*)["'][^>]*name=["']description["'][^>]*>/i);
+        const description=safe(descMatch?.[1]||'Découvrez les services, projets et solutions de Bickri Service Agency, agence digitale à Niamey, Niger.');
+        const canonicalMatch=html.match(/<link\\b[^>]*rel=["']canonical["'][^>]*href=["']([^"']+)["'][^>]*>/i);
+        const canonical=safe(canonicalMatch?.[1]||new URL(url.pathname+url.search,url.origin).href);
+        const existingOgImage=html.match(/<meta\\b[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["'][^>]*>/i)||html.match(/<meta\\b[^>]*content=["']([^"']+)["'][^>]*property=["']og:image["'][^>]*>/i);
+        const existingTwitterImage=html.match(/<meta\\b[^>]*name=["']twitter:image["'][^>]*content=["']([^"']+)["'][^>]*>/i);
+        const image=safe(existingOgImage?.[1]||existingTwitterImage?.[1]||new URL('/assets/bickri-logo-final.jpg?v=20261011',url.origin).href);
+        const metas=[
+          !/property=["']og:type["']/.test(html)?'<meta property="og:type" content="website">':'',
+          !/property=["']og:site_name["']/.test(html)?'<meta property="og:site_name" content="Bickri Service Agency">':'',
+          !/property=["']og:title["']/.test(html)?'<meta property="og:title" content="'+title+'">':'',
+          !/property=["']og:description["']/.test(html)?'<meta property="og:description" content="'+description+'">':'',
+          !/property=["']og:url["']/.test(html)?'<meta property="og:url" content="'+canonical+'">':'',
+          !/property=["']og:image["']/.test(html)?'<meta property="og:image" content="'+image+'">':'',
+          !/property=["']og:image:secure_url["']/.test(html)?'<meta property="og:image:secure_url" content="'+image+'">':'',
+          !/property=["']og:image:alt["']/.test(html)?'<meta property="og:image:alt" content="'+title+'">':'',
+          !/name=["']twitter:card["']/.test(html)?'<meta name="twitter:card" content="summary_large_image">':'',
+          !/name=["']twitter:title["']/.test(html)?'<meta name="twitter:title" content="'+title+'">':'',
+          !/name=["']twitter:description["']/.test(html)?'<meta name="twitter:description" content="'+description+'">':'',
+          !/name=["']twitter:image["']/.test(html)?'<meta name="twitter:image" content="'+image+'">':''
+        ].filter(Boolean).join('');
+        if(metas) html=html.replace(headMatch[0],headMatch[0]+metas);
+        headers.set('Content-Type','text/html; charset=utf-8');
+        headers.set('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+        return new Response(html,{status:response.status,statusText:response.statusText,headers});
+      }
+    }catch(error){console.error('Global Open Graph metadata failed:',error?.message||'unknown error')}
+  }
   if(url.pathname==='/'||url.pathname==='/index.html'){
     headers.set('Content-Type','text/html; charset=utf-8');
     headers.set('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
