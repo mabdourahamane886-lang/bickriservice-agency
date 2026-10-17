@@ -1,10 +1,10 @@
 (()=>{
-const LOGO="/assets/bickri-logo-final.jpg?v=20261017";
+const LOGO="/assets/bickri-logo-officiel.jpg?v=20261017";
 const css=`
-.bsa-head-nav{position:sticky;top:0;z-index:95;background:rgba(255,255,255,.97);backdrop-filter:blur(18px);border-bottom:1px solid #e8ecf2}
+.bsa-head-nav{position:sticky;top:0;z-index:95;background:#fff;backdrop-filter:blur(18px);border-bottom:1px solid #e8ecf2}
 .bsa-head-nav .navin{min-height:88px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:18px}
 .bsa-head-nav .brand{justify-self:start;display:flex;align-items:center;gap:0;min-width:0}
-.bsa-real-logo{display:block;width:245px;height:76px;object-fit:contain;object-position:left center;background:#fff}
+.bsa-real-logo{display:block;width:245px;height:76px;object-fit:contain;object-position:left center;background:#fff;border-radius:0}
 .bsa-head-nav .primary{justify-self:center;min-height:50px;padding:0 28px;border-radius:16px;font-size:16px;box-shadow:0 8px 24px rgba(217,164,65,.22)}
 .bsa-menu{justify-self:end;width:50px;height:50px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer;padding:8px}
 .bsa-menu span,.bsa-menu span:before,.bsa-menu span:after{display:block;width:30px;height:3px;background:#0b1b35;border-radius:3px;content:'';position:relative;transition:.2s}
