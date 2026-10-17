@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#08101f">
+<title>Statistiques intelligentes — Bickri Service Agency</title>
+<style>
+:root{--navy:#08101f;--gold:#d9a441;--bg:#f5f7fb;--text:#111827;--muted:#64748b;--line:#e2e8f0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font:15px/1.6 system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text)}
+header{background:linear-gradient(120deg,#08101f,#1b2a47);color:#fff;padding:26px max(20px,calc((100% - 1180px)/2))}
+header a{color:#f0c86f;text-decoration:none;font-weight:700;font-size:13px}h1{font-size:clamp(25px,4vw,38px);margin:12px 0 4px}header p{color:#cbd5e1;margin:0}
+main{max-width:1180px;margin:26px auto;padding:0 18px 55px}.config,.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:18px}
+label{display:block;font-size:12px;font-weight:800;margin-bottom:6px}input{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font:inherit;margin-bottom:12px}
+button{border:0;border-radius:10px;padding:12px 17px;background:var(--gold);color:var(--navy);font-weight:900;cursor:pointer}button.secondary{background:#e8edf5;margin-left:8px}
+.note{font-size:12px;color:var(--muted)}.message{padding:12px;border-radius:10px;background:#eff6ff;color:#1d4ed8;margin:12px 0}.message.error{background:#fef2f2;color:#991b1b}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.metric{padding:18px;border:1px solid var(--line);border-radius:15px;background:#fff}.metric span{display:block;font-size:12px;color:var(--muted);font-weight:700}.metric strong{display:block;font-size:30px;line-height:1.3;margin-top:7px}.two{display:grid;grid-template-columns:1.3fr .7fr;gap:18px}.barrow{display:grid;grid-template-columns:minmax(90px,1fr) 2fr 48px;align-items:center;gap:10px;margin:12px 0;font-size:12px}.bar{height:10px;border-radius:99px;background:#edf0f5;overflow:hidden}.bar i{display:block;height:100%;background:#d9a441;border-radius:99px}.muted{color:var(--muted);font-size:13px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-size:11px;text-transform:uppercase}.tablewrap{overflow-x:auto}.forecast{background:#fff8e7;border:1px solid #f2d89a;border-radius:14px;padding:16px}.hidden{display:none!important}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}}@media(max-width:460px){.grid{gap:8px}.metric{padding:13px}.metric strong{font-size:25px}.panel{padding:14px}.barrow{grid-template-columns:95px 1fr 35px}}
+</style>
+</head>
+<body>
+<header><a href="/partenaires/admin/">← Administration partenaires</a><h1>Statistiques intelligentes</h1><p>Analyse des événements réels et prévisions PyTorch pour le réseau partenaire.</p></header>
+<main>
+<section class="config">
+<h2>Connexion au service d’analyse</h2>
+<p class="note">Déployez d’abord <code>analytics_service</code> sur un hébergeur Python. Saisissez son URL HTTPS ci-dessous. Votre jeton d’administration est lu depuis la session existante et n’est pas enregistré dans cette page.</p>
+<label for="apiUrl">URL du service Python (HTTPS)</label><input id="apiUrl" type="url" placeholder="https://votre-service.onrender.com">
+<button id="load">Charger les statistiques</button><button class="secondary" id="save">Enregistrer l’URL</button>
+<div id="message" class="message" role="status">Le service Python doit être déployé et configuré avant le chargement des données.</div>
+</section>
+<section id="dashboard" class="hidden">
+<div class="grid" id="metrics"></div>
+<div class="two" style="margin-top:18px">
+<section class="panel"><h2>Activité quotidienne — 90 jours</h2><p class="muted">Nombre d’événements suivis par jour.</p><div id="daily"></div></section>
+<section class="panel"><h2>Prévisions PyTorch</h2><div id="forecast" class="forecast"></div></section>
+</div>
+<section class="panel"><h2>Classement des partenaires</h2><p class="muted">Classement par nombre d’événements attribués, et non par personnes uniques.</p><div class="tablewrap"><table><thead><tr><th>Rang</th><th>Partenaire</th><th>Événements</th><th>Statut</th></tr></thead><tbody id="ranking"></tbody></table></div></section>
+<section class="panel"><h2>Répartition des événements</h2><div id="breakdown"></div></section>
+<p class="muted" id="updated"></p>
+</section>
+</main>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const URL_KEY = 'bsa_partner_analytics_api_url';
+  const TOKEN_KEY = 'bsa_partner_access_token';
+  const saved = localStorage.getItem(URL_KEY) || '';
+  $('apiUrl').value = saved;
+  const fmt = n => Number(n || 0).toLocaleString('fr-FR');
+  function message(text, error=false) { $('message').textContent=text; $('message').className='message'+(error?' error':''); }
+  function safe(text) { return String(text ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  $('save').addEventListener('click', () => {
+    const url = $('apiUrl').value.trim().replace(/\/$/, '');
+    if (!url.startsWith('https://')) return message('Utilisez une URL HTTPS valide.', true);
+    localStorage.setItem(URL_KEY, url); message('URL enregistrée dans ce navigateur.');
+  });
+  $('load').addEventListener('click', async () => {
+    const base = $('apiUrl').value.trim().replace(/\/$/, '');
+    const token = sessionStorage.getItem(TOKEN_KEY) || '';
+    if (!base.startsWith('https://')) return message('Saisissez d’abord l’URL HTTPS du service Python.', true);
+    if (!token) return message('Session absente. Connectez-vous d’abord dans l’administration partenaires, puis revenez sur cette page.', true);
+    $('load').disabled = true; message('Chargement et analyse des statistiques…');
+    try {
+      const response = await fetch(base + '/v1/partner-analytics', {headers:{Authorization:'Bearer '+token,Accept:'application/json'},cache:'no-store'});
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail || 'Le service a refusé la requête.');
+      const labels = [
+        ['Partenaires',data.totals.partners],['Partenaires actifs',data.totals.active_partners],
+        ['Profils vérifiés',data.totals.verified_partners],['Événements suivis',data.totals.tracked_events],
+        ['Vues de profil',data.totals.profile_views],['Partages',data.totals.shares],
+        ['Clics site web',data.totals.website_clicks],['Contacts / prospects',data.totals.contact_clicks + data.totals.leads]
+      ];
+      $('metrics').innerHTML = labels.map(([label,value])=>'<div class="metric"><span>'+safe(label)+'</span><strong>'+fmt(value)+'</strong></div>').join('');
+      const last = data.daily.slice(-30), max = Math.max(1,...last.map(x=>x.events));
+      $('daily').innerHTML = last.map(x=>'<div class="barrow"><span>'+safe(x.date.slice(5))+'</span><div class="bar"><i style="width:'+Math.min(100,x.events/max*100)+'%"></i></div><b>'+fmt(x.events)+'</b></div>').join('');
+      $('ranking').innerHTML = data.ranking.length ? data.ranking.map((p,i)=>'<tr><td>#'+(i+1)+'</td><td>'+safe(p.name)+'</td><td>'+fmt(p.events)+'</td><td>'+ (p.active?'Actif':'Inactif') +'</td></tr>').join('') : '<tr><td colspan="4">Aucun événement attribué aux partenaires pour le moment.</td></tr>';
+      const f = data.forecast;
+      $('forecast').innerHTML = f.available
+        ? '<b>Estimation des 7 prochains jours : '+fmt(f.estimated_total_7_days)+' événements</b><p>'+safe(f.method)+'</p><div class="barrow"><span>Prévisions</span><div class="bar"><i style="width:100%"></i></div><b>'+fmt(f.estimated_total_7_days)+'</b></div><p class="muted">'+safe(f.disclaimer)+'</p>'
+        : '<b>Prévisions en attente</b><p>'+safe(f.message)+'</p>';
+      const entries = Object.entries(data.event_breakdown || {});
+      $('breakdown').innerHTML = entries.length ? entries.map(([k,v])=>'<div class="barrow"><span>'+safe(k)+'</span><div class="bar"><i style="width:'+Math.min(100,v/Math.max(1,...entries.map(e=>e[1]))*100)+'%"></i></div><b>'+fmt(v)+'</b></div>').join('') : '<p class="muted">Aucun événement pour cette période.</p>';
+      $('updated').textContent = 'Données générées le '+new Date(data.generated_at).toLocaleString('fr-FR')+'. Période analysée : '+data.period_days+' jours.';
+      $('dashboard').classList.remove('hidden'); message('Statistiques chargées avec succès.');
+    } catch (e) { message(e.message || 'Impossible de charger les statistiques.', true); }
+    finally { $('load').disabled = false; }
+  });
+})();
+</script>
+</body>
+</html>

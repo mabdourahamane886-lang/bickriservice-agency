@@ -36,7 +36,7 @@
 <button class="btn btnLight" id="cancelPasswordReset" type="button" style="margin-top:14px">Retour à la connexion</button>
 </section>
 <section id="adminDashboard" hidden>
-<div class="portalRow"><div><h2 style="font:800 24px Manrope;margin:0">Vue d’ensemble</h2><p id="adminSignedIn" class="muted">Administration connectée</p></div><button class="btn btnLight" id="adminRefresh" type="button">Actualiser</button></div>
+<div class="portalRow"><div><h2 style="font:800 24px Manrope;margin:0">Vue d’ensemble</h2><p id="adminSignedIn" class="muted">Administration connectée</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btnGold" href="/partenaires/admin/analytics.html">📊 Statistiques IA</a><button class="btn btnLight" id="adminRefresh" type="button">Actualiser</button></div></div>
 <div id="adminStats" class="portalStats"></div>
 <section class="panel"><div class="portalRow"><div><h2>Gestion des candidatures</h2><p class="muted">Vérifiez les informations avant toute approbation. Les profils approuvés deviennent publiquement visibles.</p></div><span id="adminApplicationCount" class="statusPill">0 dossier</span></div>
 <div class="adminTools"><input id="adminSearch" type="search" placeholder="Rechercher un nom, une entreprise, un code…"><select id="adminStatusFilter"><option value="">Tous les statuts</option><option value="pending">En attente</option><option value="under_review">En examen</option><option value="approved">Approuvées</option><option value="rejected">Refusées</option></select><a class="btn btnDark" href="/partenaires/">Ouvrir l’annuaire</a></div>
