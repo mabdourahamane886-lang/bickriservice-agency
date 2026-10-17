@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: bickri-partner-analytics
+    runtime: python
+    plan: starter
+    rootDir: analytics_service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        value: https://bickriservice-agency.org,https://www.bickriservice-agency.org
