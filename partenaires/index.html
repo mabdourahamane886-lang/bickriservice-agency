@@ -97,6 +97,21 @@
 @media(max-width:800px){.partnerFilters{grid-template-columns:1fr 1fr}.partnerBenefits{grid-template-columns:1fr}.partnerCardActions{grid-template-columns:1fr 1fr}.partnerCardActions a.primary{grid-column:1/-1}}
 @media(max-width:600px){.partnerToolsBottom{align-items:stretch;flex-direction:column}.partnerToolsLinks{display:grid;grid-template-columns:1fr 1fr}.partnerDialogGrid{grid-template-columns:1fr;text-align:center}.partnerDialogQr{margin:auto}.partnerDialogButtons{grid-template-columns:1fr 1fr}.trackerForm{grid-template-columns:1fr}.trackerForm button{width:100%}.partnerCardActions{grid-template-columns:1fr 1fr 1fr}.partnerCardActions a.primary{grid-column:auto}.partnerCardActions button,.partnerCardActions a{font-size:10px;padding:7px 4px}}
 
+
+.badgePricing{background:linear-gradient(145deg,#08101f,#14233f);color:#fff;border-radius:28px;padding:clamp(24px,4vw,42px);box-shadow:0 22px 60px rgba(8,16,31,.16)}
+.badgePricing .sectionHead{margin-bottom:26px}.badgePricing .sectionHead p{color:#c4cede}
+.badgePricingGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.badgePlan{display:flex;flex-direction:column;position:relative;background:#fff;color:#101827;border:1px solid rgba(217,164,65,.35);border-radius:20px;padding:24px;min-width:0}
+.badgePlan.featured{border:2px solid #d9a441;box-shadow:0 12px 36px rgba(0,0,0,.2)}
+.badgePlanTag{font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:900;color:#927020}
+.badgePlan h3{font:800 21px Manrope;margin:10px 0 4px}
+.badgePlanPrice{font:800 clamp(25px,3vw,34px) Manrope;letter-spacing:-.04em;margin:12px 0 0;color:#0b1730}
+.badgePlanPrice small{font:700 12px "DM Sans",sans-serif;color:#667289;letter-spacing:0}
+.badgePlan ul{padding-left:18px;color:#536077;font-size:13px;line-height:1.9;margin:16px 0 22px}
+.badgePlan .btn{margin-top:auto;width:100%;min-height:48px}
+.badgePricingNote{margin:18px 0 0;color:#c4cede;font-size:12px;line-height:1.7}
+@media(max-width:800px){.badgePricingGrid{grid-template-columns:1fr}.badgePlan{padding:22px}.badgePlanPrice{font-size:30px}}
+
 </style>
 </head>
 <body>
@@ -139,6 +154,39 @@
 <div class="partnerGrid" id="partners"></div>
 <div class="partnerShare"><h3>Lien prêt à copier — Partenaires</h3><p>Partagez la page officielle de nos partenaires avec un lien propre.</p><div class="partnerShareRow"><input id="partnersShareLink" value="https://bickriservice-agency.org/partenaires/" readonly aria-label="Lien de la page partenaires"><button id="copyPartnersLink" type="button">Copier le lien</button></div></div>
 </div>
+</section>
+
+
+<section class="section" id="choisir-badge">
+  <div class="wrap">
+    <div class="badgePricing">
+      <div class="sectionHead"><span class="eyebrow">Offres partenaires</span><h2 class="title">Choisissez votre badge <span class="gold">partenaire</span></h2><p>Choisissez la formule adaptée à votre organisation. Cliquez sur Commander pour discuter avec notre équipe sur WhatsApp et finaliser votre demande.</p></div>
+      <div class="badgePricingGrid">
+        <article class="badgePlan">
+          <span class="badgePlanTag">Essentiel</span><h3>Partenaire vérifié</h3>
+          <div><img src="/assets/partners/badge-verified-green.svg" alt="Badge vert Partenaire vérifié" width="38" height="38"></div>
+          <p class="badgePlanPrice">2 000 FCFA <small>/ mois</small></p>
+          <ul><li>Étude de la demande et des informations</li><li>Profil partenaire public après approbation</li><li>Présence dans l’annuaire des partenaires</li></ul>
+          <a class="btn btnGold" href="https://wa.me/22788376133?text=Bonjour%20Bickri%20Service%20Agency%2C%20je%20souhaite%20commander%20le%20badge%20Partenaire%20v%C3%A9rifi%C3%A9%20(2%20000%20FCFA%2Fmois).%20Merci%20de%20m%E2%80%99indiquer%20les%20crit%C3%A8res%20de%20v%C3%A9rification%20et%20les%20%C3%A9tapes%20de%20paiement." target="_blank" rel="noopener noreferrer">Commander sur WhatsApp</a>
+        </article>
+        <article class="badgePlan featured">
+          <span class="badgePlanTag">Visibilité renforcée</span><h3>Partenaire certifié</h3>
+          <div><img src="/assets/partners/badge-verified-blue.svg" alt="Badge bleu Partenaire certifié" width="38" height="38"></div>
+          <p class="badgePlanPrice">5 000 FCFA <small>/ mois</small></p>
+          <ul><li>Examen complémentaire du dossier</li><li>Profil enrichi et liens officiels</li><li>Visibilité renforcée dans le réseau Bickri</li></ul>
+          <a class="btn btnGold" href="https://wa.me/22788376133?text=Bonjour%20Bickri%20Service%20Agency%2C%20je%20souhaite%20commander%20le%20badge%20Partenaire%20certifi%C3%A9%20(5%20000%20FCFA%2Fmois).%20Merci%20de%20m%E2%80%99indiquer%20les%20crit%C3%A8res%20de%20certification%20et%20les%20%C3%A9tapes%20de%20paiement." target="_blank" rel="noopener noreferrer">Commander sur WhatsApp</a>
+        </article>
+        <article class="badgePlan">
+          <span class="badgePlanTag">Offre premium</span><h3>Partenaire Premium</h3>
+          <div><img src="/assets/partners/badge-verified-gold.svg" alt="Badge or Partenaire Premium" width="38" height="38"></div>
+          <p class="badgePlanPrice">10 000 FCFA <small>/ mois</small></p>
+          <ul><li>Évaluation pour un partenariat stratégique</li><li>Présentation prioritaire selon les critères retenus</li><li>Échange personnalisé avec l’équipe Bickri</li></ul>
+          <a class="btn btnGold" href="https://wa.me/22788376133?text=Bonjour%20Bickri%20Service%20Agency%2C%20je%20souhaite%20commander%20la%20formule%20Partenaire%20Premium%20(10%20000%20FCFA%2Fmois).%20Merci%20de%20m%E2%80%99indiquer%20les%20conditions%20et%20les%20%C3%A9tapes%20de%20validation%20et%20de%20paiement." target="_blank" rel="noopener noreferrer">Commander sur WhatsApp</a>
+        </article>
+      </div>
+      <p class="badgePricingNote">Important : les tarifs correspondent aux formules proposées et peuvent être confirmés avec notre équipe avant paiement. Le paiement ne garantit pas automatiquement un badge : chaque profil reste soumis à la vérification et à l’approbation de Bickri Service Agency. Le paiement n’est pas encore automatisé sur le site.</p>
+    </div>
+  </div>
 </section>
 
 <section class="section" style="padding-top:0">
