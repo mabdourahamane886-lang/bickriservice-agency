@@ -75,11 +75,15 @@ async def require_admin(authorization: str | None = Header(default=None)) -> dic
         return user
 
     # Compatibility with the existing Bickri admin allow-list, when that table exists.
-    allowlist = await supabase_get(
-        f"bickri_admin_users?user_id=eq.{user_id}&select=user_id&limit=1"
-    )
-    if isinstance(allowlist, list) and allowlist:
-        return user
+    try:
+        allowlist = await supabase_get(
+            f"bickri_admin_users?user_id=eq.{user_id}&select=user_id&limit=1"
+        )
+        if isinstance(allowlist, list) and allowlist:
+            return user
+    except HTTPException:
+        # The compatibility allow-list may not exist in every deployment.
+        pass
     raise HTTPException(status_code=403, detail="Accès réservé à l’administration.")
 
 
