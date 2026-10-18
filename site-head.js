@@ -1,5 +1,5 @@
 (()=>{
-const LOGO="/assets/bickri-logo-final.jpg?v=20261017";
+const LOGO="https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/9c67698d-0e0c-4cf4-89be-fb34bbcf9443.jpg?v=20261018";
 const css=`
 .bsa-head-nav{position:sticky;top:0;z-index:95;background:#fff;backdrop-filter:blur(18px);border-bottom:1px solid #e8ecf2}
 .bsa-head-nav .navin{min-height:88px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:18px}
