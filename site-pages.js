@@ -246,6 +246,11 @@
     initServiceDetailContent();
     initServiceDetailScroll();
   }
-  function boot(){addScript('/service-experience.js','bickri-service-experience');addScript('/_vercel/insights/script.js','bickri-vercel-analytics');addScript('/_vercel/speed-insights/script.js','bickri-vercel-speed');enhanceSEO();addArabicLink();if(initServiceReferenceLayout())return;initUI();initBackButton()}
+  function applyOfficialBrand(){
+    const logo="https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/9c67698d-0e0c-4cf4-89be-fb34bbcf9443.jpg?v=20261018";
+    document.querySelectorAll('.brand img').forEach(img=>{img.src=logo;img.alt='Logo officiel Bickri Service Agency';img.decoding='async';img.loading='eager';});
+    if(!document.getElementById('bickri-global-brand-style')){const style=document.createElement('style');style.id='bickri-global-brand-style';style.textContent='.header,.bsa-head-nav{background:#fff!important;color:#101827!important;border-bottom:1px solid #e3e8f0!important;backdrop-filter:blur(18px)}.brand img{width:76px!important;height:68px!important;max-width:76px;object-fit:contain!important;background:#fff!important}.brand b{color:#101827!important}.brand small{color:#667289!important}.links a{color:#536077}.links a:hover{color:#966a1e}@media(max-width:600px){.brand img{width:62px!important;height:58px!important;max-width:62px}.brand b{font-size:15px!important}.brand small{font-size:7px!important;letter-spacing:.12em!important}}';document.head.appendChild(style)}
+  }
+  function boot(){applyOfficialBrand();addScript('/service-experience.js','bickri-service-experience');addScript('/_vercel/insights/script.js','bickri-vercel-analytics');addScript('/_vercel/speed-insights/script.js','bickri-vercel-speed');enhanceSEO();addArabicLink();if(initServiceReferenceLayout())return;initUI();initBackButton()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
