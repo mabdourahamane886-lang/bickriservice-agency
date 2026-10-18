@@ -16,3 +16,92 @@ body.bickriVerifiedOpen{overflow:hidden}
 .bickriVerifiedTrust strong{display:block;color:#173125;font-size:12px}
 .bickriVerifiedTrust small{display:block;margin-top:2px;color:#6a7b71;font-size:10px;line-height:1.45}
 @media(max-width:520px){.bickriVerifiedDialog{padding:30px 20px 22px;border-radius:24px}.bickriVerifiedIcon{width:64px;height:64px}.bickriVerifiedDialog h2{font-size:23px}}
+
+
+/* BSA PARTNERS — finition premium claire, limitée à la page Partenaires */
+body:has(#partners) {
+  --navy:#12356b;
+  --navy2:#1b477f;
+  --gold:#d9a441;
+  --gold2:#b9852d;
+  --bg:#ffffff;
+  --text:#17243a;
+  --muted:#65748b;
+  --line:#e5ebf3;
+  --soft:#fff5df;
+  background:#fff;
+}
+body:has(#partners) main { background:#fff; }
+body:has(#partners) .hero {
+  background:
+    radial-gradient(ellipse at 88% 12%,rgba(217,164,65,.14),transparent 32%),
+    linear-gradient(180deg,#fff 0%,#f8fbff 100%);
+  border-bottom:1px solid #edf1f7;
+  color:#17243a;
+}
+body:has(#partners) .hero:after {
+  border-color:rgba(217,164,65,.23);
+}
+body:has(#partners) .hero h1 { color:#12356b; letter-spacing:-.06em; }
+body:has(#partners) .hero .gold { color:#b9852d; }
+body:has(#partners) .hero .eyebrow {
+  color:#8d651c;background:#fff7e7;border:1px solid #f0dfb8;
+}
+body:has(#partners) .lead { color:#65748b; }
+body:has(#partners) .heroCard {
+  background:#fff;border:1px solid #e5ebf3;box-shadow:0 22px 60px rgba(18,53,107,.09);
+}
+body:has(#partners) .heroCard strong,
+body:has(#partners) .heroCard .level span { color:#12356b; }
+body:has(#partners) .heroCard p { color:#65748b; }
+body:has(#partners) .heroCard .level { border-top-color:#e8edf4; }
+body:has(#partners) .btnGold { background:#d9a441;color:#142b4d;box-shadow:0 8px 20px rgba(217,164,65,.2); }
+body:has(#partners) .btnGold:hover { background:#e6b958;transform:translateY(-1px); }
+body:has(#partners) .btnGhost { color:#12356b;border-color:#dce4ef;background:#fff; }
+body:has(#partners) .stat { border-radius:20px;box-shadow:0 12px 34px rgba(18,53,107,.06); }
+body:has(#partners) .stat b { color:#12356b; }
+body:has(#partners) .partner {
+  border-radius:24px;border-color:#e5ebf3;box-shadow:0 12px 35px rgba(18,53,107,.055);
+  transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
+}
+body:has(#partners) .partner:hover {
+  border-color:#d9b96f;box-shadow:0 24px 55px rgba(18,53,107,.12);transform:translateY(-5px);
+}
+body:has(#partners) .partnerLogo {
+  width:176px;height:118px;margin:22px auto 18px;padding:10px;
+  border:1px solid #f0f2f6;border-radius:18px;background:#fff;
+}
+body:has(#partners) .partner h2 { color:#12356b;font-size:22px; }
+body:has(#partners) .partnerActions a,
+body:has(#partners) .partnerCardActions a.primary,
+body:has(#partners) .partnerToolsLinks a { background:#12356b;border-color:#12356b; }
+body:has(#partners) .partnerActions a:hover,
+body:has(#partners) .partnerCardActions a.primary:hover,
+body:has(#partners) .partnerToolsLinks a:hover { background:#1b477f; }
+body:has(#partners) .partnerActions button,
+body:has(#partners) .partnerShareRow button,
+body:has(#partners) .partnerToolsLinks a.secondary { background:#fff7e7;color:#805b18;border-color:#ead39e; }
+body:has(#partners) .section { background:#fff; }
+body:has(#partners) .levelCard,
+body:has(#partners) .partnerBenefit,
+body:has(#partners) .partnerShare,
+body:has(#partners) .partnerTools,
+body:has(#partners) .partnerApply { border-radius:22px;box-shadow:0 12px 34px rgba(18,53,107,.045); }
+body:has(#partners) .levelCard h3,
+body:has(#partners) .partnerBenefit h3,
+body:has(#partners) .partnerShare h3,
+body:has(#partners) .applicationTracker h3 { color:#12356b; }
+body:has(#partners) .cta { background:linear-gradient(120deg,#12356b,#1b477f);box-shadow:0 20px 50px rgba(18,53,107,.15); }
+body:has(#partners) .badgePricing { background:linear-gradient(135deg,#12356b,#1b477f); }
+body:has(#partners) .badgePlan.featured { border-color:#d9a441; }
+body:has(#partners) .footer { background:#fff;color:#65748b;border-top:1px solid #e5ebf3; }
+body:has(#partners) .footer .copy { border-top-color:#e5ebf3; }
+body:has(#partners) .footer a { color:#12356b; }
+body:has(#partners) .partnerField input:focus,
+body:has(#partners) .partnerField select:focus,
+body:has(#partners) .partnerField textarea:focus,
+body:has(#partners) .partnerFilters input:focus,
+body:has(#partners) .partnerFilters select:focus { border-color:#d9a441;box-shadow:0 0 0 3px rgba(217,164,65,.14); }
+@media (prefers-reduced-motion:reduce) {
+  body:has(#partners) *,body:has(#partners) *::before,body:has(#partners) *::after { transition:none!important;scroll-behavior:auto!important; }
+}
