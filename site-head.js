@@ -1,10 +1,10 @@
 (()=>{
-const LOGO="https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/9c67698d-0e0c-4cf4-89be-fb34bbcf9443.jpg?v=20261018";
+const LOGO="https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/a3312bdd-3b2a-412e-b0b3-61f10d3a1cf0.png?v=20261019";
 const css=`
 .bsa-head-nav{position:sticky;top:0;z-index:95;background:#fff;backdrop-filter:blur(18px);border-bottom:1px solid #e8ecf2}
 .bsa-head-nav .navin{min-height:88px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:18px}
 .bsa-head-nav .brand{justify-self:start;display:flex;align-items:center;gap:0;min-width:0}
-.bsa-real-logo{display:block;width:245px;height:76px;object-fit:contain;object-position:left center;background:#fff;border-radius:0}
+.bsa-real-logo{display:block;width:245px;height:76px;object-fit:contain;object-position:left center;background:transparent;border-radius:0}
 .bsa-head-nav .primary{justify-self:center;min-height:50px;padding:0 28px;border-radius:16px;font-size:16px;box-shadow:0 8px 24px rgba(217,164,65,.22)}
 .bsa-menu{justify-self:end;width:50px;height:50px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer;padding:8px}
 .bsa-menu span,.bsa-menu span:before,.bsa-menu span:after{display:block;width:30px;height:3px;background:#0b1b35;border-radius:3px;content:'';position:relative;transition:.2s}
