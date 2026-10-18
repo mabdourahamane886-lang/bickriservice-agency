@@ -30,10 +30,10 @@
 </style>
 </head>
 <body>
-<header class="header"><div class="wrap nav"><a class="brand" href="/" aria-label="Bickri Service Agency"><img src="/assets/bickri-b-logo.svg" alt=""><span>BICKRI SERVICE AGENCY<small>AGENCE DIGITALE • NIAMEY</small></span></a><a class="back" href="/partenaires/">← Tous les partenaires</a></div></header>
+<header class="header"><div class="wrap nav"><a class="brand" href="/" aria-label="Bickri Service Agency"><img src="https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/0f26cf1f-df17-461f-8b2f-463b5d3f9b16.png?v=20261019" alt=""><span>BICKRI SERVICE AGENCY<small>AGENCE DIGITALE • NIAMEY</small></span></a><a class="back" href="/partenaires/">← Tous les partenaires</a></div></header>
 <main>
 <section class="hero"><div class="wrap"><div id="profileLoading" class="muted" style="color:#cbd5e1">Chargement du profil partenaire…</div><div id="profileCard" class="profileCard" hidden>
-<div class="logoWrap"><img id="profileLogo" src="/assets/bickri-b-logo.svg" alt="Logo du partenaire"></div>
+<div class="logoWrap"><img id="profileLogo" src="https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/0f26cf1f-df17-461f-8b2f-463b5d3f9b16.png?v=20261019" alt="Logo du partenaire"></div>
 <div class="profile"><span class="eyebrow">Profil partenaire public</span><h1 id="profileName">Partenaire</h1><p class="desc" id="profileDescription"></p><div class="profileBadge"><img id="profileBadgeIcon" src="/assets/partners/badge-verified-green.svg" alt=""><span id="profileBadgeLabel">Partenaire vérifié</span></div><div class="profileTags" id="profileTags"></div><div class="actions"><a id="profileWebsite" class="btn gold" href="#" target="_blank" rel="noopener" hidden>Visiter le site ↗</a><button id="profileShare" class="btn ghost" type="button">Partager le profil</button><button id="profileCopy" class="btn ghost" type="button">Copier le lien</button></div></div>
 </div></div></section>
 <section class="main"><div class="wrap contentGrid" id="profileDetails" hidden>
@@ -133,10 +133,10 @@ async function init(){
   $('profileCopy').addEventListener('click',async()=>{try{await copy(shareUrl);$('profileCopy').textContent='Lien copié ✓';record('share_click','copy');}catch{window.prompt('Copiez ce lien :',shareUrl);}setTimeout(()=>$('profileCopy').textContent='Copier le lien',1600);});
   setMeta('og:title',p.name+' — Partenaire Bickri Service Agency',true);
   setMeta('og:description',p.description||p.mission||'Profil partenaire vérifié de Bickri Service Agency.',true);
-  setMeta('og:url',canonicalUrl,true);setMeta('og:image',new URL(p.logoUrl||'/assets/bickri-b-logo.svg',publicOrigin).href,true);
+  setMeta('og:url',canonicalUrl,true);setMeta('og:image',new URL(p.logoUrl||'https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/0f26cf1f-df17-461f-8b2f-463b5d3f9b16.png?v=20261019',publicOrigin).href,true);
   setMeta('twitter:title',p.name+' — Partenaire Bickri Service Agency');
   setMeta('twitter:description',p.description||p.mission||'Profil partenaire de Bickri Service Agency.');
-  setMeta('twitter:image',new URL(p.logoUrl||'/assets/bickri-b-logo.svg',publicOrigin).href);
+  setMeta('twitter:image',new URL(p.logoUrl||'https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/0f26cf1f-df17-461f-8b2f-463b5d3f9b16.png?v=20261019',publicOrigin).href);
   document.title=p.name+' — Partenaire Bickri Service Agency';
   $('profileLoading').hidden=true;$('profileCard').hidden=false;$('profileDetails').hidden=false;
   record('profile_view','view');
