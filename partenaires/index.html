@@ -174,6 +174,28 @@ body{background:#f3f7fc;color:#172b45}
 .mobile.open{background:#fff}
 @media(max-width:850px){.mobile a{border-color:#edf2f8}}
 
+
+/* Offre partenaire : arrière-plan adaptatif et contraste renforcé */
+.badgePricing{position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(circle at 8% 0%,rgba(45,212,191,.22),transparent 32%),radial-gradient(circle at 100% 100%,rgba(96,165,250,.25),transparent 36%),linear-gradient(135deg,#0b2545 0%,#124c70 52%,#0f766e 100%);border:1px solid rgba(255,255,255,.24);color:#fff;box-shadow:0 24px 64px rgba(11,37,69,.22)}
+.badgePricing .sectionHead{position:relative;z-index:1}
+.badgePricing .sectionHead .title{color:#fff}
+.badgePricing .sectionHead .eyebrow{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);color:#d9fff6}
+.badgePricing .sectionHead p,.badgePricing .badgePricingNote{color:#e4f3fb}
+.badgePricingGrid{position:relative;z-index:1}
+.badgePlan{background:rgba(255,255,255,.98);color:#172b45;border:1px solid rgba(255,255,255,.82);box-shadow:0 14px 32px rgba(3,20,39,.16);transition:transform .2s ease,box-shadow .2s ease}
+.badgePlan:hover{transform:translateY(-4px);box-shadow:0 20px 42px rgba(3,20,39,.24)}
+.badgePlan.featured{border:2px solid #5eead4;box-shadow:0 0 0 3px rgba(94,234,212,.16),0 16px 38px rgba(3,20,39,.2)}
+.badgePlanTag{color:#0f766e}
+.badgePlan h3{color:#12345b}
+.badgePlanPrice{color:#102a43}
+.badgePlanPrice small{color:#52677d}
+.badgePlan ul{color:#40566d}
+.badgePlan .btn{background:linear-gradient(110deg,#0f766e,#1676b8);color:#fff;border:1px solid transparent;box-shadow:0 5px 14px rgba(15,118,110,.18);white-space:normal;text-align:center;line-height:1.35;padding:10px 14px}
+.badgePlan .btn:hover,.badgePlan .btn:focus-visible{background:linear-gradient(110deg,#115e59,#155e9b);box-shadow:0 0 0 3px rgba(45,212,191,.24);outline:none}
+.badgePricingNote{position:relative;z-index:1}
+@media(max-width:600px){.badgePricing{padding:20px 15px;border-radius:22px}.badgePlan{padding:20px}.badgePlan .btn{min-height:48px;font-size:13px}.badgePricing .sectionHead p{font-size:14px;line-height:1.7}}
+@media(prefers-reduced-motion:reduce){.badgePlan{transition:none}.badgePlan:hover{transform:none}}
+
 </style>
 </head>
 <body>
@@ -222,7 +244,7 @@ body{background:#f3f7fc;color:#172b45}
 <section class="section" id="choisir-badge">
   <div class="wrap">
     <div class="badgePricing">
-      <div class="sectionHead"><span class="eyebrow">Offres partenaires</span><h2 class="title">Choisissez votre badge <span class="gold">partenaire</span></h2><p>Choisissez la formule adaptée à votre organisation. Cliquez sur Commander pour discuter avec notre équipe sur WhatsApp et finaliser votre demande.</p></div>
+      <div class="sectionHead"><span class="eyebrow">Offre partenaire</span><h2 class="title">Choisissez votre formule <span class="gold">partenaire</span></h2><p>Choisissez la formule adaptée à votre plan. Cliquez sur « Commander » pour discuter avec notre équipe sur WhatsApp et finaliser votre demande.</p></div>
       <div class="badgePricingGrid">
         <article class="badgePlan">
           <span class="badgePlanTag">Essentiel</span><h3>Partenaire vérifié</h3>
