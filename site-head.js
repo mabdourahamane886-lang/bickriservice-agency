@@ -1,5 +1,5 @@
 (()=>{
-const LOGO="https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/a3312bdd-3b2a-412e-b0b3-61f10d3a1cf0.png?v=20261019";
+const LOGO="https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/0f26cf1f-df17-461f-8b2f-463b5d3f9b16.png?v=20261019";
 const css=`
 .bsa-head-nav{position:sticky;top:0;z-index:95;background:#fff;backdrop-filter:blur(18px);border-bottom:1px solid #e8ecf2}
 .bsa-head-nav .navin{min-height:88px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:18px}
