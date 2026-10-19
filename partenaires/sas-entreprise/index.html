@@ -84,12 +84,15 @@ async function init(){
    {id:'75ee8919-db0d-4c4a-a874-9c2e370be42f',name:'EGAN BTP',slug:'egan-btp',description:'Construction · Rénovation · Plans · Hydraulique · Eau & assainissement',founder:'Garba Abdoul Nasser',mission:'Construction, fourniture de plans, rénovation, hydraulique de l’eau et assainissement.',country:'Niger',partnerType:'BTP & Construction',category:'BTP & Construction',badgeLevel:'green',badgeLabel:'Partenaire vérifié',badgeVerified:true,verifiedAt:'2026-10-08T08:41:16.376Z',publicId:'BSP-75EE8919',referralCode:'BSA-75EE8919',logoUrl:'/assets/partners/egan-btp.svg'}
    {"id":"sas-entreprise","name":"SAS ENTREPRISE","slug":"sas-entreprise","description":"SAS ENTREPRISE · Bâtir Votre Patrimoine.","about":"SAS ENTREPRISE est une entreprise dirigée par Adamou Saley Seybou, dont la signature « Bâtir Votre Patrimoine » exprime une ambition : accompagner les projets qui contribuent à construire, développer et valoriser le patrimoine. L’entreprise souhaite placer le sérieux, la qualité de la relation client et la confiance au cœur de ses collaborations.\n\nSa démarche commence par l’écoute des besoins, la compréhension des objectifs et la clarification des attentes. Cette approche permet d’identifier les solutions adaptées à chaque projet et de définir un cadre de collaboration transparent. L’entreprise met l’accent sur la communication, la préparation et le suivi des projets afin que les clients puissent avancer avec une vision claire des priorités et des engagements.\n\nDans une perspective durable, SAS ENTREPRISE entend contribuer à la valorisation du patrimoine et au développement des activités économiques par une approche responsable et professionnelle. Chaque projet mérite une attention particulière, un suivi attentif et une recherche de solutions pertinentes en tenant compte du contexte, des besoins et des moyens disponibles. Les prestations précises, les conditions d’intervention et les modalités commerciales doivent être confirmées directement auprès de l’entreprise avant tout engagement.\n\nSon slogan « Bâtir Votre Patrimoine » résume cette vision : faire de chaque collaboration une occasion de créer de la valeur et de bâtir une relation durable. SAS ENTREPRISE rejoint l’annuaire des partenaires de Bickri Service Agency afin de présenter son identité et renforcer sa visibilité auprès du public.","founder":"Adamou Saley Seybou","mission":"Construction et valorisation du patrimoine. Les prestations exactes et les conditions d’intervention sont à confirmer directement auprès de l’entreprise.","country":"Niger","city":"","partnerType":"Construction & patrimoine","category":"Construction & patrimoine","badgeLevel":"green","badgeLabel":"Partenaire vérifié","badgeVerified":true,"logoUrl":"https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/4df94d4f-a33a-42a9-979b-5a88f4ea4972.png"},
   ];
-  let p=null;
-  try{
-   const response=await fetch(apiUrl('/api/partners?slug='+encodeURIComponent(slug)),{cache:'no-store',headers:{Accept:'application/json'}});
-   const data=await response.json().catch(()=>({}));
-   if(response.ok&&data.partner)p=data.partner;
-  }catch{}
+  // SAS ENTREPRISE utilise ses données locales immédiatement : ne pas bloquer l’affichage sur une API distante.
+  let p=slug==='sas-entreprise' ? fallbackPartners.find(item=>item.slug===slug)||null : null;
+  if(!p){
+   try{
+    const response=await fetch(apiUrl('/api/partners?slug='+encodeURIComponent(slug)),{cache:'no-store',headers:{Accept:'application/json'},signal:AbortSignal.timeout(4500)});
+    const data=await response.json().catch(()=>({}));
+    if(response.ok&&data.partner)p=data.partner;
+   }catch{}
+  }
   if(!p){
    try{
     const params=new URLSearchParams({
