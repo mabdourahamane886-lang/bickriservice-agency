@@ -196,6 +196,46 @@ body{background:#f3f7fc;color:#172b45}
 @media(max-width:600px){.badgePricing{padding:20px 15px;border-radius:22px}.badgePlan{padding:20px}.badgePlan .btn{min-height:48px;font-size:13px}.badgePricing .sectionHead p{font-size:14px;line-height:1.7}}
 @media(prefers-reduced-motion:reduce){.badgePlan{transition:none}.badgePlan:hover{transform:none}}
 
+
+/* Refonte visuelle annuaire partenaires — octobre 2026 */
+:root{--bg:#f4f6fa;--gold:#e0ad45;--line:#e4e9f1}
+body{background:#f4f6fa}
+.header{box-shadow:0 5px 24px rgba(8,16,31,.045)}
+.brand img{width:52px;height:52px;object-fit:contain}
+.hero{padding:clamp(58px,7vw,92px) 0 clamp(56px,6vw,78px);background:radial-gradient(ellipse at 85% 18%,rgba(224,173,69,.22),transparent 30%),radial-gradient(ellipse at 4% 95%,rgba(56,104,164,.2),transparent 34%),linear-gradient(125deg,#07101f 0%,#0c1a32 58%,#172a47 100%)}
+.heroGrid{gap:clamp(26px,5vw,60px)}
+.hero h1{max-width:800px;line-height:.99}
+.lead{max-width:650px;line-height:1.75}
+.heroActions .btn{transition:transform .2s ease,box-shadow .2s ease}
+.heroActions .btn:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.16)}
+.heroCard{border-radius:24px;box-shadow:0 24px 70px rgba(0,0,0,.22)}
+.stats{margin-top:-24px;gap:16px}
+.stat{border-radius:20px;padding:22px;border-color:#e9edf3;box-shadow:0 14px 34px rgba(8,16,31,.06)}
+.stat b{font-size:clamp(25px,3vw,34px)}
+.sectionHead{margin-bottom:26px}
+.partnerTools{padding:20px;border-radius:22px;box-shadow:0 14px 34px rgba(8,16,31,.045)}
+.partnerFilters input,.partnerFilters select{min-height:50px;border-color:#dfe5ee;background:#fff}
+.partnerFilters input:focus,.partnerFilters select:focus{outline:0;border-color:#d6a33d;box-shadow:0 0 0 3px rgba(217,164,65,.14)}
+.partnerGrid{align-items:stretch;gap:22px}
+.partner{min-height:420px;padding:24px 24px 22px;border-radius:24px;border-color:#e5eaf2;box-shadow:0 10px 28px rgba(8,16,31,.045);overflow:hidden}
+.partner:before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#d9a441,#f2d68e,#d9a441);opacity:.85}
+.partner:hover{transform:translateY(-5px);box-shadow:0 22px 46px rgba(8,16,31,.105);border-color:#d8c28d}
+.partnerLogo{width:min(100%,210px);height:128px;margin:22px auto 18px;padding:12px;object-fit:contain;border:1px solid #f0f2f6;border-radius:18px;background:linear-gradient(180deg,#fff,#fbfcfe)}
+.partner h2{font-size:clamp(19px,2vw,23px);line-height:1.25;flex-wrap:wrap}
+.partner p{font-size:13px;line-height:1.7}
+.partnerFounder{margin-top:12px;padding-top:10px;border-top:1px solid #f0f2f6}
+.chip{background:#f6f8fb;border-color:#e8edf4;padding:6px 10px}
+.partnerActions{gap:9px;padding-top:22px}
+.partnerActions a,.partnerActions button{min-height:46px;border-radius:12px;font-size:12px;transition:transform .18s ease,background .18s ease}
+.partnerActions a:hover{background:#172b4a}
+.partnerActions button:hover{background:#ffedbd}
+.levelCard,.badgePlan{border-radius:22px;box-shadow:0 10px 28px rgba(8,16,31,.04)}
+.partnerApply{border-radius:26px}
+.cta{box-shadow:0 20px 50px rgba(8,16,31,.12)}
+.footer{margin-top:30px}
+@media(max-width:850px){.partnerFilters{grid-template-columns:repeat(2,minmax(0,1fr))}.partnerFilters input{grid-column:1/-1}.partner{min-height:390px}}
+@media(max-width:600px){.brand img{width:46px;height:46px}.brand b{font-size:15px}.hero h1{font-size:clamp(2.7rem,12vw,3.4rem)}.stats{gap:10px}.stat{padding:14px;border-radius:16px}.partnerFilters{grid-template-columns:1fr}.partnerFilters input{grid-column:auto}.partner{min-height:0;padding:22px 20px}.partnerLogo{height:116px;margin:18px auto}.partnerActions a,.partnerActions button{min-height:48px}.partnerToolsBottom{align-items:flex-start;flex-direction:column}.partnerToolsLinks{width:100%}.partnerToolsLinks a{flex:1;justify-content:center}}
+
 </style>
 </head>
 <body>
