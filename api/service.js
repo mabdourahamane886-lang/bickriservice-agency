@@ -80,10 +80,11 @@ module.exports = async function (req, res) {
     '<meta property="og:title" content="' + escapeHtml(title) + '">' +
     '<meta property="og:description" content="' + escapeHtml(description) + '">' +
     '<meta property="og:image" content="' + escapeHtml(image) + '">' +
+    '<meta property="og:image:secure_url" content="' + escapeHtml(image) + '">' +
     '<meta property="og:image:alt" content="' + escapeHtml(service.name) + '">' +
-    '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="fr_FR">' +
+    '<meta property="og:locale" content="fr_FR">' +
     '<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="' + escapeHtml(title) + '">' +
-    '<meta name="twitter:description" content="' + escapeHtml(description) + '"><meta name="twitter:image" content="' + escapeHtml(image) + '">' +
+    '<meta name="twitter:description" content="' + escapeHtml(description) + '"><meta name="twitter:image" content="' + escapeHtml(image) + '"><meta name="twitter:image:alt" content="' + escapeHtml(service.name) + '">' +
     '</head><body style="margin:0;background:#08101f;color:#fff;font-family:Arial,sans-serif">' +
     '<main style="max-width:900px;margin:auto;padding:24px">' +
     '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(service.name) + '" style="width:100%;max-height:520px;object-fit:cover;border-radius:20px">' +
