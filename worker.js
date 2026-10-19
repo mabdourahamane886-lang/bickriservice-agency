@@ -906,10 +906,9 @@ export default {async fetch(request,env,ctx){
         '<meta property="og:url" content="' + esc(shortUrl) + '"><meta property="og:title" content="' + esc(title) + '">' +
         '<meta property="og:description" content="' + esc(description) + '">' +
         '<meta property="og:image" content="' + esc(image) + '"><meta property="og:image:secure_url" content="' + esc(image) + '">' +
-        '<meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1600"><meta property="og:image:height" content="900">' +
         '<meta property="og:image:alt" content="' + esc(service.name || 'Service Bickri Service Agency') + '">' +
         '<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="' + esc(title) + '">' +
-        '<meta name="twitter:description" content="' + esc(description) + '"><meta name="twitter:image" content="' + esc(image) + '">' +
+        '<meta name="twitter:description" content="' + esc(description) + '"><meta name="twitter:image" content="' + esc(image) + '"><meta name="twitter:image:alt" content="' + esc(service.name || 'Service Bickri Service Agency') + '">' +
         '</head><body style="margin:0;background:#08101f;color:#fff;font-family:Arial,sans-serif"><main style="max-width:900px;margin:auto;padding:24px">' +
         '<img src="' + esc(image) + '" alt="' + esc(service.name || '') + '" style="width:100%;max-height:520px;object-fit:cover;border-radius:20px">' +
         '<p style="color:#d9a441;font-weight:700;letter-spacing:.08em">BICKRI SERVICE AGENCY · NIAMEY · NIGER</p>' +
@@ -993,8 +992,6 @@ export default {async fetch(request,env,ctx){
             '<meta property="og:description" content="'+description+'">',
             '<meta property="og:url" content="'+canonical+'">',
             '<meta property="og:image" content="'+image+'">',
-            '<meta property="og:image:width" content="1600">',
-            '<meta property="og:image:height" content="900">',
             '<meta property="og:image:alt" content="'+title+'">',
             '<meta name="twitter:card" content="summary_large_image">',
             '<meta name="twitter:title" content="'+title+'">',
