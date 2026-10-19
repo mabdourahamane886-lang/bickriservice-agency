@@ -884,6 +884,10 @@ export default {async fetch(request,env,ctx){
     }catch(error){console.error('Bickri AI request failed',error?.message||error);return json({answer:fallbackAnswer(message),version:SITE_VERSION,mode:'fallback'})}
   }
   if(url.pathname==='/api/site-version')return json({version:SITE_VERSION,assets:ASSET_VERSION,platform:'Cloudflare Workers'});
+  // Canonicalize the services index with an HTTP redirect instead of serving a JS/meta redirect stub.
+  if (request.method === 'GET' && (url.pathname === '/services' || url.pathname === '/services/')) {
+    return Response.redirect(new URL('/#services', url.origin).href, 301);
+  }
   // Short service links: /s/<code> serve the service-specific Open Graph page directly.
   if (request.method === 'GET' && /^\/s\/[^/]+\/?$/.test(url.pathname)) {
     try {
