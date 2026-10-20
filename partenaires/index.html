@@ -236,6 +236,65 @@ body{background:#f4f6fa}
 @media(max-width:850px){.partnerFilters{grid-template-columns:repeat(2,minmax(0,1fr))}.partnerFilters input{grid-column:1/-1}.partner{min-height:390px}}
 @media(max-width:600px){.brand img{width:46px;height:46px}.brand b{font-size:15px}.hero h1{font-size:clamp(2.7rem,12vw,3.4rem)}.stats{gap:10px}.stat{padding:14px;border-radius:16px}.partnerFilters{grid-template-columns:1fr}.partnerFilters input{grid-column:auto}.partner{min-height:0;padding:22px 20px}.partnerLogo{height:116px;margin:18px auto}.partnerActions a,.partnerActions button{min-height:48px}.partnerToolsBottom{align-items:flex-start;flex-direction:column}.partnerToolsLinks{width:100%}.partnerToolsLinks a{flex:1;justify-content:center}}
 
+
+/* BSA PARTNERS DARK PREMIUM THEME — visual-only overrides; existing interactions remain unchanged */
+:root{--bg:#08101f;--text:#f4f7fc;--muted:#b6c2d5;--line:rgba(194,207,228,.20);--soft:rgba(217,164,65,.13)}
+html,body{background:#08101f!important;color:#f4f7fc}
+body{background:radial-gradient(ellipse at 85% 12%,rgba(217,164,65,.09),transparent 30%),linear-gradient(180deg,#08101f 0%,#0b1528 55%,#08101f 100%)!important}
+.header{background:#fff!important;color:#101827!important;border-bottom:1px solid #e3e8f0!important}
+.stats{margin-bottom:0}
+.stat,.partner,.levelCard,.partnerShare,.badgePlan,.partnerApply,.applicationTracker,.partnerDialogBody,.partnerBenefit{background:linear-gradient(145deg,#17243a,#101b30)!important;border-color:rgba(194,207,228,.2)!important;color:#f4f7fc!important;box-shadow:0 16px 42px rgba(0,0,0,.2)}
+.stat b,.partner h2,.levelCard h3,.partnerShare h3,.badgePlan h3,.partnerApply h2,.applicationTracker h3,.partnerBenefit h3{color:#f7f9ff!important}
+.stat span,.partner p,.levelCard p,.partnerShare p,.badgePlan li,.badgePricingNote,.partnerApply p,.applicationTracker p,.partnerBenefit p{color:#b6c2d5!important}
+.section{background:transparent!important}
+.sectionHead .muted,.muted{color:#b6c2d5}
+.partner:hover{border-color:rgba(229,185,88,.65)!important;box-shadow:0 24px 65px rgba(0,0,0,.35)}
+.chip{background:rgba(255,255,255,.06)!important;border-color:rgba(194,207,228,.18)!important;color:#dce5f4!important}
+.partnerActions a{background:#d9a441!important;color:#08101f!important;border-color:#d9a441!important}
+.partnerActions button{background:rgba(217,164,65,.13)!important;border-color:rgba(217,164,65,.4)!important;color:#f0c86f!important}
+.empty{background:#111d31!important;border-color:rgba(194,207,228,.3)!important;color:#b6c2d5!important}
+.empty strong{color:#fff!important}
+.eyebrow{background:rgba(217,164,65,.13)!important;color:#f0c86f!important;border:1px solid rgba(217,164,65,.28)}
+.btnGhost{border-color:rgba(255,255,255,.28)!important;background:rgba(255,255,255,.06)!important}
+.partnerFilters input,.partnerFilters select,.partnerField input,.partnerField select,.partnerField textarea,.trackerForm input,.partnerShareRow input{background:#0a1427!important;color:#f4f7fc!important;border:1px solid rgba(194,207,228,.28)!important}
+.partnerFilters input::placeholder,.partnerField input::placeholder,.partnerField textarea::placeholder,.trackerForm input::placeholder{color:#8e9bb1!important}
+.partnerField label,.partnerApply label{color:#e6edf8!important}
+.partnerFormStatus,.partnerTrackerResult{color:#e6edf8}
+.partnerApplicationCode{background:rgba(255,255,255,.05)!important;color:#f4f7fc!important;border-color:rgba(194,207,228,.2)!important}
+.partnerDialog{background:transparent!important;color:#f4f7fc}
+.partnerDialogBody{color:#f4f7fc!important}
+.partnerDialogUrl{color:#dce5f4!important}
+.partnerDialogClose{color:#fff!important;background:rgba(255,255,255,.08)!important}
+.partnerBenefitIcon{color:#f0c86f!important}
+.badgePricing{background:transparent!important}
+.badgePricing .sectionHead p{color:#b6c2d5!important}
+.badgePlanTag{background:rgba(217,164,65,.14)!important;color:#f0c86f!important}
+.badgePlanPrice{color:#f0c86f!important}
+.badgePlanPrice small{color:#b6c2d5!important}
+.badgePlan.featured{border-color:rgba(217,164,65,.65)!important}
+.badgePricingNote{background:rgba(255,255,255,.04)!important;border-color:rgba(194,207,228,.18)!important}
+.partnerShareRow button,.partnerDialogButtons button,.partnerDialogButtons a{background:#d9a441!important;color:#08101f!important;border-color:#d9a441!important}
+@media(max-width:760px){
+ .hero{padding:58px 0 54px!important}
+ .heroGrid{grid-template-columns:1fr!important;gap:28px!important}
+ .hero h1{font-size:clamp(2.65rem,12vw,4rem)!important}
+ .lead{font-size:16px!important;line-height:1.7}
+ .heroActions{align-items:stretch!important;flex-direction:column!important}
+ .heroActions .btn{width:100%!important;min-height:54px!important;border-radius:16px!important}
+ .heroCard{padding:22px!important;border-radius:22px!important}
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+ .stat{padding:15px!important;border-radius:16px!important}
+ .stat b{font-size:25px!important}
+ .partnerGrid,.levels{grid-template-columns:1fr!important}
+ .partner{min-height:0!important;padding:24px 20px!important;border-radius:24px!important}
+ .partnerLogo{margin-top:16px!important}
+ .partnerActions{gap:10px!important}
+ .partnerActions a,.partnerActions button{min-height:50px!important;font-size:13px!important}
+ .section{padding:52px 0!important}
+ .cta{padding:26px 22px!important;flex-direction:column!important;align-items:stretch!important;border-radius:22px!important}
+ .cta .btn{width:100%!important}
+}
+
 </style>
 </head>
 <body>
