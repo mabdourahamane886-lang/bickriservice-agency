@@ -437,6 +437,83 @@ header.header,.header{background:#fff!important;color:#10213b!important;border-b
  .badgePlanTag{min-height:36px!important;padding:9px 12px!important;font-size:10px!important;letter-spacing:.11em!important;border-radius:8px!important}
 }
 
+
+/* Premium refinement of the copy-link card only; preserve current palette and behavior */
+.partnerShare{
+ position:relative!important;
+ overflow:hidden!important;
+ padding:clamp(22px,4vw,34px)!important;
+ border-radius:26px!important;
+ border:1px solid #e3e8f0!important;
+ background:#fff!important;
+ box-shadow:0 16px 42px rgba(8,16,31,.07)!important;
+}
+.partnerShare::before{
+ content:""!important;
+ position:absolute!important;
+ inset:0 0 auto 0!important;
+ height:4px!important;
+ background:#d9a441!important;
+}
+.partnerShare h3{
+ margin:0 0 10px!important;
+ color:#10213b!important;
+ font-size:clamp(21px,3vw,28px)!important;
+ line-height:1.25!important;
+ letter-spacing:-.025em!important;
+ font-weight:800!important;
+}
+.partnerShare p{
+ margin:0 0 22px!important;
+ max-width:56ch!important;
+ color:#667289!important;
+ font-size:15px!important;
+ line-height:1.7!important;
+}
+.partnerShareRow{
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr)!important;
+ gap:12px!important;
+ align-items:stretch!important;
+}
+.partnerShareRow input{
+ display:block!important;
+ width:100%!important;
+ min-width:0!important;
+ box-sizing:border-box!important;
+ min-height:50px!important;
+ padding:0 15px!important;
+ border-radius:12px!important;
+ border:1px solid #d9e0ea!important;
+ background:#f8fafc!important;
+ color:#263449!important;
+ font:500 14px/1.4 "DM Sans",sans-serif!important;
+ box-shadow:inset 0 1px 2px rgba(8,16,31,.025)!important;
+}
+.partnerShareRow button{
+ width:100%!important;
+ min-height:54px!important;
+ border-radius:13px!important;
+ border:1px solid #d9a441!important;
+ font-size:15px!important;
+ font-weight:800!important;
+ letter-spacing:.005em!important;
+ box-shadow:0 7px 18px rgba(217,164,65,.16)!important;
+ transition:transform .18s ease,box-shadow .18s ease!important;
+}
+.partnerShareRow button:hover{
+ transform:translateY(-1px)!important;
+ box-shadow:0 10px 22px rgba(217,164,65,.22)!important;
+}
+.partnerShareRow button:focus-visible{
+ outline:3px solid rgba(217,164,65,.4)!important;
+ outline-offset:3px!important;
+}
+@media(min-width:620px){
+ .partnerShareRow{grid-template-columns:minmax(0,1fr) auto!important}
+ .partnerShareRow button{width:auto!important;min-width:180px!important}
+}
+
 </style>
 </head>
 <body>
