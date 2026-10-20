@@ -119,6 +119,44 @@ body{background:#f3f5f8!important;color:var(--sig-ink)!important}
 @media(max-width:360px){.actions{grid-template-columns:minmax(0,1fr)!important}.brand{max-width:65%!important}.back{max-width:120px!important;font-size:11px!important}}
 @media(prefers-reduced-motion:reduce){.btn{transition:none!important}}
 
+/* Modèle 3 — éditorial moderne, profil partenaire */
+:root{--editorial-ink:#17243b;--editorial-muted:#657187;--editorial-gold:#d9a441;--editorial-border:#e3e8ef}
+body{background:#f7f8fa!important;color:var(--editorial-ink)!important}
+.header{background:#fff!important;border-bottom:1px solid var(--editorial-border)!important;box-shadow:0 4px 18px rgba(23,36,59,.04)!important}
+.brand{color:#17243b!important}
+.back{background:#f7f9fc!important;border:1px solid #dce3ed!important;border-radius:999px!important;color:#173b70!important;padding:10px 15px!important;font-weight:800!important}
+.hero{background:#f7f8fa!important;color:var(--editorial-ink)!important;padding:28px 0 32px!important}
+.hero:before{content:""!important;display:block!important;height:7px!important;margin:0 0 22px!important;border-radius:99px!important;background:linear-gradient(90deg,#17243b 0%,#234574 58%,#d9a441 58%,#edcf83 100%)!important}
+.profileCard{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1.12fr)!important;gap:clamp(20px,4vw,42px)!important;align-items:stretch!important;padding:clamp(18px,3vw,32px)!important;border:1px solid var(--editorial-border)!important;border-radius:24px!important;background:#fff!important;box-shadow:0 16px 42px rgba(23,36,59,.07)!important;color:var(--editorial-ink)!important}
+.logoWrap{display:grid!important;place-items:center!important;min-height:260px!important;padding:20px!important;border:0!important;border-radius:18px!important;background:linear-gradient(145deg,#f0f3f8,#f9fafc)!important;position:relative!important;overflow:hidden!important}
+.logoWrap:after{content:"IDENTITÉ DU PARTENAIRE"!important;position:absolute!important;bottom:13px!important;left:17px!important;color:#8b96a7!important;font-size:9px!important;font-weight:900!important;letter-spacing:.15em!important}
+.logoWrap img{width:100%!important;height:205px!important;object-fit:contain!important}
+.eyebrow{display:inline-flex!important;align-items:center!important;gap:8px!important;color:#9a7426!important;font-size:10px!important;font-weight:900!important;letter-spacing:.17em!important}
+.profile h1{margin:12px 0!important;color:#17243b!important;font-size:clamp(2rem,4vw,3.25rem)!important;line-height:1.08!important;letter-spacing:-.045em!important;overflow-wrap:anywhere!important}
+.profile .desc{color:#657187!important;font-size:clamp(14px,1.7vw,17px)!important;line-height:1.85!important}
+.profileBadge{display:inline-flex!important;align-items:center!important;gap:8px!important;padding:9px 13px!important;border:1px solid #d4e9dc!important;border-radius:999px!important;background:#f0faf4!important;color:#187644!important;font-size:12px!important;font-weight:850!important}
+.profileTags{display:flex!important;flex-wrap:wrap!important;gap:8px!important;margin-top:15px!important}
+.profileTags span{padding:8px 12px!important;border:1px solid #e3e8ef!important;border-radius:8px!important;background:#f7f8fa!important;color:#526078!important;font-size:11px!important;font-weight:800!important}
+.actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;margin-top:24px!important}
+.btn{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-height:48px!important;padding:11px 14px!important;border-radius:11px!important;font-size:12px!important;font-weight:900!important;line-height:1.35!important;transition:transform .18s ease,box-shadow .18s ease!important}
+.btn.gold{background:#d9a441!important;border:1px solid #d9a441!important;color:#17243b!important;box-shadow:0 6px 15px rgba(217,164,65,.16)!important}
+.btn.ghost{background:#fff!important;border:1px solid #dce3ed!important;color:#173b70!important}
+.btn:hover{transform:translateY(-2px)!important;box-shadow:0 9px 20px rgba(23,36,59,.1)!important}
+.main{background:#f7f8fa!important;padding:0 0 64px!important}
+.contentGrid{display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(250px,.75fr)!important;gap:18px!important;align-items:start!important}
+.panel{padding:clamp(21px,3vw,29px)!important;border:1px solid var(--editorial-border)!important;border-radius:20px!important;background:#fff!important;box-shadow:0 8px 26px rgba(23,36,59,.035)!important}
+.panel h2{color:#17243b!important;font-size:clamp(19px,2vw,23px)!important;letter-spacing:-.025em!important}
+.panel p{color:#657187!important;font-size:14px!important;line-height:1.9!important}
+.detail{padding:13px 0!important;border-bottom:1px solid #edf0f4!important}
+.detail:last-child{border-bottom:0!important}
+.label{color:#8993a3!important;font-size:10px!important;letter-spacing:.12em!important}
+.value{color:#273750!important;font-size:13px!important;line-height:1.7!important}
+.footer{background:#17243b!important;color:#cbd3df!important}
+.footer a{color:#edcf83!important}
+@media(max-width:720px){.hero{padding:18px 0 24px!important}.hero:before{margin-bottom:15px!important}.profileCard{grid-template-columns:minmax(0,1fr)!important;gap:20px!important;padding:15px!important;border-radius:21px!important}.logoWrap{min-height:175px!important;padding:15px!important;border-radius:15px!important}.logoWrap img{height:135px!important}.logoWrap:after{font-size:8px!important}.profile h1{font-size:clamp(2rem,8vw,2.65rem)!important;line-height:1.1!important}.profile .desc{font-size:15px!important}.actions{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;margin-top:20px!important}.actions .btn{min-width:0!important;padding:10px 7px!important;font-size:11px!important}.contentGrid{grid-template-columns:minmax(0,1fr)!important;gap:13px!important}.panel{padding:20px!important;border-radius:18px!important}.main{padding-bottom:45px!important}}
+@media(max-width:350px){.actions{grid-template-columns:minmax(0,1fr)!important}}
+@media(prefers-reduced-motion:reduce){.btn{transition:none!important}}
+
 </style>
 </head>
 <body>
