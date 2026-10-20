@@ -514,6 +514,63 @@ header.header,.header{background:#fff!important;color:#10213b!important;border-b
  .partnerShareRow button{width:auto!important;min-width:180px!important}
 }
 
+
+/* CTA “Construisons quelque chose de grand” — refined contrast, preserve gold button and behavior */
+.cta{
+ position:relative!important;
+ overflow:hidden!important;
+ isolation:isolate!important;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:space-between!important;
+ gap:24px!important;
+ padding:clamp(26px,4.5vw,42px)!important;
+ border-radius:28px!important;
+ background:linear-gradient(135deg,#102f60 0%,#173f78 58%,#214d83 100%)!important;
+ border:1px solid rgba(255,255,255,.13)!important;
+ box-shadow:0 20px 48px rgba(16,47,96,.2)!important;
+}
+.cta::before{
+ content:""!important;
+ position:absolute!important;
+ z-index:-1!important;
+ width:240px!important;height:240px!important;
+ top:-150px!important;right:-65px!important;
+ border:1px solid rgba(255,255,255,.12)!important;
+ border-radius:50%!important;
+ box-shadow:0 0 0 24px rgba(255,255,255,.025),0 0 0 48px rgba(255,255,255,.02)!important;
+}
+.cta h2{
+ margin:0 0 12px!important;
+ color:#fff!important;
+ font-size:clamp(24px,3.5vw,36px)!important;
+ line-height:1.25!important;
+ letter-spacing:-.025em!important;
+ font-weight:850!important;
+ text-wrap:balance!important;
+}
+.cta p{
+ margin:0!important;
+ max-width:56ch!important;
+ color:#e1eaf7!important;
+ font-size:clamp(14px,1.7vw,17px)!important;
+ line-height:1.75!important;
+}
+.cta .btnGold{
+ flex:0 0 auto!important;
+ background:#e0aa3e!important;
+ color:#10213b!important;
+ border:1px solid #efc46b!important;
+ box-shadow:0 8px 22px rgba(7,20,40,.16)!important;
+}
+.cta .btnGold:hover{filter:brightness(1.04)!important;transform:translateY(-1px)!important}
+@media(max-width:760px){
+ .cta{flex-direction:column!important;align-items:stretch!important;gap:20px!important;padding:26px 22px!important;border-radius:24px!important}
+ .cta h2{font-size:clamp(25px,7vw,32px)!important;line-height:1.28!important;color:#fff!important}
+ .cta p{font-size:15px!important;line-height:1.75!important;color:#e1eaf7!important}
+ .cta .btnGold{width:100%!important;min-height:54px!important;justify-content:center!important;text-align:center!important}
+}
+
 </style>
 </head>
 <body>
