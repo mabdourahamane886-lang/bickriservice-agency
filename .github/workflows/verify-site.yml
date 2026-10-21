@@ -54,6 +54,17 @@ jobs:
         run: |
           set -euo pipefail
           node --check worker.js
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const worker = fs.readFileSync('worker.js', 'utf8');
+          if (!worker.includes("'Content-Security-Policy-Report-Only'")) {
+            throw new Error('CSP candidate must remain available in Report-Only during migration.');
+          }
+          if (!/Content-Security-Policy':\s*"[^"]*script-src[^;]*'unsafe-inline'/.test(worker)) {
+            throw new Error('Guardrail: do not remove the currently enforced inline-script allowance before the migration is reviewed.');
+          }
+          console.log('CSP rollout guardrails passed: candidate is Report-Only; current enforced policy is not tightened yet.');
+          NODE
           node --check assets/partners/partner-directory.js
           node --check assets/partners/partner-portal.js
           node --input-type=module <<'NODE'
