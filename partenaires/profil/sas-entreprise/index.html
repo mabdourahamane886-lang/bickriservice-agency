@@ -229,20 +229,37 @@ body{background:#f4f7fb;color:var(--profile-ink);overflow-wrap:anywhere}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn{transition:none!important}}
 
 </style>
+<link rel="stylesheet" href="/assets/partners/profile-magazine.css">
 </head>
-<body>
-<header class="header"><div class="wrap nav"><a class="brand" href="/" aria-label="Bickri Service Agency"><img src="https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/0f26cf1f-df17-461f-8b2f-463b5d3f9b16.png?v=20261019" alt="Logo Bickri Service Agency"><span>BICKRI SERVICE AGENCY<small>AGENCE DIGITALE • NIAMEY</small></span></a><a class="back" href="/partenaires/">← Tous les partenaires</a></div></header>
+<body data-cover="">
+<header class="pm-top"><div class="pm-wrap">
+<a class="pm-brand" href="/" aria-label="Accueil Bickri Service Agency">
+<img src="https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/0f26cf1f-df17-461f-8b2f-463b5d3f9b16.png?v=20261019" alt="Logo Bickri Service Agency" width="38" height="38">
+<span>BICKRI<small>SERVICE AGENCY</small></span></a>
+<a class="pm-back" href="/partenaires/">← Annuaire</a></div></header>
 <main>
-<section class="hero"><div class="wrap"><div id="profileLoading" class="muted" style="color:#cbd5e1">Chargement du profil partenaire…</div><div id="profileCard" class="profileCard" hidden>
-<div class="logoWrap"><img id="profileLogo" src="/assets/bickri-b-logo.svg" alt="Logo du partenaire"></div>
-<div class="profile"><span class="eyebrow">Profil partenaire public</span><h1 id="profileName">Partenaire</h1><p class="desc" id="profileDescription"></p><div class="profileBadge"><img id="profileBadgeIcon" src="/assets/partners/badge-verified-green.svg" alt=""><span id="profileBadgeLabel">Partenaire vérifié</span></div><div class="profileTags" id="profileTags"></div><div class="actions"><a id="profileWebsite" class="btn gold" href="#" target="_blank" rel="noopener" hidden>Visiter le site ↗</a><button id="profileShare" class="btn ghost" type="button">Partager le profil</button><button id="profileCopy" class="btn ghost" type="button">Copier le lien</button></div></div>
-</div></div></section>
-<section class="main"><div class="wrap contentGrid" id="profileDetails" hidden>
-<article class="panel"><h2>À propos de l’entreprise</h2><p id="profileAbout"></p><h2 style="margin-top:26px">Mission et activités</h2><p id="profileMission"></p></article>
-<aside class="panel"><h2>Informations</h2><div class="details"><div class="detail"><span class="label">Pays / Ville</span><span class="value" id="profileLocation"></span></div><div class="detail" id="profileFounderRow"><span class="label">Dirigeant / contact public</span><span class="value" id="profileFounder"></span></div><div class="detail"><span class="label">Domaine</span><span class="value" id="profileType"></span></div><div class="detail"><span class="label">Identifiant partenaire</span><span class="value" id="profileId"></span></div><div class="detail"><span class="label">Badge vérifié le</span><span class="value" id="profileVerifiedAt"></span></div></div><div id="profileSocials" class="actionsPanel"></div></aside>
-</div><div id="profileNotFound" class="panel notFound"><h1>Profil introuvable</h1><p>Ce profil n’est pas disponible ou a été désactivé.</p><a class="btn gold" href="/partenaires/">Retour à l’annuaire</a></div></section>
+<section class="pm-cover"><img id="profileCover" class="pm-cover-img" alt="" hidden><div class="pm-cover-shade"></div>
+<div class="pm-cover-inner pm-wrap"><div id="profileLoading" class="pm-loading">Chargement du profil partenaire…</div>
+<div id="profileCard" class="pm-hero" hidden><div class="pm-logo"><img id="profileLogo" src="/assets/bickri-b-logo.svg" alt="Logo du partenaire"></div><div>
+<span class="pm-kicker">Profil partenaire</span><h1 id="profileName">Partenaire</h1>
+<p id="profileDescription" class="pm-lead"></p>
+<div class="pm-badge"><img id="profileBadgeIcon" src="/assets/partners/badge-verified-green.svg" alt=""><span id="profileBadgeLabel">Partenaire vérifié</span></div>
+<div id="profileTags" class="pm-tags"></div>
+<div class="pm-actions"><a id="profileWebsite" class="pm-btn pm-btn-primary" href="#" target="_blank" rel="noopener" hidden>Visiter le site ↗</a>
+<button id="profileShare" class="pm-btn pm-btn-ghost" type="button">Partager le profil</button>
+<button id="profileCopy" class="pm-btn pm-btn-ghost" type="button">Copier le lien</button></div>
+</div></div></div></section>
+<section class="pm-main"><div class="pm-wrap pm-grid" id="profileDetails" hidden>
+<article class="pm-card pm-span-2"><span class="pm-kicker-dark">À propos</span><h2>À propos de l’entreprise</h2><p id="profileAbout"></p></article>
+<aside class="pm-card"><span class="pm-kicker-dark">Informations</span><h2>Détails</h2><dl class="pm-info-list">
+<div><dt>Pays / Ville</dt><dd id="profileLocation"></dd></div><div id="profileFounderRow"><dt>Dirigeant / contact public</dt><dd id="profileFounder"></dd></div>
+<div><dt>Domaine</dt><dd id="profileType"></dd></div><div><dt>Identifiant partenaire</dt><dd id="profileId"></dd></div><div><dt>Badge vérifié le</dt><dd id="profileVerifiedAt"></dd></div></dl></aside>
+<article class="pm-card pm-span-2"><span class="pm-kicker-dark">Activités</span><h2>Mission et activités</h2><p id="profileMission"></p></article>
+<aside class="pm-card"><span class="pm-kicker-dark">Liens</span><h2>Suivre le partenaire</h2><div id="profileSocials" class="pm-links"></div></aside>
+</div><div id="profileNotFound" class="pm-wrap pm-card pm-notfound"><h1>Profil introuvable</h1><p>Ce profil n’est pas disponible ou a été désactivé.</p><a class="pm-btn pm-btn-primary" href="/partenaires/">Retour à l’annuaire</a></div></section>
 </main>
-<footer class="footer"><div class="wrap">Bickri Service Agency — Niamey, Niger · <a href="/partenaires/">Annuaire des partenaires</a> · <a href="/partenaires/espace/">Espace partenaire</a></div></footer>
+<footer class="pm-footer"><div class="pm-wrap">Bickri Service Agency — Niamey, Niger · <a href="/partenaires/">Annuaire des partenaires</a> · <a href="/partenaires/espace/">Espace partenaire</a></div></footer>
+<script src="/assets/partners/profile-cover.js" defer></script>
 <script>
 (() => {
 'use strict';
