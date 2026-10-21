@@ -54,6 +54,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check worker.js
+          node --check api/bickri-ai.js
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const worker = fs.readFileSync('worker.js', 'utf8');
