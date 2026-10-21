@@ -157,6 +157,76 @@ body{background:#f7f8fa!important;color:var(--editorial-ink)!important}
 @media(max-width:350px){.actions{grid-template-columns:minmax(0,1fr)!important}}
 @media(prefers-reduced-motion:reduce){.btn{transition:none!important}}
 
+
+/* Profil partenaire — finition responsive unifiée */
+:root{--profile-blue:#153d68;--profile-blue-2:#1d5685;--profile-gold:#d9a441;--profile-ink:#172b45;--profile-muted:#64758b;--profile-line:#e1e8f1}
+html{scroll-behavior:smooth}
+body{background:#f4f7fb;color:var(--profile-ink);overflow-wrap:anywhere}
+.header{position:sticky!important;top:0!important;z-index:50!important;backdrop-filter:blur(14px)!important}
+.wrap{width:min(1120px,calc(100% - 32px))!important}
+.nav{min-height:76px!important;gap:14px!important}
+.brand{min-width:0!important}
+.brandText,.brand small{min-width:0}
+.back{flex:0 0 auto;white-space:normal;text-align:center}
+.hero{padding:34px 0 40px!important;background:radial-gradient(ellipse at 90% 5%,rgba(217,164,65,.16),transparent 28%),linear-gradient(180deg,#f9fbfe 0%,#f0f4f9 100%)!important;color:var(--profile-ink)!important}
+.profileCard{grid-template-columns:minmax(190px,270px) minmax(0,1fr)!important;gap:clamp(20px,4vw,42px)!important;padding:clamp(18px,3.2vw,34px)!important;border:1px solid #e1e8f1!important;border-radius:26px!important;background:#fff!important;box-shadow:0 20px 55px rgba(21,61,104,.09)!important;color:var(--profile-ink)!important}
+.logoWrap{min-width:0;min-height:220px!important;display:grid!important;place-items:center!important;padding:18px!important;border:1px solid #edf1f6!important;border-radius:20px!important;background:linear-gradient(145deg,#fff,#f7f9fc)!important;box-shadow:0 8px 24px rgba(21,61,104,.05)!important}
+.logoWrap img{width:100%!important;height:190px!important;object-fit:contain!important}
+.profile{min-width:0}
+.eyebrow{display:inline-flex!important;align-items:center;gap:8px;color:#916a1d!important;font-size:10px!important;letter-spacing:.14em!important}
+.profile h1{font-size:clamp(2rem,4.6vw,3.5rem)!important;line-height:1.08!important;letter-spacing:-.04em!important;color:#153d68!important;overflow-wrap:anywhere}
+.profile .desc{max-width:68ch;color:#64758b!important;font-size:clamp(14px,1.5vw,17px)!important;line-height:1.8!important}
+.profileBadge{max-width:100%;flex-wrap:wrap;margin-top:16px!important;padding:8px 12px!important;border:1px solid #cfe8d8!important;border-radius:12px!important;background:#f1faf4!important;color:#167343!important;line-height:1.4}
+.profileBadge img{flex:0 0 auto}
+.profileTags{gap:8px!important}
+.profileTags span{max-width:100%;overflow-wrap:anywhere;padding:7px 11px!important;border:1px solid #e3eaf3!important;border-radius:10px!important;background:#f5f8fc!important;color:#4f6178!important;line-height:1.45}
+.actions{gap:10px!important}
+.btn{min-height:46px!important;border-radius:12px!important;padding:11px 16px!important;line-height:1.4!important}
+.btn.gold{background:linear-gradient(135deg,#e4b64f,#d5a03a)!important;color:#142b49!important;box-shadow:0 8px 20px rgba(217,164,65,.2)!important}
+.btn.ghost{background:#fff!important;border-color:#dbe4ef!important;color:#153d68!important}
+.main{padding:28px 0 64px!important}
+.contentGrid{grid-template-columns:minmax(0,1.2fr) minmax(260px,.8fr)!important;gap:20px!important;align-items:start}
+.panel{min-width:0;padding:clamp(20px,2.5vw,30px)!important;border:1px solid #e2e9f2!important;border-radius:22px!important;background:#fff!important;box-shadow:0 12px 34px rgba(21,61,104,.055)!important}
+.panel h2{color:#153d68!important;font-size:clamp(18px,2vw,22px)!important;line-height:1.25!important}
+.panel p{line-height:1.8!important;overflow-wrap:anywhere}
+.details{gap:0!important}
+.detail{padding:14px 0!important;border-bottom:1px solid #edf1f6!important}
+.label{color:#7b8799!important;letter-spacing:.1em!important}
+.value{color:#203c5b!important;line-height:1.6!important}
+.actionsPanel{gap:10px!important}
+.actionsPanel .btn{width:100%!important}
+.notFound{max-width:760px;margin:0 auto 40px;border:1px solid #e2e9f2;border-radius:24px;box-shadow:0 12px 34px rgba(21,61,104,.05)}
+.footer{background:#102d4e!important;color:#d7e4f2!important}
+.footer a{color:#ffe2a0!important}
+@media(max-width:760px){
+ .wrap{width:min(100% - 24px,600px)!important}
+ .nav{min-height:68px!important}
+ .brand img,.brandMark img{width:44px!important;height:44px!important}
+ .brandText b{font-size:15px!important}
+ .brand small{font-size:7px!important;letter-spacing:.1em!important}
+ .back{font-size:11px!important;padding:9px 10px!important}
+ .hero{padding:22px 0 30px!important}
+ .profileCard{grid-template-columns:minmax(0,1fr)!important;gap:20px!important;padding:17px!important;border-radius:21px!important}
+ .logoWrap{min-height:145px!important;padding:14px!important;border-radius:16px!important}
+ .logoWrap img{height:125px!important}
+ .profile h1{font-size:clamp(1.8rem,8vw,2.6rem)!important}
+ .profile .desc{font-size:14px!important}
+ .actions .btn{flex:1 1 100%;width:100%!important}
+ .contentGrid{grid-template-columns:minmax(0,1fr)!important;gap:14px!important}
+ .panel{padding:20px!important;border-radius:18px!important}
+ .main{padding:18px 0 42px!important}
+}
+@media(max-width:380px){
+ .wrap{width:calc(100% - 20px)!important}
+ .nav{gap:8px!important}
+ .brand{gap:7px!important}
+ .brandText b{font-size:13px!important}
+ .back{max-width:130px!important}
+ .profileCard{padding:13px!important}
+ .panel{padding:16px!important}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn{transition:none!important}}
+
 </style>
 </head>
 <body>
