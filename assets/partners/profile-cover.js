@@ -1,0 +1,2 @@
+// Charge la couverture déclarée sur le body ; le dégradé reste visible si l'image manque.
+(function(){var img=document.getElementById('profileCover');var src=document.body&&document.body.getAttribute('data-cover');if(!img||!src)return;img.addEventListener('error',function(){img.hidden=true});img.addEventListener('load',function(){img.hidden=false});img.src=src})();
