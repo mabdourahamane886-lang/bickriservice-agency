@@ -3,5 +3,8 @@
   "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "Bickri Service Agency — agence digitale à Niamey, Niger"
+  "description": "Bickri Service Agency — agence digitale à Niamey, Niger",
+  "scripts": {
+    "test:security": "node --test tests/security.test.mjs"
+  }
 }
