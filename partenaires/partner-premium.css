@@ -1,0 +1,38 @@
+/* BSA Partner Experience — Hybrid Premium refresh */
+:root{--bsa-navy:#0b1d38;--bsa-blue:#173e73;--bsa-gold:#d9a441;--bsa-ink:#14233b;--bsa-muted:#66758b;--bsa-line:#e4eaf2;--bsa-paper:#f5f7fb}
+.partnerGrid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:22px!important;align-items:stretch!important}
+.partnerGrid>.partner{position:relative!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;min-width:0!important;overflow:hidden!important;padding:0 22px 22px!important;border:1px solid var(--bsa-line)!important;border-radius:22px!important;background:#fff!important;box-shadow:0 12px 32px rgba(11,29,56,.07)!important;text-align:left!important;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease!important}
+.partnerGrid>.partner:before{content:""!important;position:absolute!important;inset:0 0 auto!important;height:5px!important;background:linear-gradient(90deg,var(--bsa-navy),var(--bsa-gold))!important}
+.partnerGrid>.partner:hover{transform:translateY(-4px)!important;border-color:#d8c18c!important;box-shadow:0 18px 40px rgba(11,29,56,.12)!important}
+.partnerGrid>.partner .partnerLogo{display:block!important;width:100%!important;height:156px!important;object-fit:contain!important;margin:5px 0 18px!important;padding:20px!important;border:0!important;border-bottom:1px solid #edf0f5!important;border-radius:0!important;background:linear-gradient(135deg,#f7f9fc,#fff)!important}
+.partnerGrid>.partner h2{display:flex!important;align-items:center!important;gap:9px!important;flex-wrap:wrap!important;justify-content:flex-start!important;margin:0 0 10px!important;color:var(--bsa-navy)!important;font-size:22px!important;line-height:1.3!important;font-weight:800!important;letter-spacing:-.025em!important}
+.partnerGrid>.partner .verifiedBadge{width:22px!important;height:22px!important;object-fit:contain!important}
+.partnerGrid>.partner p{margin:0 0 12px!important;color:#58677e!important;font-size:14px!important;line-height:1.7!important;text-align:left!important}
+.partnerGrid>.partner .partnerFounder{margin-top:8px!important;padding-top:12px!important;border-top:1px solid #edf0f5!important;color:var(--bsa-muted)!important;font-size:12px!important}
+.partnerGrid>.partner .partnerFounder strong{color:var(--bsa-ink)!important}
+.partnerGrid>.partner .partnerMeta{display:flex!important;flex-wrap:wrap!important;gap:7px!important;justify-content:flex-start!important;margin:12px 0 0!important}
+.partnerGrid>.partner .chip{padding:7px 10px!important;border:1px solid #e7ebf2!important;border-radius:999px!important;background:#f7f9fc!important;color:#4e5d74!important;font-size:11px!important;font-weight:750!important}
+.partnerGrid>.partner .partnerActions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:9px!important;margin-top:auto!important;padding-top:22px!important}
+.partnerGrid>.partner .partnerActions a,.partnerGrid>.partner .partnerActions button{display:flex!important;align-items:center!important;justify-content:center!important;min-height:45px!important;padding:10px!important;border-radius:12px!important;font-size:12px!important;font-weight:800!important;line-height:1.35!important;text-align:center!important;cursor:pointer!important}
+.partnerGrid>.partner .partnerActions a.primary{background:var(--bsa-navy)!important;border:1px solid var(--bsa-navy)!important;color:#fff!important}
+.partnerGrid>.partner .partnerActions button.share{background:#eef4fc!important;border:1px solid #d7e3f4!important;color:var(--bsa-blue)!important}
+.partnerGrid>.partner .partnerActions button.qr{background:#fff7e5!important;border:1px solid #f0dca9!important;color:#7d5b18!important}
+.partnerGrid>.partner .partnerActions :focus-visible{outline:3px solid #e7c66f!important;outline-offset:3px!important}
+body:has(.partnerInfo),body:has(.profileCard){background:var(--bsa-paper)!important;color:var(--bsa-ink)!important}
+.partnerInfo,.profileCard,.contentGrid>.panel{border:1px solid var(--bsa-line)!important;border-radius:22px!important;background:#fff!important;box-shadow:0 12px 34px rgba(11,29,56,.06)!important}
+.partnerInfo,.profileCard{overflow:hidden!important}
+.partnerInfo .title,.profile .title{color:var(--bsa-navy)!important;letter-spacing:-.035em!important}
+.partnerInfo .ey,.profile .eyebrow,.partnerInfo .eyebrow{color:#9b701e!important;font-weight:800!important;letter-spacing:.14em!important;text-transform:uppercase!important}
+.partnerInfo .desc,.profile .desc{color:#58677e!important;line-height:1.8!important}
+.partnerInfo .logo,.profileCard .logoWrap,.profileCard .logo{border:1px solid var(--bsa-line)!important;border-radius:20px!important;background:#fff!important;box-shadow:0 8px 22px rgba(11,29,56,.06)!important;object-fit:contain!important}
+.partnerInfo .cta,.profileCard .actions{display:flex!important;flex-wrap:wrap!important;gap:10px!important}
+.partnerInfo .cta a,.profileCard .actions .btn{min-height:46px!important;border-radius:12px!important;font-weight:800!important}
+.partnerInfo .cta a:first-child,.profileCard .actions .btn.gold{background:linear-gradient(135deg,#f0c85e,var(--bsa-gold))!important;border:1px solid var(--bsa-gold)!important;color:#15233a!important}
+.partnerInfo .cta a:not(:first-child),.profileCard .actions .btn.ghost{background:#fff!important;border:1px solid #dbe3ee!important;color:var(--bsa-navy)!important}
+.contentGrid{gap:20px!important}
+.contentGrid>.panel{padding:clamp(20px,3vw,30px)!important}
+.contentGrid>.panel h2,.contentGrid>.panel h3{color:var(--bsa-navy)!important}
+header.header,.header{border-bottom-color:var(--bsa-line)!important}
+@media(max-width:900px){.partnerGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px!important}}
+@media(max-width:620px){.partnerGrid{grid-template-columns:1fr!important;gap:15px!important}.partnerGrid>.partner{border-radius:18px!important;padding:0 18px 18px!important}.partnerGrid>.partner .partnerLogo{height:138px!important;padding:18px!important}.partnerGrid>.partner h2{font-size:21px!important}.partnerGrid>.partner .partnerActions{padding-top:18px!important}.partnerGrid>.partner .partnerActions a,.partnerGrid>.partner .partnerActions button{font-size:11px!important}.partnerInfo,.profileCard,.contentGrid>.panel{border-radius:18px!important}}
+@media(prefers-reduced-motion:reduce){.partnerGrid>.partner{transition:none!important}}
