@@ -40,3 +40,27 @@ body.service-detail-mode{overflow-x:hidden}.serviceDetailLead{max-width:850px;fo
 /* Animation douce sans translate sur body : préserve position:fixed des boutons flottants */
 @keyframes bsa-soft-entrance{from{opacity:.98}to{opacity:1}}
 @media (prefers-reduced-motion:no-preference){body{animation:bsa-soft-entrance 350ms ease-out both}}
+
+
+/* BSA — interaction states cohérents sur tout le site */
+:where(a, button, input, textarea, select, summary, [role="button"], [tabindex]):not([disabled]) {
+  -webkit-tap-highlight-color: transparent;
+  accent-color: #d6a23c;
+}
+:where(a, button, [role="button"]):visited { color: inherit; }
+:where(a, button, input, textarea, select, summary, [role="button"], [tabindex]):focus {
+  outline: none;
+}
+:where(a, button, input, textarea, select, summary, [role="button"], [tabindex]):focus-visible {
+  outline: 3px solid #d6a23c;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.92);
+}
+:where(input, textarea, select):focus-visible {
+  border-color: #b98325;
+  box-shadow: 0 0 0 3px rgba(214,162,60,.18);
+}
+:where(button, a, [role="button"]):active {
+  filter: brightness(.97);
+}
+::selection { background: rgba(214,162,60,.24); color: inherit; }
