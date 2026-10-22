@@ -59,3 +59,24 @@ header.header,.header{border-bottom-color:var(--bsa-line)!important}
 .contentGrid>.panel{border-radius:24px!important}
 @media(max-width:900px){.partnerGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px!important}}
 @media(max-width:620px){.partnerGrid{grid-template-columns:1fr!important;gap:17px!important}.partnerGrid>.partner{padding:0 19px 19px!important;border-radius:22px!important}.partnerGrid>.partner:before{height:108px!important}.partnerGrid>.partner .partnerLogo{width:92px!important;height:92px!important;margin-top:57px!important;margin-bottom:17px!important;border-radius:21px!important}.partnerGrid>.partner p{min-height:0!important}.partnerGrid>.partner .partnerActions{grid-template-columns:1fr 1fr!important}.partnerGrid>.partner .partnerActions button.qr{grid-column:1/-1!important}}
+
+
+/* MODÈLE 03 — Cartes-profil modernes, inspirées des profils partenaires premium */
+.partnerGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:24px!important;align-items:stretch!important}
+.partnerGrid>.partner{isolation:isolate;min-height:0!important;padding:0 22px 22px!important;border:1px solid #e5eaf2!important;border-radius:25px!important;background:#fff!important;box-shadow:0 14px 36px rgba(8,20,42,.075)!important;text-align:left!important}
+.partnerGrid>.partner:before{height:132px!important;background:radial-gradient(circle at 82% 25%,rgba(226,184,83,.42),transparent 25%),linear-gradient(135deg,#071225,#10284b 68%,#1b416d)!important}
+.partnerGrid>.partner:after{content:"BICKRI SERVICE AGENCY  /  PARTENAIRE"!important;top:18px!important;left:20px!important;font-size:9px!important;letter-spacing:.15em!important;color:rgba(255,255,255,.8)!important}
+.partnerGrid>.partner .partnerLogo{width:106px!important;height:106px!important;margin:72px 0 17px!important;padding:10px!important;border:5px solid #fff!important;border-radius:25px!important;background:#fff!important;box-shadow:0 10px 28px rgba(8,20,42,.16)!important}
+.partnerGrid>.partner h2{justify-content:flex-start!important;align-items:center!important;font-size:23px!important;line-height:1.25!important;margin:0 0 9px!important;color:#0b1d38!important}
+.partnerGrid>.partner .verifiedBadge{width:23px!important;height:23px!important}
+.partnerGrid>.partner p{min-height:62px!important;margin:0!important;color:#5a667a!important;font-size:13px!important;line-height:1.75!important}
+.partnerGrid>.partner .partnerFounder{margin-top:12px!important;padding-top:12px!important;border-top:1px solid #edf0f5!important;font-size:12px!important}
+.partnerGrid>.partner .partnerMeta{justify-content:flex-start!important;margin:15px 0 0!important;gap:8px!important}
+.partnerGrid>.partner .chip{padding:7px 11px!important;border-radius:999px!important;background:#f2f5f9!important;border-color:#e1e7ef!important;color:#42516a!important;font-size:11px!important}
+.partnerGrid>.partner .partnerActions{display:grid!important;grid-template-columns:1fr!important;gap:9px!important;padding-top:21px!important;margin-top:auto!important}
+.partnerGrid>.partner .partnerActions a,.partnerGrid>.partner .partnerActions button{width:100%!important;min-height:48px!important;border-radius:13px!important;font-size:13px!important}
+.partnerGrid>.partner .partnerActions a{background:linear-gradient(135deg,#0b1d38,#1b4678)!important;border:1px solid #173e73!important;color:#fff!important;box-shadow:0 7px 16px rgba(11,29,56,.13)!important}
+.partnerGrid>.partner .partnerActions button{background:#f5f7fa!important;border:1px solid #e0e6ef!important;color:#243b5d!important}
+.partnerGrid>.partner .partnerActions a:focus-visible,.partnerGrid>.partner .partnerActions button:focus-visible{outline:3px solid #e4bd5e!important;outline-offset:3px!important}
+@media(max-width:900px){.partnerGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:17px!important}}
+@media(max-width:620px){.partnerGrid{grid-template-columns:1fr!important;gap:18px!important}.partnerGrid>.partner{padding:0 20px 20px!important;border-radius:23px!important}.partnerGrid>.partner:before{height:120px!important}.partnerGrid>.partner .partnerLogo{width:96px!important;height:96px!important;margin-top:64px!important;margin-bottom:16px!important;border-radius:23px!important}.partnerGrid>.partner p{min-height:0!important}.partnerGrid>.partner .partnerActions{grid-template-columns:1fr 1fr!important}.partnerGrid>.partner .partnerActions a,.partnerGrid>.partner .partnerActions button{font-size:12px!important;min-height:46px!important}}
