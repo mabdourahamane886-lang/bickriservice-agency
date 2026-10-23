@@ -12,6 +12,17 @@
       "destination": "/api/partner-og"
     },
     {
+      "source": "/partenaires/partage/:slug/",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(facebookexternalhit|Facebot|WhatsApp|Twitterbot|LinkedInBot|Discordbot|Slackbot|TelegramBot|Pinterest|redditbot|Googlebot|bingbot|vkShare|Embedly|Quora Link Preview).*"
+        }
+      ],
+      "destination": "/api/partner-og?slug=:slug"
+    },
+    {
       "source": "/partenaires/sas-entreprise/",
       "has": [
         {
