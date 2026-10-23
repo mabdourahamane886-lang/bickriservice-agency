@@ -23,7 +23,7 @@ module.exports=async function(req,res){
  let partner=curated[slug]||null;
  try{const endpoint=SUPABASE_URL+'/rest/v1/agency_partners?slug=eq.'+encodeURIComponent(slug)+'&select=name,slug,description,company_about,logo_url,founder,mission,country,city,partner_type,category,website_url,badge_level&limit=1';const response=await fetch(endpoint,{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,Accept:'application/json'}});if(response.ok){const rows=await response.json();if(Array.isArray(rows)&&rows[0])partner=Object.assign({},partner||{},rows[0]);}}catch(_){}
  if(!partner){res.statusCode=404;return res.end(html('Profil partenaire — Bickri Service Agency','Découvrez les partenaires de Bickri Service Agency.',DEFAULT_IMAGE,SITE+'/partenaires/','website'));}
- const title=(partner.name||'Partenaire')+' — Partenaire de Bickri Service Agency';
+ const title=slug==='ayish-prestige'?'Ayish Prestige':(partner.name||'Partenaire')+' — Partenaire de Bickri Service Agency';
  const description=String(partner.company_about||partner.description||partner.mission||partner.category||'Découvrez ce partenaire de Bickri Service Agency.').replace(/\s+/g,' ').slice(0,260);
  return res.end(html(title,description,partner.logo_url||partner.logoUrl,SITE+'/partenaires/profil/?slug='+encodeURIComponent(slug),'profile'));
 };
