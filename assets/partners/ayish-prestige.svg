@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" role="img" aria-labelledby="title desc">
+<title id="title">Ayish Prestige</title><desc id="desc">Logo doré d’une marque de vêtements féminins, hijabs et parfums.</desc>
+<defs><linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8e7a0"/><stop offset=".45" stop-color="#bd8428"/><stop offset=".72" stop-color="#f6d778"/><stop offset="1" stop-color="#8e5b17"/></linearGradient></defs>
+<rect width="640" height="640" rx="40" fill="#fffdf7"/><circle cx="320" cy="320" r="286" fill="none" stroke="url(#gold)" stroke-width="8"/>
+<path d="M263 123l-15-47 42 29 30-58 30 58 42-29-15 47z" fill="url(#gold)" stroke="#9d6c22" stroke-width="3"/>
+<path d="M258 237c0-70 32-112 72-112s72 42 72 112c0 48-19 87-47 110l-25 17-25-17c-28-23-47-62-47-110z" fill="url(#gold)"/>
+<path d="M274 203c23-55 67-67 104-42 18 12 27 35 28 64-17-22-36-37-57-44-17 24-42 43-75 55z" fill="#fff8e8"/>
+<path d="M313 217c9-13 23-22 38-22 18 0 30 13 30 29 0 18-12 30-30 30h-14l-14 21-10-20c-14-7-20-21-16-35z" fill="#fffdf7"/>
+<path d="M220 350c36-23 65-34 100-34s64 11 100 34l48 62H172z" fill="url(#gold)"/>
+<text x="320" y="443" text-anchor="middle" font-family="Georgia,serif" font-size="73" fill="#2b1a0c">Ayish</text>
+<text x="320" y="495" text-anchor="middle" font-family="Arial,sans-serif" font-size="32" letter-spacing="12" fill="#9a671d">PRESTIGE</text>
+<path d="M122 518h92m212 0h92" stroke="url(#gold)" stroke-width="4"/>
+<text x="320" y="558" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" letter-spacing="2.2" fill="#30251a">VÊTEMENTS • HIJABS • PARFUMS</text>
+</svg>
