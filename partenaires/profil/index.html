@@ -280,6 +280,16 @@ async function init(){
    }catch{}
   }
   if(!p)p=fallbackPartners.find(item=>item.slug===slug)||null;
+  if(slug==='tourisme-au-niger' && p){
+   p={...p,
+    socialLinks:{
+     ...(p.socialLinks||{}),
+     tiktok:'https://www.tiktok.com/@tourisme.niger?_r=1&_t=ZN-9AaOadnX9Fe',
+     facebook:'https://www.facebook.com/profile.php?id=61590907346888',
+     youtube:'https://youtube.com/@tourisme-au-niger?si=Td5vyovIdDlWR9P3'
+    }
+   };
+  }
   if(slug==='ayish-prestige' && p){
    p={...p,description:'Vêtements féminins · Hijabs · Parfums',about:"Ayish Prestige est une marque dédiée à la mode féminine, aux hijabs et aux parfums. Elle propose une sélection pensée pour les femmes qui souhaitent associer élégance, style et confiance, au quotidien comme lors des occasions spéciales. Sous la direction de Moustapha Goni Aïchatou, la marque met à l’honneur des vêtements féminins, des hijabs et des parfums dans un univers raffiné et authentique. Pour découvrir les modèles disponibles, obtenir des informations sur les prix ou connaître les modalités de commande, les clientes sont invitées à contacter directement Ayish Prestige. En tant que partenaire de Bickri Service Agency, la marque bénéficie d’une présence au sein d’un réseau qui encourage l’entrepreneuriat, la visibilité des entreprises et le développement numérique. Ayish Prestige : l’élégance et la beauté au féminin.",mission:'Mode féminine, hijabs et parfums.',logoUrl:'https://cdn.smoothbundle.com/abdourahamane-mohamed/ayish-prestige-logo/logos/ayish-prestige-original.png',badgeVerified:false,hideBadge:true};
   }
@@ -312,7 +322,7 @@ async function init(){
   $('profileVerifiedAt').textContent=p.verifiedAt?new Date(p.verifiedAt).toLocaleDateString('fr-FR'):'Statut affiché par l’agence';
   const website=escUrl(p.websiteUrl||p.socialLinks?.website||'');
   if(website){$('profileWebsite').href=website;$('profileWebsite').hidden=false;$('profileWebsite').addEventListener('click',()=>record('website_click','website'));}
-  for(const [key,label] of Object.entries({facebook:'Facebook',instagram:'Instagram',linkedin:'LinkedIn',whatsapp:'WhatsApp',tiktok:'TikTok',x:'X',telegram:'Telegram'}))addSocial(label,p.socialLinks?.[key]);
+  for(const [key,label] of Object.entries({facebook:'Facebook',instagram:'Instagram',linkedin:'LinkedIn',whatsapp:'WhatsApp',tiktok:'TikTok',youtube:'YouTube',x:'X',telegram:'Telegram'}))addSocial(label,p.socialLinks?.[key]);
   const shareUrl=publicUrl();
   const publicOrigin=location.hostname.endsWith('.vercel.app')?'https://bickriservice-agency.org':location.origin;
   const canonicalUrl=new URL(location.pathname+'?slug='+encodeURIComponent(p.slug),publicOrigin).href;
