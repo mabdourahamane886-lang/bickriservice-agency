@@ -315,8 +315,8 @@ async function init(){
   $('profileLogo').alt='Logo '+(p.name||'partenaire');
   $('profileBadgeIcon').src='/assets/partners/'+(badges[badge]||badges.green);
   $('profileBadgeIcon').hidden=!p.badgeVerified;
-  $('profileBadgeLabel').textContent=p.badgeVerified?(p.badgeLabel||'Partenaire vérifié'):'Profil actif — non vérifié';
-  if(p.hideBadge){const badgeEl=document.querySelector('.profileBadge');if(badgeEl)badgeEl.hidden=true;}
+  if(['chadi-store','sayra-collection'].includes(p.slug)){p.badgeVerified=true;p.badgeLevel='green';p.badgeLabel='Partenaire vérifié';p.hideBadge=false;}const badgeEl=document.querySelector('.profileBadge');if(badgeEl)badgeEl.hidden=false;$('profileBadgeLabel').textContent=p.badgeVerified?(p.badgeLabel||'Partenaire vérifié'):'Profil actif — non vérifié';
+  
   $('profileTags').replaceChildren();
   [p.category||p.partnerType,p.city,p.country].filter(Boolean).forEach(value=>{const tag=document.createElement('span');tag.textContent=value;$('profileTags').appendChild(tag);});
   $('profileLocation').textContent=[p.city,p.country].filter(Boolean).join(', ')||'Non renseigné';
