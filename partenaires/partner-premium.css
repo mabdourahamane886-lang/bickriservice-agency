@@ -80,3 +80,53 @@ header.header,.header{border-bottom-color:var(--bsa-line)!important}
 .partnerGrid>.partner .partnerActions a:focus-visible,.partnerGrid>.partner .partnerActions button:focus-visible{outline:3px solid #e4bd5e!important;outline-offset:3px!important}
 @media(max-width:900px){.partnerGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:17px!important}}
 @media(max-width:620px){.partnerGrid{grid-template-columns:1fr!important;gap:18px!important}.partnerGrid>.partner{padding:0 20px 20px!important;border-radius:23px!important}.partnerGrid>.partner:before{height:120px!important}.partnerGrid>.partner .partnerLogo{width:96px!important;height:96px!important;margin-top:64px!important;margin-bottom:16px!important;border-radius:23px!important}.partnerGrid>.partner p{min-height:0!important}.partnerGrid>.partner .partnerActions{grid-template-columns:1fr 1fr!important}.partnerGrid>.partner .partnerActions a,.partnerGrid>.partner .partnerActions button{font-size:12px!important;min-height:46px!important}}
+
+
+/* Suppression du flash bleu au toucher — page Partenaires uniquement */
+.partnerGrid,
+.partnerGrid *,
+.partnerInfo,
+.partnerInfo *,
+.profileCard,
+.profileCard *,
+.contentGrid,
+.contentGrid * {
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+.partnerGrid a,
+.partnerGrid button,
+.partnerInfo a,
+.partnerInfo button,
+.profileCard a,
+.profileCard button,
+.contentGrid a,
+.contentGrid button {
+  -webkit-tap-highlight-color: transparent !important;
+  touch-action: manipulation;
+}
+
+.partnerGrid a:active,
+.partnerGrid button:active,
+.partnerInfo a:active,
+.partnerInfo button:active,
+.profileCard a:active,
+.profileCard button:active,
+.contentGrid a:active,
+.contentGrid button:active {
+  background-color: inherit;
+  box-shadow: inherit;
+}
+
+/* Conserve un indicateur visible pour la navigation au clavier */
+.partnerGrid a:focus-visible,
+.partnerGrid button:focus-visible,
+.partnerInfo a:focus-visible,
+.partnerInfo button:focus-visible,
+.profileCard a:focus-visible,
+.profileCard button:focus-visible,
+.contentGrid a:focus-visible,
+.contentGrid button:focus-visible {
+  outline: 3px solid #e4bd5e !important;
+  outline-offset: 3px !important;
+}
