@@ -58,3 +58,22 @@ h1,h2,h3{font-family:Manrope,"DM Sans",sans-serif;letter-spacing:-.02em;margin:0
 @media(max-width:960px){.pm-grid{grid-template-columns:1fr 1fr}.pm-span-2{grid-column:span 2}}
 @media(max-width:680px){.pm-cover{min-height:0}.pm-cover-inner{padding:110px 0 32px}.pm-hero{grid-template-columns:minmax(0,1fr);gap:20px}.pm-logo{width:116px;height:116px}.pm-grid{grid-template-columns:1fr}.pm-span-2{grid-column:auto}.pm-card{padding:22px}.pm-btn{width:100%}.pm-brand{font-size:13px}.pm-back{font-size:12px;padding:8px 10px}}
 @media(prefers-reduced-motion:reduce){.pm-btn{transition:none}}
+
+
+/* Suppression du surlignage bleu au toucher sur TOUS les profils partenaires */
+html, body, body *, body *::before, body *::after {
+  -webkit-tap-highlight-color: transparent !important;
+}
+a, button, input, select, textarea, [role="button"], [tabindex] {
+  -webkit-tap-highlight-color: transparent !important;
+  touch-action: manipulation;
+}
+a:active, button:active, [role="button"]:active {
+  -webkit-tap-highlight-color: transparent !important;
+}
+/* Le focus clavier reste visible et accessible */
+a:focus-visible, button:focus-visible, [role="button"]:focus-visible,
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid var(--pm-gold) !important;
+  outline-offset: 3px !important;
+}
