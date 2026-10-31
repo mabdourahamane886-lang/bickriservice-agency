@@ -939,7 +939,8 @@ export default {async fetch(request,env,ctx){
   if (request.method === 'GET' && url.pathname === '/partenaires/profil/' &&
       /(WhatsApp|facebookexternalhit|Facebot|Twitterbot|LinkedInBot|TelegramBot|Slackbot|Discordbot|SkypeUriPreview)/i.test(request.headers.get('User-Agent') || '')) {
     const slug=(url.searchParams.get('slug')||'').trim().slice(0,90);
-    const key=env.SUPABASE_SERVICE_ROLE_KEY;
+    // Public profile reads are also allowed with the publishable key under Supabase RLS.
+    const key=env.SUPABASE_SERVICE_ROLE_KEY || SUPABASE_PUBLIC_KEY;
     const escapeHtml=(value)=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
     if(!slug||!key) return new Response('Profil partenaire introuvable',{status:404,headers:{...SECURITY_HEADERS,'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'}});
     try {
