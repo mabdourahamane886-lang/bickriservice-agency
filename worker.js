@@ -947,7 +947,9 @@ export default {async fetch(request,env,ctx){
       const params=new URLSearchParams({slug:`eq.${slug}`,active:'eq.true',select:'name,slug,description,mission,logo_url,country,city,partner_type,category,badge_label,public_id',limit:'1'});
       const profileResponse=await supabaseRequest(`agency_partners?${params.toString()}`,key,{method:'GET'});
       const profileRows=await profileResponse.json().catch(()=>[]);
-      const p=Array.isArray(profileRows)?profileRows[0]:null;
+      let p=Array.isArray(profileRows)?profileRows[0]:null;
+      // Curated public profile fallback: this partner has a published static profile/logo in the repository.
+      if(!p && slug==='tourisme-au-niger') p={name:'Tourisme au Niger',slug:'tourisme-au-niger',description:'Collectif dédié à la promotion du tourisme, de la culture et des merveilles du Niger.',logo_url:new URL('/assets/partners/tourisme-au-niger.jpg',url.origin).href,category:'Tourisme & influence'};
       if(!p) return new Response('Profil partenaire introuvable',{status:404,headers:{...SECURITY_HEADERS,'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'}});
       const basePath='/partenaires/profil/?slug='+encodeURIComponent(p.slug);
       const canonical=new URL(basePath,url.origin).href;
