@@ -210,6 +210,7 @@
     }
     if($('noPartnerPanel'))$('noPartnerPanel').hidden=Boolean(p);
     if($('partnerManagementPanel'))$('partnerManagementPanel').hidden=!p;
+    if($('socialGrowthPanel'))$('socialGrowthPanel').hidden=!p;
     if(p){
       const edit=$('partnerProfileForm');
       if(edit){
@@ -230,15 +231,7 @@
       if($('portalPartnerName'))$('portalPartnerName').textContent=p.name;
       if($('portalPartnerBadge'))$('portalPartnerBadge').textContent=p.badgeLabel||'Partenaire';
       if($('portalPartnerQr')){$('portalPartnerQr').src='https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=12&data='+encodeURIComponent(link);$('portalPartnerQr').hidden=false;}
-      const growthPanel=$('partnerManagementPanel');
-      if(growthPanel&&!$('socialGrowthEntry')){
-        const growthEntry=document.createElement('a');
-        growthEntry.id='socialGrowthEntry';
-        growthEntry.href='/partenaires/espace/social-growth.html';
-        growthEntry.textContent='🚀 Ouvrir Bickri Social Growth';
-        growthEntry.style.cssText='display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 18px;padding:15px 18px;border-radius:14px;background:linear-gradient(120deg,#0b1d38,#173e73);color:#fff;font-weight:800;text-decoration:none;border:1px solid #d9a441;box-shadow:0 8px 22px rgba(11,29,56,.12)';
-        growthPanel.prepend(growthEntry);
-      }
+      if($('socialGrowthPanel'))$('socialGrowthPanel').hidden=false;
     }
   }
 
