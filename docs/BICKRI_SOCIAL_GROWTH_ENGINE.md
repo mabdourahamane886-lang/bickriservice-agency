@@ -38,7 +38,7 @@ It adds only brand_social_* tables and does not alter partner tables. All social
 1. UI preview may run without provider secrets; unconfigured providers show Configuration requise.
 2. OAuth callback validates one-time state, redirect URI, expiry and provider identity.
 3. Provider tokens are encrypted before persistence and never returned to the browser.
-4. Start with read-only identity/analytics scopes; request publishing scopes only when needed.
+4. Initial OAuth asks only for identity/analytics scopes; add publishing scopes later through incremental consent after the publishing module is ready.
 5. Publishing requires partner approval by default, uses provider APIs and records provider IDs/status.
 6. Test RLS, partner isolation, CSRF/state, token encryption, OAuth errors, API quotas and mobile layout.
 7. Production deployment waits for credentials, provider app approvals, migration verification and smoke tests.
