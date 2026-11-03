@@ -129,12 +129,12 @@
     try{
       const local=$('scheduleAt').value;
       const media=$('scheduleMedia').value.trim();
-      const scheduledAt=local?new Date(local).toISOString():'';
+      const scheduledAt=local?new Date(local+'+01:00').toISOString():'';
       const result=await api('/api/social-growth/content/schedule',{method:'POST',body:JSON.stringify({
-        platform:$('schedulePlatform').value,caption:$('scheduleCaption').value.trim(),
+        platform:$('schedulePlatform').value,title:$('scheduleTitle').value.trim(),caption:$('scheduleCaption').value.trim(),
         scheduledAt,mediaUrls:media?[media]:[],contentType:'post'
       })});
-      $('scheduleCaption').value='';$('scheduleMedia').value='';
+      $('scheduleCaption').value='';$('scheduleTitle').value='';$('scheduleMedia').value='';
       await loadOverview();
       setStatus('Publication programmée. Elle sera envoyée à l’heure choisie si le compte et les autorisations API sont toujours valides.','success');
     }catch(error){setStatus(error.message||'Impossible de programmer cette publication.','error');}
