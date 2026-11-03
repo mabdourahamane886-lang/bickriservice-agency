@@ -7,3 +7,4 @@ wrangler.jsonc
 .git/
 .gitignore
 README.md
+lib/social-growth.js
