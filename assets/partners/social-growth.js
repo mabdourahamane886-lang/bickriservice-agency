@@ -57,13 +57,14 @@
       selected=new Set(data.preferences?.selectedPlatforms||[]);
       renderPlatforms(data.accounts||[]);
       renderStats(data.metrics||[]);
+      renderScheduled(data.content||[]);
       if(data.preferences){
         const goals=new Set(data.preferences.growthGoals||['visibility']);
         document.querySelectorAll('#goalChoices input').forEach(el=>el.checked=goals.has(el.value));
         $('targetAudience').value=data.preferences.targetAudience?.description||'';
         $('weeklyTarget').value=data.preferences.weeklyPostTarget??4;
       }
-      $('savePlatforms').disabled=false;$('saveStrategy').disabled=false;$('refreshOverview').disabled=false;$('generateContent').disabled=false;
+      $('savePlatforms').disabled=false;$('saveStrategy').disabled=false;$('refreshOverview').disabled=false;$('generateContent').disabled=false;$('schedulePost').disabled=false;
       setStatus('Espace Social Growth chargé pour '+(data.partner?.name||'votre marque')+'.','success');
     }catch(error){
       setStatus(error.message||'Impossible de charger Social Growth. Connectez-vous à votre espace partenaire.', 'error');
@@ -117,6 +118,30 @@
     }catch(error){setStatus(error.message,'error');}
     finally{button.disabled=false;button.textContent='Générer ma stratégie de contenu';}
   }
+
+  function renderScheduled(items=[]){
+    const el=$('scheduledList');if(!el)return;
+    const rows=items.filter(x=>['scheduled','published','failed','cancelled','publishing'].includes(x.status));
+    el.innerHTML=rows.length?rows.map(x=>'<article class="contentItem"><strong>'+escapeHtml(x.platform)+' · '+escapeHtml(x.status)+'</strong><p>'+escapeHtml(x.caption||'')+'</p><span class="muted">'+escapeHtml(x.scheduled_at?new Date(x.scheduled_at).toLocaleString('fr-FR',{timeZone:'Africa/Niamey'}):'')+'</span>'+(x.error_code?'<p class="muted">Code : '+escapeHtml(x.error_code)+'</p>':'')+'</article>').join(''):'<p class="muted">Aucune publication programmée pour le moment.</p>';
+  }
+  async function schedulePost(){
+    const button=$('schedulePost');button.disabled=true;button.textContent='Enregistrement…';
+    try{
+      const local=$('scheduleAt').value;
+      const media=$('scheduleMedia').value.trim();
+      const scheduledAt=local?new Date(local).toISOString():'';
+      const result=await api('/api/social-growth/content/schedule',{method:'POST',body:JSON.stringify({
+        platform:$('schedulePlatform').value,caption:$('scheduleCaption').value.trim(),
+        scheduledAt,mediaUrls:media?[media]:[],contentType:'post'
+      })});
+      $('scheduleCaption').value='';$('scheduleMedia').value='';
+      await loadOverview();
+      setStatus('Publication programmée. Elle sera envoyée à l’heure choisie si le compte et les autorisations API sont toujours valides.','success');
+    }catch(error){setStatus(error.message||'Impossible de programmer cette publication.','error');}
+    finally{button.disabled=false;button.textContent='Programmer la publication';}
+  }
+
+  $('schedulePost').addEventListener('click',schedulePost);
   $('savePlatforms').addEventListener('click',savePreferences);
   $('saveStrategy').addEventListener('click',saveStrategy);
   $('generateContent').addEventListener('click',generate);
