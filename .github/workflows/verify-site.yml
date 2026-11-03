@@ -35,6 +35,8 @@ jobs:
           test -s lib/social-growth.js
           test -s docs/BICKRI_SOCIAL_GROWTH_ENGINE.md
           test -s supabase/migrations/20261103160500_bickri_social_growth_engine.sql
+          test -s supabase/migrations/20261103154000_bickri_social_growth_security_indexes.sql
+          test -s supabase/migrations/20261103154500_bickri_social_growth_oauth_partner_index.sql
           test -s partenaires/admin/index.html
           test -s assets/partners/partner-directory.js
           test -s assets/partners/partner-portal.js
