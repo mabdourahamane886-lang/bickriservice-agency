@@ -1,5 +1,5 @@
 import { sendPartnerApplication } from './lib/bickri-mail.js';
-import { handleSocialGrowthRequest } from './lib/social-growth.js';
+import { handleSocialGrowthRequest, processScheduledSocialPosts } from './lib/social-growth.js';
 const SITE_VERSION = '2.0.0';
 const ASSET_VERSION = '2.0.0';
 const SUPABASE_URL = 'https://okdohokhlkxrmxpevees.supabase.co';
@@ -1063,4 +1063,6 @@ export default {async fetch(request,env,ctx){
     headers.set('Pragma','no-cache');headers.set('Expires','0');
   }
   return new Response(response.body,{status:response.status,statusText:response.statusText,headers});
+}, async scheduled(event,env,ctx){
+  ctx.waitUntil(processScheduledSocialPosts(env).catch(error=>console.error('Social Growth scheduler failed:',error?.message||'unknown error')));
 }};
