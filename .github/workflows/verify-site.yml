@@ -31,6 +31,8 @@ jobs:
           test -s partenaires/profil/index.html
           test -s partenaires/espace/index.html
           test -s partenaires/espace/social-growth.html
+          grep -q 'id="socialGrowthPanel"' partenaires/espace/index.html
+          grep -q 'social-growth.html' partenaires/espace/index.html
           test -s assets/partners/social-growth.js
           test -s lib/social-growth.js
           test -s docs/BICKRI_SOCIAL_GROWTH_ENGINE.md
