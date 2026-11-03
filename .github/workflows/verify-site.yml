@@ -30,6 +30,11 @@ jobs:
           test -s partenaires/index.html
           test -s partenaires/profil/index.html
           test -s partenaires/espace/index.html
+          test -s partenaires/espace/social-growth.html
+          test -s assets/partners/social-growth.js
+          test -s lib/social-growth.js
+          test -s docs/BICKRI_SOCIAL_GROWTH_ENGINE.md
+          test -s supabase/migrations/20261103160500_bickri_social_growth_engine.sql
           test -s partenaires/admin/index.html
           test -s assets/partners/partner-directory.js
           test -s assets/partners/partner-portal.js
@@ -54,6 +59,8 @@ jobs:
         run: |
           set -euo pipefail
           node --check worker.js
+          node --check lib/social-growth.js
+          node --check assets/partners/social-growth.js
           node --check api/bickri-ai.js
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
