@@ -70,6 +70,15 @@
       if(/session|connectez|authentification/i.test(error.message))setTimeout(()=>{location.href='/partenaires/espace/';},1800);
     }
   }
+  async function syncAndRefresh(){
+    const button=$('refreshOverview');button.disabled=true;button.textContent='Synchronisation…';
+    try{
+      const result=await api('/api/social-growth/sync',{method:'POST',body:'{}'});
+      await loadOverview();
+      setStatus('Synchronisation terminée : '+result.synced+' compte(s) actualisé(s), '+result.failed+' erreur(s).',result.failed?'error':'success');
+    }catch(error){setStatus(error.message,'error');}
+    finally{button.disabled=false;button.textContent='Synchroniser les statistiques';}
+  }
   async function connectPlatform(platform){
     try{
       const data=await api('/api/social-growth/oauth/start?platform='+encodeURIComponent(platform));
@@ -111,7 +120,7 @@
   $('savePlatforms').addEventListener('click',savePreferences);
   $('saveStrategy').addEventListener('click',saveStrategy);
   $('generateContent').addEventListener('click',generate);
-  $('refreshOverview').addEventListener('click',loadOverview);
+  $('refreshOverview').addEventListener('click',syncAndRefresh);
   const params=new URLSearchParams(location.search);
   if(params.get('connected')==='1')setStatus('Compte social connecté. Chargement des données…','success');
   if(params.get('error'))setStatus('Connexion non terminée : '+params.get('error'),'error');
