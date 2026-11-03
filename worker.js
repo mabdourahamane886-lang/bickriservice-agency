@@ -1,4 +1,5 @@
 import { sendPartnerApplication } from './lib/bickri-mail.js';
+import { handleSocialGrowthRequest } from './lib/social-growth.js';
 const SITE_VERSION = '2.0.0';
 const ASSET_VERSION = '2.0.0';
 const SUPABASE_URL = 'https://okdohokhlkxrmxpevees.supabase.co';
@@ -292,6 +293,7 @@ function fallbackAnswer(message){
 
 export default {async fetch(request,env,ctx){
   const url=new URL(request.url);
+  if (url.pathname.startsWith('/api/social-growth/')) return handleSocialGrowthRequest(request,env,ctx);
   if (url.pathname.startsWith('/api/partner') && request.headers.get('Origin') && !isAllowedOrigin(request)) {
     return json({error:'Origine non autorisée'},403);
   }
