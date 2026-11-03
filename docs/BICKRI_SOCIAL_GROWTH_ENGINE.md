@@ -53,3 +53,14 @@ It adds only brand_social_* tables and does not alter partner tables. All social
 - No fake followers, likes, comments, automated follows, scraping behind login, spam or engagement manipulation.
 - No guaranteed reach, virality, follower counts or sales.
 - No modification of existing partner cards, profiles, badges, logos or application flows.
+
+## Publishing queue and automation (November 2026)
+- Partners can schedule a post from the Social Growth workspace. Scheduling is an explicit approval action and records the approving user.
+- Cloudflare Worker Cron runs every five minutes and atomically claims due queue rows before attempting delivery.
+- The queue records published/failed state, provider post ID, timestamps and audit events. Provider/API failures are not silently retried; the partner can review the error and reschedule after fixing permissions or media.
+- Text publishing is implemented for Facebook Pages and X; Instagram requires a public HTTPS image/video URL; TikTok requires a public video URL accepted by TikTok's PULL_FROM_URL rules; YouTube uses a resumable video upload from a public HTTPS video URL.
+- OAuth now requests publishing scopes in addition to read scopes. Existing connected accounts must reconnect and grant the new permissions before publishing.
+- YouTube uploads are public by default in this initial queue implementation. Partners must only schedule content they have rights to publish.
+- Media URLs must be HTTPS, public and accessible to the provider. The server does not upload media files from the partner's device in this iteration.
+- The scheduler needs the existing Supabase service role and token encryption secrets plus provider credentials. The Cloudflare Cron trigger is versioned in wrangler.jsonc.
+- Provider app review, account eligibility, rate limits, media format constraints and domain verification remain controlled by each platform. A successful queue attempt is not a guarantee of reach or engagement.
