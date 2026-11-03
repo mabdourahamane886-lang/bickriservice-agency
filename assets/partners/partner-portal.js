@@ -211,6 +211,7 @@
     if($('noPartnerPanel'))$('noPartnerPanel').hidden=Boolean(p);
     if($('partnerManagementPanel'))$('partnerManagementPanel').hidden=!p;
     if($('socialGrowthPanel'))$('socialGrowthPanel').hidden=!p;
+    if($('socialGrowthQuickAction'))$('socialGrowthQuickAction').hidden=!p;
     if(p){
       const edit=$('partnerProfileForm');
       if(edit){
