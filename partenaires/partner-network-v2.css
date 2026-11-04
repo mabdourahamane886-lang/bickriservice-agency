@@ -1,0 +1,237 @@
+/* BSA Partner Network V2 — directory cards and responsive layout */
+:root{
+  --bsa-network-navy:#0b1d38;
+  --bsa-network-blue:#1d4778;
+  --bsa-network-gold:#d9a441;
+  --bsa-network-paper:#f5f7fb;
+  --bsa-network-line:#e4eaf2;
+  --bsa-network-ink:#15243a;
+  --bsa-network-muted:#64748b;
+}
+.partnerGrid{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  align-items:stretch!important;
+  gap:22px!important;
+}
+.partnerGrid>.partner{
+  position:relative!important;
+  isolation:isolate!important;
+  display:flex!important;
+  flex-direction:column!important;
+  min-width:0!important;
+  min-height:0!important;
+  padding:0 23px 22px!important;
+  overflow:hidden!important;
+  text-align:left!important;
+  border:1px solid var(--bsa-network-line)!important;
+  border-radius:23px!important;
+  background:#fff!important;
+  box-shadow:0 8px 28px rgba(11,29,56,.055)!important;
+  transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease!important;
+}
+.partnerGrid>.partner::before{
+  content:""!important;
+  position:absolute!important;
+  z-index:-1!important;
+  inset:0 0 auto!important;
+  height:105px!important;
+  background:
+    radial-gradient(circle at 84% 20%,rgba(217,164,65,.34),transparent 25%),
+    linear-gradient(120deg,#09172d 0%,#12345d 58%,#1d4778 100%)!important;
+}
+.partnerGrid>.partner::after{
+  content:"BSA  /  PARTNER NETWORK"!important;
+  position:absolute!important;
+  top:17px!important;
+  left:21px!important;
+  color:rgba(255,255,255,.82)!important;
+  font-size:9px!important;
+  line-height:1!important;
+  font-weight:800!important;
+  letter-spacing:.18em!important;
+}
+.partnerGrid>.partner:hover{
+  transform:translateY(-3px) scale(1.008)!important;
+  border-color:#d6bd83!important;
+  box-shadow:0 18px 42px rgba(11,29,56,.11)!important;
+}
+.partnerGrid>.partner .partnerLogo{
+  position:relative!important;
+  z-index:1!important;
+  display:block!important;
+  flex:0 0 auto!important;
+  width:88px!important;
+  height:88px!important;
+  margin:57px 0 17px!important;
+  padding:10px!important;
+  object-fit:contain!important;
+  background:#fff!important;
+  border:4px solid #fff!important;
+  border-radius:21px!important;
+  box-shadow:0 7px 22px rgba(11,29,56,.15)!important;
+}
+.partnerGrid>.partner h2{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:7px!important;
+  margin:0 0 8px!important;
+  color:var(--bsa-network-ink)!important;
+  font:800 21px/1.25 Manrope,sans-serif!important;
+  letter-spacing:-.025em!important;
+  overflow-wrap:anywhere!important;
+}
+.partnerGrid>.partner .verifiedBadge{
+  width:21px!important;
+  height:21px!important;
+  flex:0 0 auto!important;
+  object-fit:contain!important;
+}
+.partnerGrid>.partner .partnerLiveBadge{
+  align-self:flex-start!important;
+  width:max-content!important;
+  max-width:100%!important;
+  margin:0 0 12px!important;
+  padding:6px 10px!important;
+  border-radius:999px!important;
+  font-size:10px!important;
+  line-height:1.3!important;
+  font-weight:800!important;
+}
+.partnerGrid>.partner>p{
+  min-height:0!important;
+  margin:0 0 13px!important;
+  color:#58677e!important;
+  font-size:13px!important;
+  line-height:1.7!important;
+  display:-webkit-box!important;
+  -webkit-box-orient:vertical!important;
+  -webkit-line-clamp:3!important;
+  overflow:hidden!important;
+}
+.partnerGrid>.partner .partnerFounder{
+  margin:0!important;
+  padding:11px 0 0!important;
+  border-top:1px solid #edf1f6!important;
+  color:#66758a!important;
+  font-size:11px!important;
+  line-height:1.5!important;
+}
+.partnerGrid>.partner .partnerFounder strong{color:#263a56!important}
+.partnerGrid>.partner .partnerMeta{
+  display:flex!important;
+  justify-content:flex-start!important;
+  gap:7px!important;
+  margin:14px 0 0!important;
+}
+.partnerGrid>.partner .chip{
+  max-width:100%!important;
+  padding:6px 9px!important;
+  color:#43536b!important;
+  background:#f3f6fa!important;
+  border:1px solid #e5eaf1!important;
+  border-radius:9px!important;
+  font-size:10px!important;
+  line-height:1.35!important;
+  overflow-wrap:anywhere!important;
+}
+.partnerGrid>.partner .partnerPublicId{
+  margin-top:10px!important;
+  color:#8995a6!important;
+  font-size:9px!important;
+}
+.partnerGrid>.partner .partnerCardActions{
+  display:grid!important;
+  grid-template-columns:1.15fr 1fr 1fr!important;
+  gap:7px!important;
+  margin-top:auto!important;
+  padding-top:20px!important;
+}
+.partnerGrid>.partner .partnerCardActions a,
+.partnerGrid>.partner .partnerCardActions button{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-width:0!important;
+  min-height:42px!important;
+  padding:8px 6px!important;
+  border:1px solid #e1e7ef!important;
+  border-radius:10px!important;
+  background:#f7f9fc!important;
+  color:#31445f!important;
+  font-size:10px!important;
+  line-height:1.25!important;
+  font-weight:800!important;
+  text-align:center!important;
+  cursor:pointer!important;
+  transition:background .18s ease,border-color .18s ease,transform .18s ease!important;
+}
+.partnerGrid>.partner .partnerCardActions a.primary{
+  color:#fff!important;
+  background:linear-gradient(135deg,#0b1d38,#1d4778)!important;
+  border-color:#173d6b!important;
+  box-shadow:0 5px 12px rgba(11,29,56,.12)!important;
+}
+.partnerGrid>.partner .partnerCardActions button.share{
+  color:#1e4b3a!important;
+  background:#f0faf4!important;
+  border-color:#d4eddd!important;
+}
+.partnerGrid>.partner .partnerCardActions button.qr{
+  color:#76571b!important;
+  background:#fff8e9!important;
+  border-color:#efdfba!important;
+}
+.partnerGrid>.partner .partnerCardActions a:hover,
+.partnerGrid>.partner .partnerCardActions button:hover{
+  transform:translateY(-1px)!important;
+  border-color:#c8d3e2!important;
+}
+.partnerGrid>.partner :focus-visible,
+.partnerTools input:focus-visible,
+.partnerTools select:focus-visible{
+  outline:3px solid rgba(217,164,65,.55)!important;
+  outline-offset:3px!important;
+}
+.partnerTools{
+  padding:20px!important;
+  border:1px solid var(--bsa-network-line)!important;
+  border-radius:20px!important;
+  background:#fff!important;
+  box-shadow:0 8px 25px rgba(11,29,56,.035)!important;
+}
+.partnerFilters input,.partnerFilters select{
+  min-height:48px!important;
+  border:1px solid #dce4ee!important;
+  border-radius:11px!important;
+  background:#fbfcfe!important;
+  color:#263a56!important;
+  font-size:13px!important;
+}
+.partnerFilters input:focus,.partnerFilters select:focus{
+  border-color:#b9944a!important;
+  box-shadow:0 0 0 3px rgba(217,164,65,.12)!important;
+  outline:none!important;
+}
+.partnerResultsCount{color:#64748b!important;font-size:12px!important}
+.partnerToolsLinks a{border-radius:10px!important}
+.partnerDialog{max-height:min(90vh,760px)!important;overflow:auto!important}
+@media(max-width:960px){
+  .partnerGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:17px!important}
+}
+@media(max-width:620px){
+  .partnerGrid{grid-template-columns:minmax(0,1fr)!important;gap:15px!important}
+  .partnerGrid>.partner{padding:0 18px 18px!important;border-radius:20px!important}
+  .partnerGrid>.partner::before{height:98px!important}
+  .partnerGrid>.partner .partnerLogo{width:82px!important;height:82px!important;margin-top:53px!important;margin-bottom:15px!important;border-radius:19px!important}
+  .partnerGrid>.partner h2{font-size:20px!important}
+  .partnerGrid>.partner>p{-webkit-line-clamp:4!important}
+  .partnerGrid>.partner .partnerCardActions{grid-template-columns:1.15fr 1fr 1fr!important;gap:6px!important;padding-top:17px!important}
+  .partnerGrid>.partner .partnerCardActions a,.partnerGrid>.partner .partnerCardActions button{min-height:43px!important;font-size:10px!important}
+  .partnerTools{padding:14px!important;border-radius:16px!important}
+  .partnerFilters{grid-template-columns:1fr!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .partnerGrid>.partner,.partnerGrid>.partner .partnerCardActions a,.partnerGrid>.partner .partnerCardActions button{transition:none!important}
+}
