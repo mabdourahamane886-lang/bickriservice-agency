@@ -210,6 +210,8 @@
     }
     if($('noPartnerPanel'))$('noPartnerPanel').hidden=Boolean(p);
     if($('partnerManagementPanel'))$('partnerManagementPanel').hidden=!p;
+    if($('socialGrowthPanel'))$('socialGrowthPanel').hidden=!p;
+    if($('socialGrowthQuickAction'))$('socialGrowthQuickAction').hidden=!p;
     if(p){
       const edit=$('partnerProfileForm');
       if(edit){
@@ -230,6 +232,7 @@
       if($('portalPartnerName'))$('portalPartnerName').textContent=p.name;
       if($('portalPartnerBadge'))$('portalPartnerBadge').textContent=p.badgeLabel||'Partenaire';
       if($('portalPartnerQr')){$('portalPartnerQr').src='https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=12&data='+encodeURIComponent(link);$('portalPartnerQr').hidden=false;}
+      if($('socialGrowthPanel'))$('socialGrowthPanel').hidden=false;
     }
   }
 

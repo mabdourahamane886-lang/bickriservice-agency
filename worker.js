@@ -1,4 +1,5 @@
 import { sendPartnerApplication } from './lib/bickri-mail.js';
+import { handleSocialGrowthRequest, processScheduledSocialPosts } from './lib/social-growth.js';
 const SITE_VERSION = '2.0.0';
 const ASSET_VERSION = '2.0.0';
 const SUPABASE_URL = 'https://okdohokhlkxrmxpevees.supabase.co';
@@ -130,7 +131,7 @@ const SECURITY_HEADERS = {
   'X-DNS-Prefetch-Control':'off',
   'X-Permitted-Cross-Domain-Policies':'none',
   'Permissions-Policy':'camera=(), microphone=(), geolocation=()',
-  'Content-Security-Policy':"default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' https: data: blob:; connect-src 'self' https://okdohokhlkxrmxpevees.supabase.co https://*.onrender.com https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; media-src 'self' https: blob:; worker-src 'self' blob:; upgrade-insecure-requests",
+  'Content-Security-Policy':"default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' https: data: blob:; connect-src 'self' https://bickriservice-agency.org https://bickriservice-agency.bickriserviceagency.dev https://okdohokhlkxrmxpevees.supabase.co https://*.onrender.com https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; media-src 'self' https: blob:; worker-src 'self' blob:; upgrade-insecure-requests",
   // Audit-only candidate: stricter than the enforced policy. Keep Report-Only until every violation is reviewed.
   'Content-Security-Policy-Report-Only':"default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' https://fonts.googleapis.com; style-src-attr 'none'; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://okdohokhlkxrmxpevees.supabase.co https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; media-src 'self' blob:; worker-src 'self' blob:; upgrade-insecure-requests",
   'Cross-Origin-Opener-Policy':'same-origin-allow-popups',
@@ -292,6 +293,7 @@ function fallbackAnswer(message){
 
 export default {async fetch(request,env,ctx){
   const url=new URL(request.url);
+  if (url.pathname.startsWith('/api/social-growth/')) return handleSocialGrowthRequest(request,env,ctx);
   if (url.pathname.startsWith('/api/partner') && request.headers.get('Origin') && !isAllowedOrigin(request)) {
     return json({error:'Origine non autorisée'},403);
   }
@@ -1061,4 +1063,6 @@ export default {async fetch(request,env,ctx){
     headers.set('Pragma','no-cache');headers.set('Expires','0');
   }
   return new Response(response.body,{status:response.status,statusText:response.statusText,headers});
+}, async scheduled(event,env,ctx){
+  ctx.waitUntil(processScheduledSocialPosts(env).catch(error=>console.error('Social Growth scheduler failed:',error?.message||'unknown error')));
 }};
