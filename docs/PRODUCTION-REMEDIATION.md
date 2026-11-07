@@ -48,3 +48,9 @@ Keep `TURNSTILE_SECRET_KEY` as a Worker secret and verify that the public Turnst
 - Added all 37 service detail URLs to `sitemap.xml` (67 unique URLs total after the addition).
 - Updated the Cloudflare deployment workflow to load `OPENAI_API_KEY` from the GitHub Actions secret store when configured. If it is absent, the workflow emits a warning and Bickri IA continues to use its local fallback.
 - The production Cloudflare zone currently reports SSL mode `Full`, not `Full (strict)`. Do not switch it until the Worker/custom-domain certificate and any origin path have been validated. The `www` DNS record is currently absent; do not create it without confirming the canonical host target.
+
+
+## Automated pre-deployment validation
+- Added `npm run check` (dependency-free) to syntax-check `worker.js` and validate the 37-entry service catalog, unique slugs/codes/copy, HTTPS image URLs, and sitemap coverage.
+- The Cloudflare deployment workflow now runs this check before attempting a production deploy.
+- The current PR's Vercel preview status checks returned `build-rate-limit` failures from the Vercel project/plan. These are infrastructure quota failures, not evidence of a failed application build; a fresh preview build or Vercel quota adjustment is needed for a full preview verification.
