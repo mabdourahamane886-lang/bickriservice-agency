@@ -41,3 +41,10 @@ Keep `TURNSTILE_SECRET_KEY` as a Worker secret and verify that the public Turnst
 - No DNS record or Cloudflare zone setting changed.
 - No Worker secret or Supabase key changed.
 - No database schema or RLS policy changed.
+
+
+## Additional audit corrections in this review branch
+- Rewrote the audience, deliverable and purpose fields for all 37 service entries in `services-share.json` to remove the repeated generic descriptions.
+- Added all 37 service detail URLs to `sitemap.xml` (67 unique URLs total after the addition).
+- Updated the Cloudflare deployment workflow to load `OPENAI_API_KEY` from the GitHub Actions secret store when configured. If it is absent, the workflow emits a warning and Bickri IA continues to use its local fallback.
+- The production Cloudflare zone currently reports SSL mode `Full`, not `Full (strict)`. Do not switch it until the Worker/custom-domain certificate and any origin path have been validated. The `www` DNS record is currently absent; do not create it without confirming the canonical host target.
