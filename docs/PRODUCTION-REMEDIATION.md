@@ -34,8 +34,8 @@ Never commit secret values, paste them into pull requests, expose them in browse
 
 ## Verification still required before production release
 
-1. Run `npm run check` in the new pull-request validation workflow and confirm it passes.
-2. Resolve the current Vercel preview build quota failure (`build-rate-limit`) and obtain a fresh preview build.
+1. Pull-request validation workflow: PASS (Node.js syntax check and 37-service/sitemap validation completed successfully on commit `7a4e5c8d6a146acb751c639d8aea3cd2e0b6f273`).
+2. Resolve the current Vercel preview build quota failure (`build-rate-limit`) and obtain a fresh preview build. This is separate from the passing GitHub Actions validation.
 3. Test partner application submission, status lookup (valid and invalid inputs), partner authentication/dashboard and admin review using authorized test accounts.
 4. Verify Bickri IA with a valid provider key and confirm fallback behavior when the key is unavailable.
 5. Verify Turnstile end-to-end.
@@ -49,3 +49,10 @@ Never commit secret values, paste them into pull requests, expose them in browse
 - No Worker production deployment has been initiated.
 - The Cloudflare zone settings and rate-limit ruleset above are live configuration changes; they do not deploy the updated Worker code.
 - The new validation workflow and catalog changes are not yet active on the production branch until merge.
+
+
+## Latest automated checks
+- `Validate Bickri Service Agency`: PASS.
+- `Verify Bickri Service Agency`: PASS.
+- `CodeQL Security Scan`: still running at the time of this update; do not treat it as passed until GitHub reports completion.
+- Vercel preview checks: blocked by the project's `build-rate-limit` quota response.
