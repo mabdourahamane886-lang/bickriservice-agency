@@ -39,6 +39,9 @@ jobs:
           test -s supabase/migrations/20261011101000_agency_partner_admin_audit_log.sql
           echo "Partner portal pages, scripts and database migrations are present."
 
+      - name: Verify service groups and security guardrails
+        run: node scripts/verify-services-security.mjs
+
       - name: Check for committed environment files
         shell: bash
         run: |
