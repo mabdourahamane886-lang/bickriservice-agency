@@ -57,4 +57,4 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID || 'c2c79f6fe0e620dbbcc2c45f3d623d67' }}
         run: wrangler deploy
 
-# Manual production redeployment requested on 2026-10-10.
+# Production redeploy trigger: publish latest main revision.
