@@ -149,6 +149,8 @@ const partnerSubmissionBuckets = globalThis.__bsaPartnerSubmissionBuckets || new
 globalThis.__bsaPartnerSubmissionBuckets = partnerSubmissionBuckets;
 const partnerClickBuckets = globalThis.__bsaPartnerClickBuckets || new Map();
 globalThis.__bsaPartnerClickBuckets = partnerClickBuckets;
+const partnerStatusBuckets = globalThis.__bsaPartnerStatusBuckets || new Map();
+globalThis.__bsaPartnerStatusBuckets = partnerStatusBuckets;
 
 function checkPartnerLimit(request, buckets, max, windowMs) {
   const ip = request.headers.get('CF-Connecting-IP') ||
@@ -391,6 +393,10 @@ export default {async fetch(request,env,ctx){
   }
 
   if (url.pathname === '/api/partner/status' && request.method === 'GET') {
+    // Reduce application-code/email enumeration. This in-memory guard is per isolate;
+    // configure a Cloudflare Rate Limiting rule for a globally enforced production limit.
+    const statusRate = checkPartnerLimit(request,partnerStatusBuckets,8,15*60*1000);
+    if (!statusRate.allowed) return partnerJson(request,{error:'Trop de tentatives. Réessayez dans quelques minutes.'},429,{'Retry-After':String(statusRate.retryAfter)});
     const code = (url.searchParams.get('code') || '').trim().toUpperCase();
     const email = (url.searchParams.get('email') || '').trim().toLowerCase();
     if (!/^BPA-[A-F0-9]{10}$/.test(code) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {

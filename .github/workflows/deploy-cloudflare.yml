@@ -23,6 +23,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Validate Worker and public site data
+        run: npm run check
+
       - name: Validate Cloudflare credentials
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CLOUDFLARD_API_TOKEN }}
@@ -49,6 +52,19 @@ jobs:
             printf '%s' "$SUPABASE_SERVICE_ROLE_KEY" | wrangler secret put SUPABASE_SERVICE_ROLE_KEY
           else
             echo "::warning::SUPABASE_SERVICE_ROLE_KEY is not configured. Public partner profiles can still load, but private partner accounts, applications, administration and click tracking need this secret."
+          fi
+
+      - name: Configure OpenAI API key when available
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CLOUDFLARD_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID || 'c2c79f6fe0e620dbbcc2c45f3d623d67' }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -n "$OPENAI_API_KEY" ]; then
+            printf '%s' "$OPENAI_API_KEY" | wrangler secret put OPENAI_API_KEY
+          else
+            echo "::warning::OPENAI_API_KEY is not configured. Bickri IA will use its local fallback responses."
           fi
 
       - name: Deploy Worker and assets
