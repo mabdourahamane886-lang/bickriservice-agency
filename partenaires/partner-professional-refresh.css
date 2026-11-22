@@ -398,3 +398,50 @@ body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 @media(prefers-reduced-motion:reduce){
   #devenir-partenaire{scroll-behavior:auto}
 }
+
+
+/* Parcours partenaire simplifié : formulaire existant, informations facultatives repliées. */
+#partnerApplicationForm.partnerFormSimple>.partnerExtras{
+  grid-column:1/-1!important;
+  margin:2px 0 0!important;
+  border:1px solid var(--bsa-pro-line)!important;
+  background:#f8fafc!important;
+}
+#partnerApplicationForm.partnerFormSimple>.partnerExtras>summary{
+  min-height:54px!important;
+  padding:17px 19px!important;
+  font-size:14px!important;
+  font-weight:850!important;
+}
+#partnerApplicationForm.partnerFormSimple .partnerExtrasIntro{
+  margin:15px 20px 2px!important;
+  max-width:680px;
+  color:var(--bsa-pro-muted)!important;
+  font-size:13px;
+  line-height:1.65;
+}
+#partnerApplicationForm.partnerFormSimple .partnerExtrasGroup{
+  grid-column:1/-1!important;
+  width:100%;
+  margin:9px 0 0;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--bsa-pro-line);
+  color:var(--bsa-pro-navy)!important;
+  font:800 14px/1.5 Manrope,sans-serif;
+}
+#partnerApplicationForm.partnerFormSimple>.partnerField,
+#partnerApplicationForm.partnerFormSimple>.partnerExtras{min-width:0!important}
+#partnerApplicationForm.partnerFormSimple>.partnerField:has(#partnerMessage){grid-column:1/-1!important}
+#partnerApplicationForm.partnerFormSimple>.partnerField:has(#partnerMessage) textarea{min-height:118px!important}
+#partnerApplicationForm.partnerFormSimple>.partnerConsentField{margin-top:3px}
+#partnerApplicationForm.partnerFormSimple .partnerExtras .partnerOptionalGrid{
+  align-items:start;
+  padding-top:16px!important;
+}
+#partnerApplicationForm.partnerFormSimple .partnerExtras .partnerOptionalGrid>.partnerField.full{grid-column:1/-1!important}
+@media(max-width:680px){
+  #partnerApplicationForm.partnerFormSimple>.partnerExtras{grid-column:1/-1!important}
+  #partnerApplicationForm.partnerFormSimple .partnerExtrasIntro{margin:12px 15px 0!important}
+  #partnerApplicationForm.partnerFormSimple .partnerExtras .partnerOptionalGrid{padding:14px!important}
+  #partnerApplicationForm.partnerFormSimple .partnerExtrasGroup{font-size:13px}
+}
