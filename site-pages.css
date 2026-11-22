@@ -64,3 +64,28 @@ body.service-detail-mode{overflow-x:hidden}.serviceDetailLead{max-width:850px;fo
   filter: brightness(.97);
 }
 ::selection { background: rgba(214,162,60,.24); color: inherit; }
+
+
+/* BSA : contacts tactiles Android, sans flash bleu ni perte du focus clavier. */
+html,body{ -webkit-tap-highlight-color:transparent; }
+:where(a,button,summary,[role="button"],input,textarea,select,[tabindex]){
+  -webkit-tap-highlight-color:transparent!important;
+}
+:where(a,button,summary,[role="button"]){
+  touch-action:manipulation;
+  transition:background-color .18s ease,border-color .18s ease,box-shadow .18s ease,opacity .18s ease;
+}
+:where(a,button,summary,[role="button"]):active{opacity:.94}
+:where(a,button,summary,[role="button"],input,textarea,select,[tabindex]):focus-visible{
+  outline:3px solid #d9a441!important;
+  outline-offset:3px!important;
+}
+@media(prefers-reduced-motion:reduce){
+  :where(a,button,summary,[role="button"]){transition:none!important;animation:none!important}
+}
+/* Fiches de services : en-tête de marque lisible sur téléphone, fond sans cadre. */
+body.service-reference-mode .siteBrand img,
+body.service-reference-mode .siteHeader img{
+  background:transparent!important;border:none!important;
+  box-shadow:none!important;border-radius:0!important;
+}
