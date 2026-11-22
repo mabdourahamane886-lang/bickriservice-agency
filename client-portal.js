@@ -51,12 +51,18 @@
   }
   function setAuthMode(next){
     authMode=next;
-    $('nameField').hidden=next!=='signup';
-    $('authName').required=next==='signup';
-    $('authSubmit').textContent=next==='signup'?'Créer mon compte':'Se connecter';
-    $('authToggle').textContent=next==='signup'?'J’ai déjà un compte':'Créer un compte';
-    $('authDesc').textContent=next==='signup'?'Créez votre compte avec votre e-mail et un mot de passe de 8 caractères minimum.':'Connectez-vous avec votre compte Bickri pour suivre vos dossiers.';
-    $('authPassword').autocomplete=next==='signup'?'new-password':'current-password';
+    const signingUp=next==='signup';
+    const resetting=next==='reset';
+    $('nameField').hidden=!signingUp;
+    $('authName').required=signingUp;
+    $('emailField').hidden=resetting;
+    $('authEmail').required=!resetting;
+    $('authTitle').textContent=signingUp?'Créer votre compte':resetting?'Choisir un nouveau mot de passe':'Connexion sécurisée';
+    $('authSubmit').textContent=signingUp?'Créer mon compte':resetting?'Enregistrer mon mot de passe':'Se connecter';
+    $('authToggle').textContent=signingUp||resetting?'J’ai déjà un compte':'Créer un compte';
+    $('authDesc').textContent=signingUp?'Créez votre compte avec votre e-mail et un mot de passe de 8 caractères minimum.':resetting?'Saisissez un nouveau mot de passe de 8 caractères minimum.':'Connectez-vous avec votre compte Bickri pour suivre vos dossiers.';
+    $('authForgot').hidden=next!=='login';
+    $('authPassword').autocomplete=signingUp||resetting?'new-password':'current-password';
   }
   $('authToggle').addEventListener('click',()=>{
     setAuthMode(authMode==='login'?'signup':'login');
@@ -64,20 +70,69 @@
     $('authPassword').value='';
     $('authEmail').focus();
   });
+  $('authForgot')?.addEventListener('click',async()=>{
+    const email=$('authEmail').value.trim();
+    if(!email||!$('authEmail').checkValidity()){
+      $('authEmail').reportValidity();
+      $('authEmail').focus();
+      return;
+    }
+    const button=$('authForgot');
+    button.disabled=true;
+    notice('Demande de récupération du mot de passe…');
+    try{
+      await auth('recover?redirect_to='+encodeURIComponent(location.origin+'/espace-client/'),{email});
+      notice('Si cette adresse possède un compte, un lien de récupération sera envoyé. Vérifiez votre boîte de réception et les courriers indésirables.','success');
+    }catch(err){
+      notice(err?.message||'Impossible de demander la récupération du mot de passe.','error');
+    }finally{button.disabled=false;}
+  });
+  // Les liens de récupération utilisent le flux implicite Supabase.
+  // On retire les jetons de l'URL dès que possible pour ne pas les exposer à la navigation.
+  const recoveryFragment=new URLSearchParams(location.hash.replace(/^#/,''));
+  if(recoveryFragment.get('type')==='recovery'){
+    const access=recoveryFragment.get('access_token');
+    const refreshToken=recoveryFragment.get('refresh_token');
+    history.replaceState(null,'',location.pathname+location.search);
+    if(access){
+      saveAuth({access_token:access,refresh_token:refreshToken||'',expires_in:Number(recoveryFragment.get('expires_in'))||3600});
+      setAuthMode('reset');
+      notice('Lien vérifié. Définissez maintenant votre nouveau mot de passe.','success');
+    }else{
+      notice('Ce lien de récupération est invalide ou a expiré. Demandez un nouveau lien.','error');
+    }
+  }
   $('authForm').addEventListener('submit',async e=>{
     e.preventDefault();const b=$('authSubmit'),d=Object.fromEntries(new FormData(e.currentTarget).entries());
-    b.disabled=true;notice(authMode==='signup'?'Création de votre compte…':'Connexion à votre compte…');
+    b.disabled=true;
+    notice(authMode==='signup'?'Création de votre compte…':authMode==='reset'?'Mise à jour du mot de passe…':'Connexion à votre compte…');
     try{
-      if(authMode==='signup'){
+      if(authMode==='reset'){
+        const response=await fetch(BASE+'/auth/v1/user',{
+          method:'PUT',
+          headers:{apikey:PUBLIC_KEY,Authorization:'Bearer '+token(),'Content-Type':'application/json'},
+          body:JSON.stringify({password:String(d.password)})
+        });
+        const result=await response.json().catch(()=>({}));
+        if(!response.ok)throw Error(result.msg||result.message||result.error_description||'Impossible de modifier le mot de passe.');
+        clearAuth();
+        $('authPassword').value='';
+        setAuthMode('login');
+        notice('Mot de passe mis à jour. Connectez-vous avec votre nouveau mot de passe.','success');
+      }else if(authMode==='signup'){
         const r=await auth('signup',{email:String(d.email).trim(),password:String(d.password),data:{full_name:String(d.fullName||'').trim()}});
         if(r.access_token){
           saveAuth(r);
           await openDashboard();
-        }else if(r.user?.id){
+        }else if(r.id||r.user?.id){
+          // L'API REST /signup renvoie parfois directement le profil utilisateur (id à la racine).
+          // Pour protéger la confidentialité, Supabase peut aussi renvoyer un objet simulé
+          // lorsque l'adresse existe déjà : ne jamais annoncer que le compte vient d'être créé.
+          $('authPassword').value='';
           setAuthMode('login');
-          notice('Demande de création de compte reçue. Si un e-mail de confirmation est requis, ouvrez-le puis connectez-vous. Vérifiez également les courriers indésirables.','success');
+          notice('Demande reçue. Si vous possédez déjà un compte, connectez-vous avec votre mot de passe. Sinon, vérifiez votre e-mail de confirmation (y compris les indésirables).','success');
         }else{
-          throw Error('La création du compte n’a pas pu être confirmée. Réessayez.');
+          throw Error('Aucune confirmation de la demande n’a été fournie par le serveur. Vérifiez votre compte existant ou réessayez plus tard.');
         }
       }else{
         const r=await auth('token?grant_type=password',{email:String(d.email).trim(),password:String(d.password)});
@@ -206,5 +261,5 @@
   }
   loadServices();
   // Turnstile se charge uniquement lorsque le formulaire devient visible.
-  if(token())openDashboard().catch(()=>showAuth('Reconnectez-vous.'));
+  if(token()&&authMode!=='reset')openDashboard().catch(()=>showAuth('Reconnectez-vous.'));
 })();
