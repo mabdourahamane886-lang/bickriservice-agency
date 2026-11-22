@@ -59,6 +59,7 @@
     return out;
   }
   function showAuth(text=''){
+    document.body.classList.remove('client-profile-active');
     $('authCard').hidden=false;
     if($('portalDashboard'))$('portalDashboard').hidden=true;
     if($('adminDashboard'))$('adminDashboard').hidden=true;
@@ -157,7 +158,7 @@
     }catch(err){notice(err?.message||'Impossible de finaliser la demande. Vérifiez votre connexion.','error');}finally{b.disabled=false;}
   });
   document.querySelectorAll('[data-logout]').forEach(button=>button.addEventListener('click',()=>{
-    const access=token();clearAuth();window.dispatchEvent(new Event('bsa:client-logout'));
+    const access=token();clearAuth();document.body.classList.remove('client-profile-active');window.dispatchEvent(new Event('bsa:client-logout'));
     if(access)fetch(BASE+'/auth/v1/logout',{method:'POST',headers:{apikey:PUBLIC_KEY,Authorization:'Bearer '+access}}).catch(()=>{});
     showAuth('Vous êtes déconnecté.');notice('Déconnexion effectuée.','success');
   }));
@@ -332,11 +333,14 @@
   // Il reste accessible même si les fonctions privées de devis sur Vercel sont hors service.
   window.addEventListener('bsa:client-session-expired',()=>{
     clearAuth();
+    document.body.classList.remove('client-profile-active');
     if($('clientProfileSection'))$('clientProfileSection').hidden=true;
     showAuth('Votre session a expiré. Connectez-vous de nouveau.');
   });
   async function openDashboard(){
     if(!adminMode){
+      document.body.classList.add('client-profile-active');
+      notice('');
       $('authCard').hidden=true;
       if($('clientProfileSection'))$('clientProfileSection').hidden=false;
       window.dispatchEvent(new Event('bsa:client-authenticated'));
@@ -345,10 +349,18 @@
         $('portalDashboard').hidden=false;
         await loadClient();
         await setupCaptcha();
+        const state=$('clientServiceState');
+        if(state){state.hidden=true;state.open=false;}
         notice('');
       }catch(err){
         $('portalDashboard').hidden=true;
-        notice('Votre profil professionnel est disponible. Le suivi des devis est temporairement indisponible : '+readableError(err),'error');
+        // Show the actual service problem only when its details are expanded,
+        // not as a large error banner above a perfectly usable profile.
+        const state=$('clientServiceState');
+        const stateText=$('clientServiceStateText');
+        if(state)state.hidden=false;
+        if(stateText)stateText.textContent='Le suivi de vos devis est momentanément indisponible. Détail technique : '+readableError(err);
+        notice('');
       }
       return;
     }
