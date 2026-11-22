@@ -1019,7 +1019,7 @@ export default {async fetch(request,env,ctx){
     const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
     const readMeta=(html,kind,name)=>{
       const tags=String(html||'').match(/<meta\b[^>]*>/gi)||[];
-      const tag=tags.find(t=>new RegExp('\\b'+kind+'\\s*=\\s*["\\']'+name+'["\\']','i').test(t));
+      const tag=tags.find(t=>new RegExp('\\b'+kind+'\\s*=\\s*"'+name+'"','i').test(t));
       const value=tag?.match(/\bcontent\s*=\s*["']([^"']*)["']/i)?.[1]||'';
       return value.replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>');
     };
@@ -1043,7 +1043,9 @@ export default {async fetch(request,env,ctx){
           const html=await asset.text();
           const originalTitle=readMeta(html,'property','og:title');
           const originalImage=readMeta(html,'property','og:image');
-          if(!originalTitle||!originalImage)continue;
+          const originalUrl=readMeta(html,'property','og:url');
+          // Ne jamais utiliser l'index générique renvoyé par le fallback SPA comme profil partenaire.
+          if(!originalTitle||!originalImage||!originalUrl||!originalUrl.includes('/'+slug+'/'))continue;
           p={name:originalTitle.replace(/\s+[—–-]\s+Partenaire.*$/i,''),slug,
             description:readMeta(html,'property','og:description')||readMeta(html,'name','description'),
             logo_url:originalImage};
