@@ -400,113 +400,48 @@ body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 }
 
 
-/* Invitation simple au partenariat : réutilise le bleu marine, l'or et le blanc BSA. */
-.partnerJoin{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:clamp(20px,4vw,52px);
-  margin:50px 0 0;
-  padding:clamp(28px,4.5vw,46px);
-  border:1px solid rgba(217,164,65,.28);
-  border-radius:24px;
-  background:linear-gradient(125deg,#08101f,#14233f);
-  color:#fff;
-  box-shadow:0 16px 38px rgba(8,16,31,.12);
+/* Parcours partenaire simplifié : formulaire existant, informations facultatives repliées. */
+#partnerApplicationForm.partnerFormSimple>.partnerExtras{
+  grid-column:1/-1!important;
+  margin:2px 0 0!important;
+  border:1px solid var(--bsa-pro-line)!important;
+  background:#f8fafc!important;
 }
-.partnerJoinContent{flex:1 1 630px;min-width:0}
-.partnerJoinLabel{
-  display:inline-flex;
-  margin-bottom:12px;
-  color:#f0cf7e;
-  font-size:11px;
-  font-weight:800;
-  letter-spacing:.11em;
-  text-transform:uppercase;
+#partnerApplicationForm.partnerFormSimple>.partnerExtras>summary{
+  min-height:54px!important;
+  padding:17px 19px!important;
+  font-size:14px!important;
+  font-weight:850!important;
 }
-.partnerJoin h2{
-  max-width:660px;
-  margin:0 0 12px;
-  color:#fff!important;
-  font:800 clamp(24px,3vw,34px)/1.2 Manrope,sans-serif;
-  letter-spacing:-.03em;
-}
-.partnerJoinContent>p{
+#partnerApplicationForm.partnerFormSimple .partnerExtrasIntro{
+  margin:15px 20px 2px!important;
   max-width:680px;
-  margin:0;
-  color:#dce5f3!important;
-  font-size:14px;
-  line-height:1.75;
+  color:var(--bsa-pro-muted)!important;
+  font-size:13px;
+  line-height:1.65;
 }
-.partnerJoinSteps{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px 20px;
-  margin:20px 0 0;
-  padding:0;
-  list-style:none;
+#partnerApplicationForm.partnerFormSimple .partnerExtrasGroup{
+  grid-column:1/-1!important;
+  width:100%;
+  margin:9px 0 0;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--bsa-pro-line);
+  color:var(--bsa-pro-navy)!important;
+  font:800 14px/1.5 Manrope,sans-serif;
 }
-.partnerJoinSteps li{
-  display:flex;
-  align-items:flex-start;
-  gap:8px;
-  max-width:275px;
-  color:#f2f5fa;
-  font-size:12px;
-  font-weight:700;
-  line-height:1.5;
+#partnerApplicationForm.partnerFormSimple>.partnerField,
+#partnerApplicationForm.partnerFormSimple>.partnerExtras{min-width:0!important}
+#partnerApplicationForm.partnerFormSimple>.partnerField:has(#partnerMessage){grid-column:1/-1!important}
+#partnerApplicationForm.partnerFormSimple>.partnerField:has(#partnerMessage) textarea{min-height:118px!important}
+#partnerApplicationForm.partnerFormSimple>.partnerConsentField{margin-top:3px}
+#partnerApplicationForm.partnerFormSimple .partnerExtras .partnerOptionalGrid{
+  align-items:start;
+  padding-top:16px!important;
 }
-.partnerJoinSteps li::before{
-  content:"✓";
-  display:inline-grid;
-  place-items:center;
-  flex:0 0 20px;
-  height:20px;
-  border-radius:50%;
-  background:rgba(217,164,65,.18);
-  color:#f0cf7e;
-  font-weight:900;
-}
-.partnerJoinActions{
-  flex:0 0 min(100%,245px);
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-  align-items:stretch;
-}
-.partnerJoinActions .btn{
-  display:flex;
-  justify-content:center;
-  gap:7px;
-  min-height:52px;
-  padding:12px 17px;
-  border-radius:12px;
-  background:#d9a441!important;
-  color:#08101f!important;
-  text-align:center;
-  line-height:1.4;
-  white-space:normal;
-}
-.partnerJoinActions .btn:hover{background:#e7bb68!important}
-.partnerJoinActions .btn:focus-visible{
-  outline:3px solid #fff!important;
-  outline-offset:3px!important;
-}
-.partnerJoinActions p{
-  margin:0;
-  color:#dce5f3!important;
-  font-size:11px;
-  line-height:1.6;
-  text-align:center;
-}
-@media(max-width:920px){
-  .partnerJoin{flex-direction:column;align-items:stretch;gap:24px}
-  .partnerJoinContent{flex:0 1 auto}
-  .partnerJoinActions{flex:0 1 auto;max-width:none}
-}
-@media(max-width:620px){
-  .partnerJoin{margin-top:30px;padding:26px 19px;border-radius:19px}
-  .partnerJoinSteps{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
-  .partnerJoinSteps li{max-width:none}
-  .partnerJoinActions .btn{width:100%}
+#partnerApplicationForm.partnerFormSimple .partnerExtras .partnerOptionalGrid>.partnerField.full{grid-column:1/-1!important}
+@media(max-width:680px){
+  #partnerApplicationForm.partnerFormSimple>.partnerExtras{grid-column:1/-1!important}
+  #partnerApplicationForm.partnerFormSimple .partnerExtrasIntro{margin:12px 15px 0!important}
+  #partnerApplicationForm.partnerFormSimple .partnerExtras .partnerOptionalGrid{padding:14px!important}
+  #partnerApplicationForm.partnerFormSimple .partnerExtrasGroup{font-size:13px}
 }
