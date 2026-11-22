@@ -1003,7 +1003,7 @@ export default {async fetch(request,env,ctx){
   const publicPartnerOrigin='https://bickriservice-agency.org';
   const partnerShareMatch=url.pathname.match(/^\/partenaires\/partage\/([a-z0-9][a-z0-9-]{0,89})\/?$/);
   const isPartnerProfile=url.pathname==='/partenaires/profil/';
-  const isSocialBot=/(WhatsApp|facebookexternalhit|Facebot|Twitterbot|LinkedInBot|TelegramBot|Slackbot|Discordbot|SkypeUriPreview|Pinterestbot|Snapchat|TikTok|redditbot|Mastodon|Embedly|Iframely)/i.test(request.headers.get('User-Agent')||'');
+  const isSocialBot=/(WhatsApp|facebookexternalhit|Facebot|Twitterbot|LinkedInBot|TelegramBot|Slackbot|Discordbot|SkypeUriPreview|Pinterestbot|Snapchat|TikTok|redditbot|Mastodon|Embedly|Iframely|Googlebot|bingbot)/i.test(request.headers.get('User-Agent')||'');
   if(request.method==='GET' && (partnerShareMatch || (isPartnerProfile && isSocialBot))){
     const slug=partnerShareMatch?.[1]||(url.searchParams.get('slug')||'').trim();
     const previewHeaders={...SECURITY_HEADERS,'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Vary':'User-Agent'};

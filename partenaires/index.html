@@ -770,7 +770,9 @@ body{background:#f5f7fb!important;color:var(--directory-ink)!important}
   </div>
 </div>
 <div id="partnerDirectoryMessage" class="muted" role="status" aria-live="polite"></div>
+<button id="partnerDirectoryRetry" type="button" class="partnerResetFilters" hidden>Réessayer le chargement des partenaires</button>
 <div class="partnerGrid" id="partners"></div>
+<noscript><div class="empty" role="status"><strong>Activer JavaScript pour voir tout l’annuaire.</strong><p>Vous pouvez également consulter les fiches publiques existantes : <a href="/partenaires/impact-afriq/">Impact Afriq</a>, <a href="/partenaires/egan-btp/">EGAN BTP</a> et <a href="/partenaires/tourisme-au-niger/">Tourisme au Niger</a>.</p></div></noscript>
 <div class="partnerShare"><h3>Lien prêt à copier — Partenaires</h3><p>Partagez la page officielle de nos partenaires avec un lien propre.</p><div class="partnerShareRow"><input id="partnersShareLink" value="https://bickriservice-agency.org/partenaires/" readonly aria-label="Lien de la page partenaires"><button id="copyPartnersLink" type="button">Copier le lien</button></div></div>
 </div>
 </section>
@@ -823,8 +825,7 @@ body{background:#f5f7fb!important;color:var(--directory-ink)!important}
 </div>
 <div class="cta"><div><h2>Rejoindre Bickri Service Agency</h2><p>Présentez votre entreprise en quelques lignes et transmettez votre demande directement sur WhatsApp à notre équipe.</p></div><a class="btn btnGold" href="#devenir-partenaire">Rejoindre le partenariat →</a></div>
 <div class="partnerApply" id="devenir-partenaire">
-  <div class="partnerApplyHead"><span class="eyebrow">Candidature simplifiée</span><h2>Rejoindre notre réseau de partenaires</h2><p>Indiquez vos coordonnées et présentez votre projet. Le bouton ouvrira WhatsApp avec votre message déjà rempli pour notre équipe à notre équipe.</p><p class="partnerRequiredHint">Les champs marqués d’un <strong>*</strong> sont obligatoires. Vous confirmerez l’envoi dans WhatsApp.</p></div>
-  <div id="partnerFormSuccess" class="partnerFormStatus success" role="status" aria-live="polite" hidden>Votre candidature a été enregistrée.</div><div id="partnerApplicationCodePanel" class="partnerApplicationCode" hidden><span>Votre code de dossier :</span><code id="partnerApplicationCode"></code><button id="copyPartnerApplicationCode" type="button">Copier le code</button></div>
+  <div class="partnerApplyHead"><span class="eyebrow">Candidature simplifiée</span><h2>Rejoindre notre réseau de partenaires</h2><p>Indiquez vos coordonnées et présentez votre projet. Le bouton prépare votre message pour notre équipe dans WhatsApp. Vérifiez-le puis appuyez sur « Envoyer » dans WhatsApp : la demande n'est pas enregistrée automatiquement sur ce site.</p><p class="partnerRequiredHint">Les champs marqués d’un <strong>*</strong> sont obligatoires. Vous confirmerez l’envoi dans WhatsApp.</p></div>
   <div id="partnerFormError" class="partnerFormStatus error" role="alert" aria-live="assertive" hidden></div>
   <form id="partnerApplicationForm" class="partnerForm partnerFormSimple">
   <div class="partnerField"><label for="partnerFullName">Nom complet <span>*</span></label><input id="partnerFullName" name="fullName" type="text" autocomplete="name" placeholder="Votre nom complet" maxlength="120" required></div>
@@ -864,7 +865,7 @@ body{background:#f5f7fb!important;color:var(--directory-ink)!important}
       <span id="partnerWhatsAppStatus" class="partnerFormStatus" role="status" aria-live="polite" hidden></span>
       <span id="partnerFormProgress" class="partnerFormStatus" role="status" aria-live="polite"></span>
     </div>
-</form><details class="applicationTracker" id="partnerTrackerPanel"><summary>Vous avez déjà un code de dossier ? Suivre ma demande</summary><p>Le suivi concerne les anciennes demandes enregistrées sur le site. Les messages WhatsApp ne reçoivent pas de code automatique.</p><form id="partnerStatusForm" class="trackerForm"><input name="code" id="partnerStatusCode" placeholder="Ex. BPA-12AB34CD56" maxlength="14" required aria-label="Code de dossier"><input name="email" type="email" placeholder="Votre adresse e-mail" required aria-label="Adresse e-mail de candidature"><button class="btn btnGold" type="submit">Vérifier le statut</button></form><div id="partnerStatusResult" class="partnerTrackerResult" role="status" aria-live="polite" hidden></div></details>
+</form><details class="applicationTracker" id="partnerTrackerPanel"><summary>Suivre une ancienne candidature enregistrée</summary><p>Ce suivi concerne uniquement les dossiers créés sur le site avant le passage à WhatsApp. Les nouvelles demandes envoyées par WhatsApp ne reçoivent pas de code automatique : pour obtenir des nouvelles, reprenez votre conversation avec notre équipe sur WhatsApp.</p><form id="partnerStatusForm" class="trackerForm"><input name="code" id="partnerStatusCode" placeholder="Ex. BPA-12AB34CD56" maxlength="14" required aria-label="Code de dossier"><input name="email" type="email" placeholder="Votre adresse e-mail" required aria-label="Adresse e-mail de candidature"><button class="btn btnGold" type="submit">Vérifier le statut</button></form><div id="partnerStatusResult" class="partnerTrackerResult" role="status" aria-live="polite" hidden></div></details>
 </div>
 </div>
 </section>

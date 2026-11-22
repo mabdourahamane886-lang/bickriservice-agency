@@ -221,7 +221,7 @@ body{background:#f4f7fb;color:var(--profile-ink);overflow-wrap:anywhere}
 <div><dt>Domaine</dt><dd id="profileType"></dd></div><div><dt>Identifiant partenaire</dt><dd id="profileId"></dd></div><div><dt>Badge vérifié le</dt><dd id="profileVerifiedAt"></dd></div></dl></aside>
 <article class="pm-card pm-span-2"><span class="pm-kicker-dark">Activités</span><h2>Mission et activités</h2><p id="profileMission"></p></article>
 <aside class="pm-card"><span class="pm-kicker-dark">Liens</span><h2>Suivre le partenaire</h2><div id="profileSocials" class="pm-links"></div></aside>
-</div><div id="profileNotFound" class="pm-wrap pm-card pm-notfound"><h1>Profil introuvable</h1><p>Ce profil n’est pas disponible ou a été désactivé.</p><a class="pm-btn pm-btn-primary" href="/partenaires/">Retour à l’annuaire</a></div></section>
+</div><div id="profileNotFound" class="pm-wrap pm-card pm-notfound" role="status"><h1>Profil indisponible</h1><p>Ce profil peut être introuvable, désactivé ou temporairement inaccessible. Vous pouvez réessayer ou consulter l’annuaire.</p><button id="profileRetry" type="button" class="pm-btn pm-btn-primary">Réessayer</button> <a class="pm-btn pm-btn-ghost" href="/partenaires/">Retour à l’annuaire</a></div></section>
 </main>
 <footer class="pm-footer"><div class="pm-wrap">Bickri Service Agency — Niamey, Niger · <a href="/partenaires/">Annuaire des partenaires</a> · <a href="/partenaires/espace/">Espace partenaire</a></div></footer>
 <script src="/assets/partners/profile-cover.js" defer></script>
@@ -229,6 +229,12 @@ body{background:#f4f7fb;color:var(--profile-ink);overflow-wrap:anywhere}
 (() => {
 'use strict';
 const $=id=>document.getElementById(id);
+$('profileRetry')?.addEventListener('click',()=>location.reload());
+$('profileLogo')?.addEventListener('error',event=>{
+ const img=event.currentTarget;
+ if(img.dataset.fallbackUsed==='1')return;
+ img.dataset.fallbackUsed='1';img.src='/assets/bickri-b-logo.svg';img.alt='Logo du partenaire indisponible';
+});
 const API_BASE=location.hostname.endsWith('.vercel.app')?'https://bickriservice-agency.org':'';const apiUrl=path=>API_BASE+path;
 const SUPABASE_URL='https://okdohokhlkxrmxpevees.supabase.co';
 const SUPABASE_PUBLIC_KEY='sb_publishable_EiTruyR5fwwHpS_PzO5_iA_d1i4iMCP';
