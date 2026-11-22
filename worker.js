@@ -1022,7 +1022,9 @@ export default {async fetch(request,env,ctx){
       const tags=String(html||'').match(/<meta\b[^>]*>/gi)||[];
       const tag=tags.find(t=>new RegExp('\\b'+kind+'\\s*=\\s*"'+name+'"','i').test(t));
       const value=tag?.match(/\bcontent\s*=\s*["']([^"']*)["']/i)?.[1]||'';
-      return value.replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+      // Décoder les entités reconnues en une seule passe (pas de double déséchappement). 
+      const entities={'&amp;':'&','&quot;':'"','&#39;':"'",'&apos;':"'",'&lt;':'<','&gt;':'>'};
+      return value.replace(/&(?:amp|quot|#39|apos|lt|gt);/g,entity=>entities[entity]||entity);
     };
     let p=null;
     try {
