@@ -597,3 +597,25 @@ body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
   #devenir-partenaire::before{left:16px;right:16px}
   #partnerApplicationForm .partnerWhatsAppRetry{align-self:stretch;width:100%}
 }
+
+
+/* Interactions tactiles Partenaires : supprimer le flash bleu natif Android. */
+html,body{ -webkit-tap-highlight-color:transparent; }
+:where(a,button,summary,input,select,textarea,[role="button"],[tabindex]){
+  -webkit-tap-highlight-color:transparent!important;
+}
+:where(a,button,summary,[role="button"]){
+  touch-action:manipulation;
+  transition:background-color .18s ease,border-color .18s ease,opacity .18s ease,box-shadow .18s ease;
+}
+:where(a,button,summary,[role="button"]):active{opacity:.95}
+:where(a,button,summary,input,select,textarea,[role="button"],[tabindex]):focus-visible{
+  outline:3px solid #d9a441!important;
+  outline-offset:3px!important;
+}
+@media(prefers-reduced-motion:reduce){
+  :where(a,button,summary,[role="button"]){transition:none!important;animation:none!important}
+}
+/* Le contact est assuré par le bouton WhatsApp ; numéro non visible. */
+#devenir-partenaire .partnerWhatsAppHelp,
+#devenir-partenaire .partnerWhatsAppHint{display:none!important}
