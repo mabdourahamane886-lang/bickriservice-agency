@@ -758,3 +758,84 @@ html,body{ -webkit-tap-highlight-color:transparent; }
   #partenaires .partnerGrid>.partner.partnerCardV3,
   #partenaires .partnerCardV3 .partnerCardLogoLink{transition:none!important}
 }
+
+
+/* Profil partenaire V3 — identité professionnelle claire, mobile et accessible. */
+body:has(.pm-hero) .pm-cover{
+  min-height:520px!important;
+  background:radial-gradient(ellipse at 87% 4%,rgba(217,164,65,.27),transparent 33%),
+             radial-gradient(ellipse at 3% 95%,rgba(39,94,157,.32),transparent 40%),
+             linear-gradient(120deg,#071325 0%,#102b4c 57%,#214c79 100%)!important;
+}
+body:has(.pm-hero) .pm-cover:after{
+  content:"";position:absolute;right:-100px;top:-220px;width:520px;height:520px;
+  border:1px solid rgba(246,216,153,.14);border-radius:50%;pointer-events:none
+}
+body:has(.pm-hero) .pm-cover-inner{padding:145px 0 66px!important}
+body:has(.pm-hero) .pm-hero{
+  display:grid!important;grid-template-columns:176px minmax(0,1fr)!important;
+  gap:32px!important;align-items:center!important;
+}
+body:has(.pm-hero) .pm-logo{
+  width:176px!important;height:176px!important;padding:18px!important;border-radius:26px!important;
+  background:#fff!important;border:5px solid rgba(255,255,255,.94)!important;
+  box-shadow:0 20px 54px rgba(0,0,0,.27)!important;
+}
+body:has(.pm-hero) .pm-logo img{width:100%;height:100%;object-fit:contain}
+body:has(.pm-hero) .pm-hero h1{
+  max-width:800px;line-height:1.1!important;margin:12px 0 13px!important;
+  font-size:clamp(31px,5vw,54px)!important;letter-spacing:-.05em!important
+}
+body:has(.pm-hero) .pm-lead{max-width:710px;font-size:16px!important;line-height:1.75!important}
+body:has(.pm-hero) .pm-facts{
+  display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 22px;
+}
+body:has(.pm-hero) .pm-facts>div{
+  display:flex;flex-direction:column;gap:3px;min-width:135px;max-width:100%;
+  padding:11px 15px;border:1px solid rgba(255,255,255,.19);
+  border-radius:13px;background:rgba(255,255,255,.065);
+}
+body:has(.pm-hero) .pm-facts span{
+  color:#bbccdd;font-size:10px;font-weight:750;letter-spacing:.07em;text-transform:uppercase
+}
+body:has(.pm-hero) .pm-facts strong{
+  color:#fff;font-size:13px;line-height:1.45;font-weight:850;overflow-wrap:anywhere
+}
+body:has(.pm-hero) .pm-actions{gap:10px;margin-top:12px}
+body:has(.pm-hero) .pm-actions .pm-btn{
+  min-height:48px!important;padding:10px 16px!important;border-radius:12px!important;
+  font-size:13px!important;font-weight:850!important;line-height:1.4!important
+}
+body:has(.pm-hero) .pm-main{
+  padding:36px 0 78px!important;
+  background:linear-gradient(180deg,#f4f7fb 0%,#edf2f8 100%)!important
+}
+body:has(.pm-hero) .pm-grid{gap:19px!important;align-items:stretch}
+body:has(.pm-hero) .pm-grid>.pm-card{
+  border:1px solid #e0e7ef!important;border-radius:20px!important;
+  padding:clamp(22px,2.6vw,32px)!important;background:#fff!important;
+  box-shadow:0 12px 32px rgba(11,30,54,.055)!important
+}
+body:has(.pm-hero) .pm-grid>.pm-card h2{
+  margin-bottom:14px!important;color:#112b4b!important;font-size:clamp(19px,2vw,23px)!important;
+}
+body:has(.pm-hero) .pm-grid>.pm-card p{line-height:1.85!important;color:#52647b!important}
+body:has(.pm-hero) .pm-info-list dd{color:#1a3658!important}
+body:has(.pm-hero) .pm-links a{
+  gap:12px;background:#f7f9fc!important;color:#153d68!important;
+  border:1px solid #e1e8f1!important;border-radius:12px!important
+}
+body:has(.pm-hero) .pm-links a:hover{background:#fff8ea!important;border-color:#d9bb78!important}
+@media(max-width:760px){
+  body:has(.pm-hero) .pm-cover{min-height:0!important}
+  body:has(.pm-hero) .pm-cover-inner{padding:112px 0 36px!important}
+  body:has(.pm-hero) .pm-hero{grid-template-columns:minmax(0,1fr)!important;gap:20px!important}
+  body:has(.pm-hero) .pm-logo{width:118px!important;height:118px!important;border-radius:21px!important;padding:13px!important}
+  body:has(.pm-hero) .pm-hero h1{font-size:clamp(28px,8vw,39px)!important}
+  body:has(.pm-hero) .pm-lead{font-size:14px!important}
+  body:has(.pm-hero) .pm-facts{gap:9px}
+  body:has(.pm-hero) .pm-facts>div{flex:1 1 140px;min-width:0}
+  body:has(.pm-hero) .pm-actions .pm-btn{width:100%!important;flex:1 1 100%}
+  body:has(.pm-hero) .pm-main{padding:26px 0 52px!important}
+  body:has(.pm-hero) .pm-grid>.pm-card{border-radius:17px!important;padding:21px!important}
+}
