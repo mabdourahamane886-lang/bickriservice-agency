@@ -91,3 +91,26 @@ test('Un slug inexistant ne doit jamais hériter des balises génériques de l�
     assert.doesNotMatch(html,/<meta property="og:image"/);
   });
 });
+
+
+test('Googlebot et Bingbot reçoivent les métadonnées des profils publiés',async()=>{
+  for(const crawler of ['Googlebot/2.1','bingbot/2.0']){
+    await mockPartnerData([publishedPartner],genericIndex,async env=>{
+      const res=await worker.fetch(new Request(ORIGIN+'/partenaires/profil/?slug=agence-exemple',{headers:{'User-Agent':crawler}}),env,{});
+      assert.equal(res.status,200);
+      const html=await res.text();
+      assert.match(html,/<meta property="og:title" content="Agence Exemple — Bickri Service Agency">/);
+      assert.match(html,/<meta property="og:image" content="https:\/\/cdn\.example\.org\/partenaire-logo\.png">/);
+    });
+  }
+});
+
+test('Un logo externe non HTTPS est rejeté pour les aperçus sociaux',async()=>{
+  await mockPartnerData([{...publishedPartner,logo_url:'http://insecure.example.org/logo.png'}],genericIndex,async env=>{
+    const res=await worker.fetch(new Request(ORIGIN+'/partenaires/partage/agence-exemple/',{headers:{'User-Agent':'WhatsApp'}}),env,{});
+    assert.equal(res.status,200);
+    const html=await res.text();
+    assert.match(html,/<meta property="og:image" content="https:\/\/bickriservice-agency\.org\/assets\/bickri-logo-final\.jpg">/);
+    assert.doesNotMatch(html,/insecure\.example\.org/);
+  });
+});
