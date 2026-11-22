@@ -19,7 +19,12 @@
   async function auth(path,data){
     const res=await fetch(BASE+'/auth/v1/'+path,{method:'POST',headers:{apikey:PUBLIC_KEY,'Content-Type':'application/json'},body:JSON.stringify(data)});
     const out=await res.json().catch(()=>({}));
-    if(!res.ok)throw Error(out.msg||out.message||out.error_description||'Authentification impossible.');
+    if(!res.ok){
+      const msg=out.msg||out.message||out.error_description||out.error||'Authentification impossible.';
+      if(res.status===429)throw Error('Trop de tentatives. Réessayez plus tard.');
+      if(res.status>=500)throw Error('Le service de création de compte est momentanément indisponible. Réessayez plus tard.');
+      throw Error(msg);
+    }
     return out;
   }
   async function refresh(){
@@ -53,21 +58,33 @@
     $('authDesc').textContent=next==='signup'?'Créez votre compte avec votre e-mail et un mot de passe de 8 caractères minimum.':'Connectez-vous avec votre compte Bickri pour suivre vos dossiers.';
     $('authPassword').autocomplete=next==='signup'?'new-password':'current-password';
   }
-  $('authToggle').addEventListener('click',()=>setAuthMode(authMode==='login'?'signup':'login'));
+  $('authToggle').addEventListener('click',()=>{
+    setAuthMode(authMode==='login'?'signup':'login');
+    notice('');
+    $('authPassword').value='';
+    $('authEmail').focus();
+  });
   $('authForm').addEventListener('submit',async e=>{
     e.preventDefault();const b=$('authSubmit'),d=Object.fromEntries(new FormData(e.currentTarget).entries());
-    b.disabled=true;notice('Connexion au compte…');
+    b.disabled=true;notice(authMode==='signup'?'Création de votre compte…':'Connexion à votre compte…');
     try{
       if(authMode==='signup'){
         const r=await auth('signup',{email:String(d.email).trim(),password:String(d.password),data:{full_name:String(d.fullName||'').trim()}});
-        if(r.access_token){saveAuth(r);await openDashboard();}
-        else{setAuthMode('login');notice('Compte créé. Confirmez votre e-mail depuis le message reçu, puis connectez-vous.','success');}
+        if(r.access_token){
+          saveAuth(r);
+          await openDashboard();
+        }else if(r.user?.id){
+          setAuthMode('login');
+          notice('Demande de création de compte reçue. Si un e-mail de confirmation est requis, ouvrez-le puis connectez-vous. Vérifiez également les courriers indésirables.','success');
+        }else{
+          throw Error('La création du compte n’a pas pu être confirmée. Réessayez.');
+        }
       }else{
         const r=await auth('token?grant_type=password',{email:String(d.email).trim(),password:String(d.password)});
         if(!r.access_token)throw Error('Connexion impossible.');
         saveAuth(r);await openDashboard();
       }
-    }catch(err){notice(err.message,'error');}finally{b.disabled=false;}
+    }catch(err){notice(err?.message||'Impossible de finaliser la demande. Vérifiez votre connexion.','error');}finally{b.disabled=false;}
   });
   document.querySelectorAll('[data-logout]').forEach(button=>button.addEventListener('click',()=>{
     const access=token();clearAuth();if(access)fetch(BASE+'/auth/v1/logout',{method:'POST',headers:{apikey:PUBLIC_KEY,Authorization:'Bearer '+access}}).catch(()=>{});
@@ -180,7 +197,12 @@
       if(adminMode){$('adminDashboard').hidden=false;await loadAdmin();}
       else{$('portalDashboard').hidden=false;await loadClient();await setupCaptcha();}
       notice('');
-    }catch(err){showAuth(err.message);}
+    }catch(err){
+      const message=err?.status===503
+        ? 'Votre compte est connecté, mais l’espace de suivi des devis est temporairement indisponible : la configuration serveur doit être finalisée.'
+        : err?.message||'Impossible de charger votre espace client.';
+      showAuth(message);
+    }
   }
   loadServices();
   // Turnstile se charge uniquement lorsque le formulaire devient visible.
