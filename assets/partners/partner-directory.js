@@ -89,8 +89,10 @@
     if(values.includes(current)) select.value=current;
   }
   function rebuildFilters() {
-    // Afficher uniquement les pays réellement présents dans le répertoire.
-    const countries = [...new Set(partners.map(p => p.country).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'fr'));
+    // Keep all available countries and territories selectable, including those without published partners.
+    // Preserve legacy country labels from existing profiles when their spelling differs from Intl.DisplayNames.
+    const countries = [...new Set([...ALL_COUNTRIES.map(c => c.name), ...partners.map(p => p.country).filter(Boolean)])]
+      .sort((a,b) => a.localeCompare(b, 'fr'));
     fillFilter(countryFilter, countries, '🌍 Tous les pays', true);
     fillFilter(categoryFilter, [...new Set(partners.map(p => p.category || p.partnerType).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'fr')), 'Tous les domaines');
   }
