@@ -187,23 +187,91 @@
     const appointment=$('kind').value==='rendezvous';
     $('dateField').hidden=!appointment;$('preferredAt').required=appointment;
   });
+  // Widget Turnstile actif sur le domaine officiel : rendu explicite, état réinitialisable.
+  // Aucun formulaire ne peut être envoyé tant que le serveur anti-robot n'a pas délivré de jeton.
+  let captchaLoading=null;
+  function captchaFeedback(message,failed=false){
+    const msg=$('captchaMessage');
+    if(msg)msg.textContent=message;
+    const retry=$('captchaRetry');
+    if(retry)retry.hidden=!failed;
+    if(failed){captchatoken='';if($('requestSubmit'))$('requestSubmit').disabled=true;}
+  }
   async function setupCaptcha(){
     if(captchaId!==null)return;
-    const msg=$('captchaMessage');if(!msg)return;
-    try{
-      const response=await fetch(API_BASE+'/api/turnstile-sitekey',{cache:'no-store'});
-      const data=await response.json();
-      if(!response.ok||!data.siteKey)throw Error('Vérification indisponible.');
-      const render=()=>{
-        if(!window.turnstile)return;
-        captchaId=window.turnstile.render('#clientTurnstile',{sitekey:data.siteKey,callback:v=>{captchatoken=v;$('requestSubmit').disabled=false;msg.textContent='Vérification réussie.';},'expired-callback':()=>{captchatoken='';$('requestSubmit').disabled=true;msg.textContent='Vérification expirée.';},'error-callback':()=>{captchatoken='';$('requestSubmit').disabled=true;msg.textContent='Vérification impossible.';}});
-        msg.textContent='Terminez la vérification anti-robot.';
-      };
-      if(window.turnstile){render();return;}
-      window.bsaClientCaptchaReady=render;
-      const script=document.createElement('script');script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?onload=bsaClientCaptchaReady&render=explicit';script.async=true;script.defer=true;script.onerror=()=>{msg.textContent='Impossible de charger la vérification.';};document.head.appendChild(script);
-    }catch(err){msg.textContent=err.message;}
+    if(captchaLoading)return captchaLoading;
+    const wrapper=$('clientTurnstile');
+    if(!wrapper)return;
+    const render=async()=>{
+      let siteKey='';
+      try{
+        const response=await fetch(API_BASE+'/api/turnstile-sitekey',{cache:'no-store'});
+        const data=await response.json().catch(()=>({}));
+        if(!response.ok||typeof data.siteKey!=='string'||!/^0x[A-Za-z0-9_-]+$/.test(data.siteKey)){
+          throw Error('Configuration Turnstile indisponible.');
+        }
+        siteKey=data.siteKey;
+        if(!window.turnstile){
+          await new Promise((resolve,reject)=>{
+            const existing=document.querySelector('script[data-bsa-turnstile]');
+            if(existing){existing.remove();}
+            const script=document.createElement('script');
+            script.dataset.bsaTurnstile='true';
+            script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+            script.async=true;
+            script.onload=resolve;
+            script.onerror=()=>reject(Error('Le service Turnstile ne peut pas être chargé. Vérifiez votre connexion.'));
+            document.head.appendChild(script);
+          });
+        }
+        if(!window.turnstile?.render)throw Error('Impossible d’initialiser le contrôle anti-robot.');
+        if(captchaId!==null)return;
+        captchaId=window.turnstile.render(wrapper,{
+          sitekey:siteKey,
+          theme:'auto',
+          appearance:'always',
+          callback:value=>{
+            captchatoken=value||'';
+            if($('requestSubmit'))$('requestSubmit').disabled=!captchatoken;
+            captchaFeedback(captchatoken?'Vérification réussie.':'Vérification incomplète.');
+          },
+          'expired-callback':()=>{
+            captchatoken='';
+            if($('requestSubmit'))$('requestSubmit').disabled=true;
+            captchaFeedback('La vérification a expiré. Réessayez.',true);
+          },
+          'error-callback':()=>{
+            captchatoken='';
+            captchaId=null;
+            wrapper.replaceChildren();
+            captchaFeedback('Le contrôle anti-robot a rencontré une erreur. Appuyez sur Réessayer.',true);
+          },
+          'timeout-callback':()=>{
+            captchatoken='';
+            if($('requestSubmit'))$('requestSubmit').disabled=true;
+            captchaFeedback('La vérification a pris trop de temps. Réessayez.',true);
+          }
+        });
+        captchaFeedback('Terminez la vérification anti-robot.');
+      }catch(error){
+        captchaId=null;
+        captchaFeedback(error?.message||'Vérification indisponible. Réessayez.',true);
+      }
+    };
+    captchaFeedback('Chargement de la vérification…');
+    captchaLoading=render().finally(()=>{captchaLoading=null;});
+    return captchaLoading;
   }
+  $('captchaRetry')?.addEventListener('click',()=>{
+    captchatoken='';
+    if($('requestSubmit'))$('requestSubmit').disabled=true;
+    if(captchaId!==null&&window.turnstile){
+      try{window.turnstile.reset(captchaId);captchaFeedback('Reprenez la vérification.');return;}catch{}
+      try{window.turnstile.remove(captchaId);}catch{}
+      captchaId=null;
+    }
+    setupCaptcha();
+  });
   $('requestForm')?.addEventListener('submit',async e=>{
     e.preventDefault();
     if(!captchatoken)return notice('Validez la vérification anti-robot.','error');
