@@ -2,7 +2,8 @@
   'use strict';
   const BASE='https://okdohokhlkxrmxpevees.supabase.co';
   const PUBLIC_KEY='sb_publishable_EiTruyR5fwwHpS_PzO5_iA_d1i4iMCP';
-  const API_BASE=location.hostname.endsWith('.vercel.app')?'https://bickriservice-agency.org':'';
+  // API sur le même hébergeur : Vercel et Cloudflare exposent les mêmes routes.
+  const API_BASE='';
   const prefix='bsa_client_';
   const $=id=>document.getElementById(id);
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

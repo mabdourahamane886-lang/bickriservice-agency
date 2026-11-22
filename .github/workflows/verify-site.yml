@@ -58,6 +58,12 @@ jobs:
           set -euo pipefail
           node --check worker.js
           node --check lib/agency-client.js
+          node --check lib/vercel-client-adapter.js
+          node --check api/client/me.js
+          node --check api/client/requests.js
+          node --check api/client/notifications.js
+          node --check api/client/admin/requests.js
+          node scripts/verify-vercel-client.mjs
           node --check client-portal.js
           node scripts/verify-client-portal.mjs
           node --check api/bickri-ai.js
