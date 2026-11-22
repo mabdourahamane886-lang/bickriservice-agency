@@ -87,3 +87,191 @@
  .clientProfileActions>button{width:100%}
 }
 @media(prefers-reduced-motion:reduce){.clientUploadLabel{transition:none!important}}
+
+/* V2 — Profil professionnel en deux étapes : édition puis carte récapitulative. */
+#clientProfileSummary[hidden],#clientProfileEditor[hidden]{display:none!important}
+#clientProfileSection{scroll-margin-top:95px}
+.clientProfileCard{
+  max-width:1060px;margin:0 auto;
+  padding:clamp(24px,4vw,46px)!important;
+  border:1px solid #e2e9f1!important;
+  border-radius:24px!important;
+  box-shadow:0 16px 45px rgba(12,28,53,.06);
+}
+.clientProfileTop{margin-bottom:28px!important}
+.clientProfileTop h2{font-weight:900!important;letter-spacing:-.025em!important}
+.clientProfileLayout{gap:clamp(25px,5vw,56px)}
+.clientAvatarColumn{
+  padding:24px 15px 20px;
+  border:1px solid #e7ebf1;
+  border-radius:18px;
+  background:linear-gradient(155deg,#f8fafc,#fff);
+}
+.clientAvatarFrame{
+  width:148px!important;height:148px!important;
+  border:4px solid #dfbd6a!important;
+  background:linear-gradient(145deg,#152c52,#07172f)!important;
+}
+.clientAvatarFrame span{
+  display:grid;place-items:center;width:100%;height:100%;
+  color:#f8e4ae!important;font-size:48px!important;
+  font-weight:900;letter-spacing:.025em
+}
+.clientUploadLabel{width:100%;max-width:205px}
+.clientAvatarFileInput{
+  position:absolute!important;
+  width:1px!important;height:1px!important;
+  overflow:hidden!important;
+  clip-path:inset(50%)!important;
+  white-space:nowrap!important;
+  border:0!important;padding:0!important;margin:0!important;
+}
+.clientUploadLabel:has(+ .clientAvatarFileInput:focus-visible){
+  outline:3px solid #d9a441;outline-offset:3px;
+}
+.clientAvatarSelection{
+  margin:0;
+  max-width:210px;
+  color:#51647b;
+  font-size:12px;
+  line-height:1.55;
+  text-align:center;
+  overflow-wrap:anywhere;
+}
+.clientProfileForm .fields{gap:20px!important}
+.clientProfileForm .field label{font-weight:800;color:#19314e}
+.clientProfileForm .field input,.clientProfileForm .field textarea{
+  min-height:53px;
+  padding:13px 15px;
+  border:1px solid #dce4ed;
+  border-radius:12px;
+  background:#fff;
+  color:#11263e;
+  font-size:15px;
+  line-height:1.5;
+  transition:border-color .2s ease,box-shadow .2s ease;
+}
+.clientProfileForm .field textarea{min-height:130px}
+.clientProfileForm .field :is(input,textarea):focus{
+  outline:none;
+  border-color:#c49c3d;
+  box-shadow:0 0 0 3px rgba(212,168,64,.14)
+}
+.clientProfileActions{margin-top:25px}
+.clientProfileActions .cta{min-height:52px;border-radius:12px;padding:12px 22px}
+.clientProfileSummary{
+  border:1px solid #e4e9f1;
+  border-radius:20px;
+  padding:clamp(22px,4vw,38px);
+  background:linear-gradient(155deg,#fff,#f9fbfd);
+}
+.clientProfileSummaryHeader{display:flex;align-items:center;gap:22px;padding-bottom:24px;border-bottom:1px solid #e3e8ee}
+.clientSummaryAvatar{
+  flex:0 0 112px;width:112px;height:112px;
+  display:grid;place-items:center;
+  border:4px solid #e3c47b;border-radius:50%;
+  background:linear-gradient(145deg,#132d53,#08172e);
+  box-shadow:0 10px 22px rgba(8,16,31,.12);
+  overflow:hidden
+}
+.clientSummaryAvatar img{display:block;width:100%;height:100%;object-fit:cover}
+.clientSummaryAvatar img[hidden],.clientSummaryAvatar span[hidden]{display:none!important}
+.clientSummaryAvatar span{color:#f9e3aa;font-size:34px;font-weight:900}
+.clientSummaryLabel{display:block;margin-bottom:7px;color:#99732d;font-weight:900;letter-spacing:.095em;text-transform:uppercase;font-size:10px}
+.clientProfileSummaryHeader h3{margin:0 0 7px;font-size:clamp(23px,3vw,30px);line-height:1.25;color:#0c203d;overflow-wrap:anywhere}
+.clientProfileSummaryHeader p{margin:3px 0;color:#52637b;line-height:1.55;font-size:14px}
+#clientSummaryJob{color:#1d375b!important;font-weight:800}
+.clientSummaryDetails{display:grid;grid-template-columns:1fr 2fr;gap:22px;margin-top:23px}
+.clientSummaryDetails>div{min-width:0}
+.clientSummaryDetails span{display:block;color:#8793a2;font-weight:800;letter-spacing:.035em;font-size:11px;text-transform:uppercase;margin-bottom:7px}
+.clientSummaryDetails strong,.clientSummaryDetails p{display:block;margin:0;color:#1a2d46;font-size:14px;line-height:1.7;overflow-wrap:anywhere}
+.clientSummaryDetails p{white-space:pre-line}
+.clientSummaryActions{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-top:28px}
+.clientSummaryActions>.cta{min-height:48px;padding:12px 20px}
+.clientSummaryActions>span{display:flex;align-items:center;gap:6px;color:#63738a;font-size:12px}
+.clientProfileSummaryStatus{flex:1 0 100%;color:#276044;font-size:13px;margin:3px 0 0}
+@media(max-width:700px){
+  .clientProfileCard{padding:24px 17px!important;border-radius:19px!important}
+  .clientAvatarColumn{padding:21px 16px;align-items:center;gap:10px}
+  .clientAvatarColumn small{text-align:center}
+  .clientProfileSummaryHeader{align-items:flex-start;gap:16px}
+  .clientSummaryAvatar{flex-basis:84px;width:84px;height:84px}
+  .clientSummaryAvatar span{font-size:27px}
+  .clientSummaryDetails{grid-template-columns:1fr;gap:18px}
+  .clientSummaryActions{flex-direction:column;align-items:stretch}
+  .clientSummaryActions>.cta{width:100%;text-align:center}
+  .clientSummaryActions>span{justify-content:center}
+}
+@media(prefers-reduced-motion:reduce){.clientProfileForm .field input,.clientProfileForm .field textarea{transition:none!important}}
+
+/* Actions du profil : boutons hiérarchisés, accessibles sur téléphone. */
+.clientProfileActions{
+  display:flex!important;
+  align-items:stretch!important;
+  justify-content:flex-start!important;
+  flex-wrap:wrap!important;
+  gap:12px!important;
+  padding:19px 0 0;
+  border-top:1px solid #e8edf4;
+}
+.clientProfilePrimary{
+  display:inline-flex!important;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  min-height:54px!important;
+  padding:13px 23px!important;
+  border:1px solid #bc8b30!important;
+  border-radius:13px!important;
+  background:linear-gradient(135deg,#f0d28a,#d5a13c)!important;
+  box-shadow:0 7px 17px rgba(178,129,40,.14);
+  color:#10233d!important;
+  font-weight:900!important;
+  font-size:14px!important;
+  cursor:pointer;
+  transition:transform .16s ease,box-shadow .16s ease,filter .16s ease;
+}
+.clientProfilePrimary:hover:not(:disabled){box-shadow:0 10px 22px rgba(178,129,40,.2);filter:brightness(1.03)}
+.clientProfilePrimary:active:not(:disabled){transform:scale(.985)}
+.clientProfilePrimary:disabled{opacity:.7;cursor:wait}
+.clientProfilePrimary[aria-busy=true] .clientSaveIcon{
+  display:inline-block;
+  width:16px;height:16px;
+  border:2px solid rgba(16,35,61,.25);
+  border-top-color:#10233d;
+  border-radius:50%;
+  font-size:0;
+  animation:clientProfileSpin .75s linear infinite;
+}
+@keyframes clientProfileSpin{to{transform:rotate(360deg)}}
+.clientProfileCancel,.clientProfileLogout{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:52px;
+  padding:12px 19px;
+  border:1px solid #dce3ec;
+  border-radius:13px;
+  background:#fff;
+  color:#263b58;
+  font:800 14px/1.4 "DM Sans",sans-serif;
+  cursor:pointer;
+  transition:border-color .18s ease,background-color .18s ease;
+}
+.clientProfileCancel:hover,.clientProfileLogout:hover{background:#f5f8fc;border-color:#adbccc}
+.clientProfileCancel[hidden]{display:none!important}
+.clientProfileCancel:disabled{opacity:.55;cursor:wait}
+.clientProfileSaveHint{flex:1 0 100%;margin:3px 0 0;color:#6b788b;font-size:12px;line-height:1.6}
+.clientSummaryActions .clientProfileLogout{min-height:48px}
+.clientProfileCard :where(.clientProfileCancel,.clientProfileLogout,.clientProfilePrimary):focus-visible{
+  outline:3px solid #d9a441!important;outline-offset:3px!important;
+}
+@media(max-width:700px){
+  .clientProfileActions{flex-direction:column!important}
+  .clientProfileActions>*:is(button){width:100%!important;max-width:none!important}
+  .clientSummaryActions .clientProfileLogout{width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+  .clientProfilePrimary,.clientProfileCancel,.clientProfileLogout{transition:none!important}
+  .clientProfilePrimary[aria-busy=true] .clientSaveIcon{animation:none!important}
+}
