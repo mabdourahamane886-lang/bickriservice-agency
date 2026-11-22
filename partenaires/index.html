@@ -909,7 +909,7 @@ menu?.addEventListener('click',e=>{
   menu.setAttribute('aria-expanded',open?'true':'false');
   menu.setAttribute('aria-label',open?'Fermer le menu':'Ouvrir le menu');
 });
-mobile?.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{mobile.classList.remove('open');menu?.setAttribute('aria-expanded','false');menu?.setAttribute('aria-label','Ouvrir le menu')}));
+mobile?.addEventListener('click',event=>{if(!event.target.closest('a'))return;mobile.classList.remove('open');menu?.setAttribute('aria-expanded','false');menu?.setAttribute('aria-label','Ouvrir le menu')});
 document.addEventListener('keydown',event=>{
   if(event.key==='Escape'&&mobile?.classList.contains('open')){
     mobile.classList.remove('open');menu?.setAttribute('aria-expanded','false');menu?.setAttribute('aria-label','Ouvrir le menu');menu?.focus();
