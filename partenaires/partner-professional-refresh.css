@@ -398,3 +398,115 @@ body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 @media(prefers-reduced-motion:reduce){
   #devenir-partenaire{scroll-behavior:auto}
 }
+
+
+/* Invitation simple au partenariat : réutilise le bleu marine, l'or et le blanc BSA. */
+.partnerJoin{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:clamp(20px,4vw,52px);
+  margin:50px 0 0;
+  padding:clamp(28px,4.5vw,46px);
+  border:1px solid rgba(217,164,65,.28);
+  border-radius:24px;
+  background:linear-gradient(125deg,#08101f,#14233f);
+  color:#fff;
+  box-shadow:0 16px 38px rgba(8,16,31,.12);
+}
+.partnerJoinContent{flex:1 1 630px;min-width:0}
+.partnerJoinLabel{
+  display:inline-flex;
+  margin-bottom:12px;
+  color:#f0cf7e;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+}
+.partnerJoin h2{
+  max-width:660px;
+  margin:0 0 12px;
+  color:#fff!important;
+  font:800 clamp(24px,3vw,34px)/1.2 Manrope,sans-serif;
+  letter-spacing:-.03em;
+}
+.partnerJoinContent>p{
+  max-width:680px;
+  margin:0;
+  color:#dce5f3!important;
+  font-size:14px;
+  line-height:1.75;
+}
+.partnerJoinSteps{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px 20px;
+  margin:20px 0 0;
+  padding:0;
+  list-style:none;
+}
+.partnerJoinSteps li{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  max-width:275px;
+  color:#f2f5fa;
+  font-size:12px;
+  font-weight:700;
+  line-height:1.5;
+}
+.partnerJoinSteps li::before{
+  content:"✓";
+  display:inline-grid;
+  place-items:center;
+  flex:0 0 20px;
+  height:20px;
+  border-radius:50%;
+  background:rgba(217,164,65,.18);
+  color:#f0cf7e;
+  font-weight:900;
+}
+.partnerJoinActions{
+  flex:0 0 min(100%,245px);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  align-items:stretch;
+}
+.partnerJoinActions .btn{
+  display:flex;
+  justify-content:center;
+  gap:7px;
+  min-height:52px;
+  padding:12px 17px;
+  border-radius:12px;
+  background:#d9a441!important;
+  color:#08101f!important;
+  text-align:center;
+  line-height:1.4;
+  white-space:normal;
+}
+.partnerJoinActions .btn:hover{background:#e7bb68!important}
+.partnerJoinActions .btn:focus-visible{
+  outline:3px solid #fff!important;
+  outline-offset:3px!important;
+}
+.partnerJoinActions p{
+  margin:0;
+  color:#dce5f3!important;
+  font-size:11px;
+  line-height:1.6;
+  text-align:center;
+}
+@media(max-width:920px){
+  .partnerJoin{flex-direction:column;align-items:stretch;gap:24px}
+  .partnerJoinContent{flex:0 1 auto}
+  .partnerJoinActions{flex:0 1 auto;max-width:none}
+}
+@media(max-width:620px){
+  .partnerJoin{margin-top:30px;padding:26px 19px;border-radius:19px}
+  .partnerJoinSteps{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+  .partnerJoinSteps li{max-width:none}
+  .partnerJoinActions .btn{width:100%}
+}
