@@ -225,7 +225,7 @@
     if(document.getElementById('bickri-back-button'))return;
     // Les fiches de services possèdent déjà un bouton de retour dans la page.
     // Ne pas afficher un second retour flottant qui masque le contenu mobile.
-    if(location.pathname.startsWith('/services/')||location.pathname.startsWith('/partenaires/'))return;
+    if(['/services/','/partenaires/','/espace-client/','/admin-clients/'].some(prefix=>location.pathname.startsWith(prefix)))return;
     const path=location.pathname.replace(/\/+$/,'')||'/';
     if(path==='/'||path==='/index.html')return;
     const btn=document.createElement('button');
