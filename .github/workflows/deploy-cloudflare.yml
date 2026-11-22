@@ -1,9 +1,8 @@
 name: Deploy Bickri Service Agency to Cloudflare
 
+# Cloudflare Workers Builds automatically deploys each push to main.
+# Keep this workflow as a manual fallback once its API token has Workers-edit access.
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 permissions:
