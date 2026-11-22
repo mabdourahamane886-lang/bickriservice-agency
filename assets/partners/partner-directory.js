@@ -159,15 +159,21 @@
       const badge=p.badgeLevel||'green', cfg=configs[badge]||configs.green;
       const logo=p.logoUrl||p.logo_url||('/assets/partners/'+(p.slug==='impact-afriq'?'impact-afriq.svg':p.slug==='egan-btp'?'egan-btp.svg':'badge-verified-green.svg'));
       const href=fullUrl(profilePath(p));
-      return '<article class="partner" data-partner-card="'+escapeHtml(p.slug)+'">'+
-        '<img class="partnerLogo" src="'+escapeHtml(logo)+'" alt="'+escapeHtml(p.name)+'" loading="lazy" data-logo-fallback="/assets/bickri-b-logo.svg">'+
-        '<h2>'+escapeHtml(p.name)+(p.badgeVerified&&!p.hideBadge?'<img class="verifiedBadge" src="/assets/partners/'+cfg.file+'" alt="'+escapeHtml(p.badgeLabel||cfg.label)+'" title="'+escapeHtml(p.badgeLabel||cfg.label)+'">':'')+'</h2>'+
-        (p.hideBadge?'':'<span class="partnerLiveBadge"'+(p.badgeVerified?'':' style="background:#f8fafc;color:#64748b;border-color:#e2e8f0"')+'>'+(p.badgeVerified?'✓ ':'')+escapeHtml(p.badgeVerified?(p.badgeLabel||cfg.label):'Profil actif — non vérifié')+'</span>')+
-        '<p style="margin-top:12px">'+escapeHtml(p.slug==='sahelia-fresh'?'Yaourts et jus naturels · Formations pratiques · Livraison':(p.description||p.mission||'Partenaire de Bickri Service Agency'))+'</p>'+ 
-        (p.founder?'<div class="partnerFounder">Dirigeant : <strong>'+escapeHtml(p.founder)+'</strong></div>':'')+
-        '<div class="partnerMeta"><span class="chip">'+escapeHtml(p.category||p.partnerType||'Collaboration')+'</span><span class="chip">'+escapeHtml([p.city,p.country||'Niger'].filter(Boolean).join(' · '))+'</span></div>'+
-        (p.publicId?'<div class="partnerPublicId">Identifiant de vérification : '+escapeHtml(p.publicId)+'</div>':'')+
-        '<div class="partnerCardActions"><a class="primary" href="'+escapeHtml(href)+'" data-open-partner="'+escapeHtml(p.slug)+'">Voir la page</a><button class="share" type="button" data-share-partner="'+escapeHtml(p.slug)+'">Partager</button><button class="qr" type="button" data-qr-partner="'+escapeHtml(p.slug)+'">QR code</button></div></article>';
+      const label=p.badgeVerified?(p.badgeLabel||cfg.label):'Profil public non vérifié';
+      const description=p.slug==='sahelia-fresh'?'Yaourts et jus naturels · Formations pratiques · Livraison':(p.description||p.mission||'Découvrez ce partenaire de Bickri Service Agency.');
+      const locationLabel=[p.city,p.country||'Niger'].filter(Boolean).join(' · ');
+      return '<article class="partner partnerCardV3" data-partner-card="'+escapeHtml(p.slug)+'">'+
+        '<div class="partnerCardHero"><span class="partnerCardHeroLabel">BICKRI / PARTNER NETWORK</span><span class="partnerCardHeroMark" aria-hidden="true">B</span></div>'+
+        '<div class="partnerCardBody">'+
+        '<a class="partnerCardLogoLink" href="'+escapeHtml(href)+'" data-open-partner="'+escapeHtml(p.slug)+'" aria-label="Voir le profil de '+escapeHtml(p.name)+'"><img class="partnerLogo" src="'+escapeHtml(logo)+'" alt="Logo de '+escapeHtml(p.name)+'" loading="lazy" data-logo-fallback="/assets/bickri-b-logo.svg"></a>'+
+        '<h2><a class="partnerCardNameLink" href="'+escapeHtml(href)+'" data-open-partner="'+escapeHtml(p.slug)+'">'+escapeHtml(p.name)+'</a>'+(p.badgeVerified&&!p.hideBadge?'<img class="verifiedBadge" src="/assets/partners/'+cfg.file+'" alt="'+escapeHtml(label)+'" title="'+escapeHtml(label)+'">':'')+'</h2>'+
+        (p.hideBadge?'':'<span class="partnerLiveBadge"'+(p.badgeVerified?'':' data-unverified="true"')+'>'+(p.badgeVerified?'✓ ':'')+escapeHtml(label)+'</span>')+
+        '<p class="partnerCardDescription">'+escapeHtml(description)+'</p>'+
+        (p.founder?'<div class="partnerFounder">Responsable : <strong>'+escapeHtml(p.founder)+'</strong></div>':'')+
+        '<div class="partnerMeta"><span class="chip">'+escapeHtml(p.category||p.partnerType||'Collaboration')+'</span><span class="chip">'+escapeHtml(locationLabel)+'</span></div>'+
+        (p.publicId?'<div class="partnerPublicId">ID partenaire : '+escapeHtml(p.publicId)+'</div>':'')+
+        '</div>'+
+        '<div class="partnerCardActions"><a class="primary" href="'+escapeHtml(href)+'" data-open-partner="'+escapeHtml(p.slug)+'">Voir le profil <span aria-hidden="true">↗</span></a><button class="share" type="button" aria-label="Partager le profil de '+escapeHtml(p.name)+'" data-share-partner="'+escapeHtml(p.slug)+'">Partager</button><button class="qr" type="button" aria-label="Afficher le QR code de '+escapeHtml(p.name)+'" data-qr-partner="'+escapeHtml(p.slug)+'">QR code</button></div></article>';
     }).join('');
   }
   function openShare(p) {
