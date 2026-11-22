@@ -80,6 +80,10 @@
   }
   function renderSummary(){
     if(!profile)return;
+    const initials=String(profile.full_name||'').trim().split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0].toLocaleUpperCase('fr')).join('')||'CL';
+    placeholder.textContent=initials;
+    const summaryFallback=$('clientSummaryAvatarFallback');
+    if(summaryFallback)summaryFallback.textContent=initials;
     $('clientSummaryName').textContent=profile.full_name||'Mon profil';
     $('clientSummaryJob').textContent=profile.professional_title||'Profession à compléter';
     $('clientSummaryCompany').textContent=profile.company_name||'Entreprise à compléter';
@@ -115,6 +119,9 @@
     setImage(blob);
   }
   function fill(current){
+    const initials=String(current.full_name||'').trim().split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0].toLocaleUpperCase('fr')).join('')||'CL';
+    placeholder.textContent=initials;
+    $('clientSummaryAvatarFallback').textContent=initials;
     $('clientProfileName').value=current.full_name||'';
     $('clientProfileTitleJob').value=current.professional_title||'';
     $('clientProfileCompany').value=current.company_name||'';
