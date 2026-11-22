@@ -260,31 +260,51 @@
     }catch{}
   }
 
-  // Retirer l'ancien gestionnaire du formulaire pour éviter une double soumission.
-  const originalForm=$('partnerApplicationForm');
-  if(originalForm){
-    const form=originalForm.cloneNode(true);
-    originalForm.replaceWith(form);
-    const ref=new URL(location.href).searchParams.get('ref')||'';
-    const refField=form.querySelector('[name="referralCode"]');
-    if(refField)refField.value=ref;
-    form.addEventListener('submit',async event=>{
+  // Envoi direct sur WhatsApp : n'annonce jamais un enregistrement en base.
+  // Le visiteur valide lui-même l'envoi dans WhatsApp, sans clé API ni compte obligatoire.
+  const partnerForm = $('partnerApplicationForm');
+  if (partnerForm) {
+    const ref = new URL(location.href).searchParams.get('ref') || '';
+    const refField = partnerForm.querySelector('[name="referralCode"]');
+    if (refField) refField.value = ref;
+
+    partnerForm.addEventListener('submit', event => {
       event.preventDefault();
-      const submit=$('partnerSubmitButton'),progress=$('partnerFormProgress'),success=$('partnerFormSuccess'),errorBox=$('partnerFormError'),codePanel=$('partnerApplicationCodePanel');
-      if(success)success.hidden=true;if(errorBox)errorBox.hidden=true;if(codePanel)codePanel.hidden=true;
-      if(progress)progress.textContent='Envoi et enregistrement en cours…';if(submit)submit.disabled=true;
-      const data=Object.fromEntries(new FormData(form).entries());
-      try{
-        const response=await fetch(apiUrl('/api/partner'),{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)});
-        const result=await response.json().catch(()=>({}));
-        if(!response.ok||!result.ok)throw new Error(result.error||'La candidature n’a pas pu être enregistrée.');
-        form.reset();if(refField)refField.value=ref;
-        if(success){success.hidden=false;success.textContent=result.message||'Votre candidature a été enregistrée.';}
-        if(progress)progress.textContent=result.emailStatus==='sent'?'Notification e-mail envoyée.':result.emailStatus==='failed'?'Candidature sauvegardée ; la notification e-mail reste à rétablir.':'Candidature sauvegardée ; la notification e-mail est en attente de configuration.';
-        if(result.applicationCode&&codePanel){codePanel.hidden=false;if($('partnerApplicationCode'))$('partnerApplicationCode').textContent=result.applicationCode;if($('partnerStatusCode'))$('partnerStatusCode').value=result.applicationCode;}
-        success?.scrollIntoView({behavior:'smooth',block:'center'});
-      }catch(error){if(errorBox){errorBox.textContent=error.message||'Une erreur est survenue. Réessayez.';errorBox.hidden=false;}if(progress)progress.textContent='';}
-      finally{if(submit)submit.disabled=false;}
+      if (!partnerForm.reportValidity()) return;
+
+      const data = Object.fromEntries(new FormData(partnerForm).entries());
+      const tidy = (value, max = 200) => String(value ?? '').trim().slice(0, max);
+      const messageParts = [
+        'Bonjour Bickri Service Agency,',
+        'Je souhaite rejoindre votre réseau de partenaires.',
+        '',
+        'Nom : ' + tidy(data.fullName, 120),
+        'E-mail : ' + tidy(data.email, 254),
+        'Entreprise : ' + tidy(data.companyName, 160),
+        'Pays : ' + tidy(data.country || 'Niger', 80)
+      ];
+      if (tidy(data.city, 100)) messageParts.push('Ville : ' + tidy(data.city, 100));
+      if (tidy(data.category, 100)) messageParts.push('Domaine : ' + tidy(data.category, 100));
+      if (tidy(data.partnerType, 40) && data.partnerType !== 'other')
+        messageParts.push('Type de partenariat : ' + tidy(data.partnerType, 40));
+      if (tidy(data.websiteUrl, 350)) messageParts.push('Site web : ' + tidy(data.websiteUrl, 350));
+      if (ref) messageParts.push('Référence partenaire : ' + tidy(ref, 80));
+      messageParts.push('', 'Présentation de ma demande :', tidy(data.message, 1600));
+      const url = 'https://wa.me/22788376133?text=' + encodeURIComponent(messageParts.join('\n'));
+
+      const whatsAppLink = $('partnerWhatsAppLink');
+      const status = $('partnerWhatsAppStatus');
+      if (whatsAppLink) {
+        whatsAppLink.href = url;
+        whatsAppLink.hidden = false;
+      }
+      if (status) {
+        status.hidden = false;
+        status.textContent = 'Votre message est prêt. Dans WhatsApp, appuyez sur Envoyer. Si la fenêtre ne s’ouvre pas, utilisez le lien ci-dessus.';
+      }
+      if ($('partnerFormProgress')) $('partnerFormProgress').textContent = '';
+      if (whatsAppLink) whatsAppLink.click();
+      else window.location.assign(url);
     });
   }
   $('copyPartnerApplicationCode')?.addEventListener('click',async()=>{
