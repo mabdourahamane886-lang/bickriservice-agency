@@ -103,4 +103,7 @@ jobs:
           NODE
           echo "Partner portal JavaScript and inline HTML scripts passed syntax checks."
 
+      - name: Test Open Graph per-partner links and redirects
+        run: node --test tests/partner-og.test.js
+
 # Deployment trigger: push to main to trigger connected hosting deployments.
