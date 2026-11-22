@@ -881,3 +881,8 @@ body:has(.pm-hero) .pm-logo .partnerLogoInitials{
   background:#142e50;
   border-radius:14px;
 }
+
+/* 2026-11-22 : agrandissement des logos authentiques, sans recadrage. */
+#partenaires .partnerCardV3 .partnerCardLogoLink{width:132px!important;height:132px!important;min-width:132px!important;overflow:hidden!important;background:#fff!important}
+#partenaires .partnerGrid>.partner.partnerCardV3 .partnerLogo{width:100%!important;height:100%!important;object-fit:contain!important;padding:6px!important;background:transparent!important}
+@media(max-width:760px){#partenaires .partnerCardV3 .partnerCardLogoLink{width:116px!important;height:116px!important;min-width:116px!important}}
