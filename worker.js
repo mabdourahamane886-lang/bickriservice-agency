@@ -1064,7 +1064,7 @@ export default {async fetch(request,env,ctx){
     const title=String(p.name||'Partenaire').trim().slice(0,160)+' — Bickri Service Agency';
     const description=String(p.description||p.mission||'Découvrez ce partenaire du réseau Bickri Service Agency.')
       .replace(/\s+/g,' ').trim().slice(0,270);
-    const fallbackLogo=new URL('/assets/bickri-logo-final.jpg',publicPartnerOrigin).href;
+    // Sahelia Fresh : image authentique de référence pour les partages sociaux.\n    if(slug==='sahelia-fresh') p.logo_url='https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/053dc7b0-1a6c-4685-84a3-08595451a656.png';\n    const fallbackLogo=new URL('/assets/bickri-logo-final.jpg',publicPartnerOrigin).href;
     let image=fallbackLogo;
     try{
       const raw=String(p.logo_url||'').trim();
