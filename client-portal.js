@@ -10,7 +10,7 @@
   const money=n=>n===null||n===undefined?'À définir':new Intl.NumberFormat('fr-FR').format(n)+' FCFA';
   const labels={new:'Nouvelle',reviewing:'En cours d’examen',quoted:'Devis disponible',in_progress:'En réalisation',completed:'Terminée',cancelled:'Annulée'};
   const adminMode=document.body.dataset.clientMode==='admin';
-  let authMode='login',captchatoken='',captchaId=null,adminRows=[];
+  let authMode='login',captchatoken='',captchaId=null,adminRows=[],clientRows=[];
   function notice(msg,kind='info'){const e=$('portalMessage');if(!e)return;e.hidden=!msg;e.dataset.kind=kind;e.textContent=msg;if(msg)e.scrollIntoView({behavior:'smooth',block:'nearest'});}
   function token(){return sessionStorage.getItem(prefix+'token')||'';}
   function saveAuth(d){sessionStorage.setItem(prefix+'token',d.access_token);sessionStorage.setItem(prefix+'refresh',d.refresh_token||'');sessionStorage.setItem(prefix+'expiry',String(Date.now()+Math.max(60,Number(d.expires_in)||3600)*1000));}
@@ -73,15 +73,25 @@
     showAuth('Vous êtes déconnecté.');notice('Déconnexion effectuée.','success');
   }));
   function cardRequest(r) {
-    return '<article class="clientItem"><h4>'+esc(r.request_code)+'</h4><p><span class="clientBadge">'+esc(labels[r.status]||r.status)+'</span> · '+esc(r.kind==='rendezvous'?'Rendez-vous':'Devis')+'</p><p><b>Service :</b> '+esc(r.service_slug)+'</p><p><b>Création :</b> '+esc(date(r.created_at))+'</p>'+(r.preferred_at?'<p><b>Proposition :</b> '+esc(date(r.preferred_at))+' (à confirmer)</p>':'')+'<p><b>Montant proposé :</b> '+esc(money(r.quote_amount_xof))+'</p>'+(r.admin_message?'<p><b>Réponse de l’agence :</b></p><p class="clientLong">'+esc(r.admin_message)+'</p>':'')+'</article>';
+    return '<article class="clientItem"><h4>'+esc(r.request_code)+'</h4><p><span class="clientBadge">'+esc(labels[r.status]||r.status)+'</span> · '+esc(r.kind==='rendezvous'?'Rendez-vous':'Devis')+'</p><p><b>Service :</b> '+esc(r.service_slug)+'</p><p><b>Création :</b> '+esc(date(r.created_at))+'</p>'+(r.preferred_at?'<p><b>Proposition :</b> '+esc(date(r.preferred_at))+' (à confirmer)</p>':'')+'<p><b>Montant proposé :</b> '+esc(money(r.quote_amount_xof))+'</p>'+(r.admin_message?'<p><b>Réponse de l’agence :</b></p><p class="clientLong">'+esc(r.admin_message)+'</p>':'')+(r.quote_amount_xof!==null&&r.quote_amount_xof!==undefined?'<p><button class="clientTextButton" type="button" data-print="'+esc(r.id)+'">Imprimer / Enregistrer le devis en PDF</button></p>':'')+'</article>';
   }
   async function loadClient(){
     const [reqs,news]=await Promise.all([api('/api/client/requests'),api('/api/client/notifications')]);
-    $('myRequests').innerHTML=reqs.requests?.length?reqs.requests.map(cardRequest).join(''):'<p class="clientMuted">Aucune demande. Remplissez le formulaire pour créer votre premier dossier.</p>';
+    clientRows=reqs.requests||[];
+    $('myRequests').innerHTML=clientRows.length?clientRows.map(cardRequest).join(''):'<p class="clientMuted">Aucune demande. Remplissez le formulaire pour créer votre premier dossier.</p>';
     const unread=(news.notifications||[]).filter(n=>!n.read_at);
     $('notificationCount').textContent=unread.length?'('+unread.length+' non lues)':'';
     $('myNotifications').innerHTML=news.notifications?.length?news.notifications.map(n=>'<div class="clientNotification"><strong>'+esc(n.title)+'</strong><p>'+esc(n.message)+'</p><small class="clientMeta">'+esc(date(n.created_at))+'</small>'+(n.read_at?'':'<br><button type="button" class="clientTextButton" data-read="'+esc(n.id)+'">Marquer comme lue</button>')+'</div>').join(''):'<p class="clientMuted">Aucune notification.</p>';
   }
+  $('myRequests')?.addEventListener('click',e=>{
+    const button=e.target.closest('[data-print]');if(!button)return;
+    const r=clientRows.find(row=>row.id===button.dataset.print);
+    if(!r||r.quote_amount_xof===null||r.quote_amount_xof===undefined)return;
+    const w=window.open('','_blank');
+    if(!w)return notice('Autorisez les fenêtres contextuelles pour imprimer le devis.','error');
+    const html='<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Proposition de devis '+esc(r.request_code)+'</title><style>body{font:16px Arial,sans-serif;color:#08101f;padding:44px;max-width:760px;margin:auto}h1{border-bottom:3px solid #d9a441;padding-bottom:12px}p{line-height:1.6}section{background:#f6f8fb;padding:20px;margin-top:18px;border-radius:12px}.total{font-size:28px;font-weight:800;color:#08101f}small{color:#667289}footer{margin-top:35px;border-top:1px solid #e3e8f0;padding-top:18px}@media print{body{padding:20px}}</style></head><body><header><b>BICKRI SERVICE AGENCY</b><p>Niamey, Niger · bickriservice-agency.org</p></header><h1>Proposition de devis</h1><p><b>Référence :</b> '+esc(r.request_code)+'</p><p><b>Client :</b> '+esc(r.full_name)+'</p><p><b>Service :</b> '+esc(r.service_slug)+'</p><p><b>Date de la demande :</b> '+esc(date(r.created_at))+'</p><section><b>Montant proposé</b><p class="total">'+esc(money(r.quote_amount_xof))+'</p><b>Détails de la réponse</b><p>'+esc(r.admin_message||'Devis soumis à la validation de l’agence.')+'</p></section><footer><small>Proposition non contractuelle. Les conditions définitives sont confirmées par Bickri Service Agency. Aucun paiement effectué depuis ce document.</small></footer></body></html>';
+    w.document.open();w.document.write(html);w.document.close();w.focus();w.print();
+  });
   $('myNotifications')?.addEventListener('click',async e=>{
     const btn=e.target.closest('[data-read]');if(!btn)return;btn.disabled=true;
     try{await api('/api/client/notifications',{method:'PATCH',body:JSON.stringify({id:btn.dataset.read})});await loadClient();}catch(err){notice(err.message,'error');btn.disabled=false;}
