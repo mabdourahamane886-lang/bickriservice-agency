@@ -12,7 +12,22 @@
   const labels={new:'Nouvelle',reviewing:'En cours d’examen',quoted:'Devis disponible',in_progress:'En réalisation',completed:'Terminée',cancelled:'Annulée'};
   const adminMode=document.body.dataset.clientMode==='admin';
   let authMode='login',captchatoken='',captchaId=null,adminRows=[],clientRows=[];
-  function notice(msg,kind='info'){const e=$('portalMessage');if(!e)return;e.hidden=!msg;e.dataset.kind=kind;e.textContent=msg;if(msg)e.scrollIntoView({behavior:'smooth',block:'nearest'});}
+  function readableError(value,fallback='Une erreur est survenue.'){
+    if(typeof value==='string')return value;
+    if(value&&typeof value==='object'){
+      for(const item of [value.error_description,value.msg,value.message,value.error]){
+        if(typeof item==='string'&&item)return item;
+        if(item&&typeof item.message==='string')return item.message;
+      }
+    }
+    return fallback;
+  }
+  function notice(msg,kind='info'){
+    const e=$('portalMessage');if(!e)return;
+    const content=msg?readableError(msg):'';
+    e.hidden=!content;e.dataset.kind=kind;e.textContent=content;
+    if(content)e.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
   function token(){return sessionStorage.getItem(prefix+'token')||'';}
   function saveAuth(d){sessionStorage.setItem(prefix+'token',d.access_token);sessionStorage.setItem(prefix+'refresh',d.refresh_token||'');sessionStorage.setItem(prefix+'expiry',String(Date.now()+Math.max(60,Number(d.expires_in)||3600)*1000));}
   function clearAuth(){['token','refresh','expiry'].forEach(k=>sessionStorage.removeItem(prefix+k));}
@@ -20,7 +35,7 @@
     const res=await fetch(BASE+'/auth/v1/'+path,{method:'POST',headers:{apikey:PUBLIC_KEY,'Content-Type':'application/json'},body:JSON.stringify(data)});
     const out=await res.json().catch(()=>({}));
     if(!res.ok){
-      const msg=out.msg||out.message||out.error_description||out.error||'Authentification impossible.';
+      const msg=readableError(out,'Authentification impossible.');
       if(res.status===429)throw Error('Trop de tentatives. Réessayez plus tard.');
       if(res.status>=500)throw Error('Le service de création de compte est momentanément indisponible. Réessayez plus tard.');
       throw Error(msg);
@@ -40,7 +55,7 @@
     if(opt.body)headers['Content-Type']='application/json';
     const res=await fetch(API_BASE+path,{...opt,headers,cache:'no-store'});
     const out=await res.json().catch(()=>({}));
-    if(!res.ok)throw Object.assign(Error(out.error||'Service indisponible.'),{status:res.status});
+    if(!res.ok)throw Object.assign(Error(readableError(out,'Service indisponible.')),{status:res.status});
     return out;
   }
   function showAuth(text=''){
@@ -142,7 +157,8 @@
     }catch(err){notice(err?.message||'Impossible de finaliser la demande. Vérifiez votre connexion.','error');}finally{b.disabled=false;}
   });
   document.querySelectorAll('[data-logout]').forEach(button=>button.addEventListener('click',()=>{
-    const access=token();clearAuth();if(access)fetch(BASE+'/auth/v1/logout',{method:'POST',headers:{apikey:PUBLIC_KEY,Authorization:'Bearer '+access}}).catch(()=>{});
+    const access=token();clearAuth();window.dispatchEvent(new Event('bsa:client-logout'));
+    if(access)fetch(BASE+'/auth/v1/logout',{method:'POST',headers:{apikey:PUBLIC_KEY,Authorization:'Bearer '+access}}).catch(()=>{});
     showAuth('Vous êtes déconnecté.');notice('Déconnexion effectuée.','success');
   }));
   function cardRequest(r) {
@@ -312,20 +328,38 @@
     const data=await api('/api/client/admin/requests');
     adminRows=data.requests||[];renderAdmin();
   }
+  // Le profil professionnel utilise directement Supabase et ses politiques RLS.
+  // Il reste accessible même si les fonctions privées de devis sur Vercel sont hors service.
+  window.addEventListener('bsa:client-session-expired',()=>{
+    clearAuth();
+    if($('clientProfileSection'))$('clientProfileSection').hidden=true;
+    showAuth('Votre session a expiré. Connectez-vous de nouveau.');
+  });
   async function openDashboard(){
+    if(!adminMode){
+      $('authCard').hidden=true;
+      if($('clientProfileSection'))$('clientProfileSection').hidden=false;
+      window.dispatchEvent(new Event('bsa:client-authenticated'));
+      try{
+        await api('/api/client/me');
+        $('portalDashboard').hidden=false;
+        await loadClient();
+        await setupCaptcha();
+        notice('');
+      }catch(err){
+        $('portalDashboard').hidden=true;
+        notice('Votre profil professionnel est disponible. Le suivi des devis est temporairement indisponible : '+readableError(err),'error');
+      }
+      return;
+    }
     try{
       const me=await api('/api/client/me');
-      if(adminMode&&!me.isAdmin)throw Error('Ce compte ne dispose pas des droits administrateur.');
+      if(!me.isAdmin)throw Error('Ce compte ne dispose pas des droits administrateur.');
       $('authCard').hidden=true;
-      if(adminMode){$('adminDashboard').hidden=false;await loadAdmin();}
-      else{$('portalDashboard').hidden=false;await loadClient();await setupCaptcha();}
+      $('adminDashboard').hidden=false;
+      await loadAdmin();
       notice('');
-    }catch(err){
-      const message=err?.status===503
-        ? 'Votre compte est connecté, mais l’espace de suivi des devis est temporairement indisponible : la configuration serveur doit être finalisée.'
-        : err?.message||'Impossible de charger votre espace client.';
-      showAuth(message);
-    }
+    }catch(err){showAuth(readableError(err,'Impossible de charger votre espace administrateur.'));}
   }
   loadServices();
   // Turnstile se charge uniquement lorsque le formulaire devient visible.
