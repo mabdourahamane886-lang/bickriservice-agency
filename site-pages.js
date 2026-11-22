@@ -118,7 +118,7 @@
       .service-reference-mode .eyebrow{display:inline-flex;padding:8px 12px;border-radius:999px;background:#fff4d9;color:#775b1f;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em}
       .service-reference-mode .pageHero h1{font:800 clamp(2.5rem,6vw,4.7rem)/1.02 Manrope,sans-serif;letter-spacing:-.05em;margin:24px 0 20px;color:#08101f}
       .service-reference-mode .pageHero>div>p{font-size:clamp(1.05rem,2vw,1.35rem);line-height:1.8;color:#52627a;max-width:850px;margin:0}
-      .service-reference-mode .serviceHeroImage{display:block;width:100%;max-width:1100px;height:auto;min-height:0;max-height:none;object-fit:contain;border-radius:28px;margin:34px auto 0;box-shadow:0 24px 70px rgba(8,16,31,.16);background:#e9edf3}
+      .service-reference-mode .serviceHeroImage{display:block;width:100%;max-width:1100px;height:auto;min-height:0;max-height:470px;object-fit:cover;border-radius:18px;margin:34px auto 0;box-shadow:0 24px 70px rgba(8,16,31,.16);background:#e9edf3}
       .service-reference-mode .serviceHeroImageFallback{display:none;margin:12px 0 0;color:#7a879b;font-size:13px}
       .service-reference-mode .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
       .service-reference-mode .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 20px;border-radius:13px;border:1px solid #e3e8f0;background:#fff;font-weight:900}
@@ -180,17 +180,13 @@
             <span class="eyebrow">Service digital</span>
             <h1>${esc(service.name)}</h1>
             <p>${esc(service.desc)}</p>
+            <div class="actions"><a class="btn primary" href="https://wa.me/22788376133?text=${encodeURIComponent('Bonjour Bickri Service Agency, je souhaite un devis pour la prestation « ' + service.name + ' ».')}">Demander un devis sur WhatsApp ↗</a><a class="btn" href="/rendez-vous/">Prendre rendez-vous</a></div>
             <img class="serviceHeroImage" src="${esc(service.img)}" alt="${esc(service.name)} — Bickri Service Agency" loading="eager" decoding="async" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
             <div class="serviceHeroImageFallback">L’image de présentation de ce service n’a pas pu être chargée.</div>
-            <div class="actions"><a class="btn primary" href="/rendez-vous/">Demander ce service</a><a class="btn" href="/#service-${encodeURIComponent(slug)}">← Retour aux services</a></div>
+
           </div></section>
           <section class="pageSection"><div class="siteWrap contentGrid">
-            <article class="contentCard serviceFullCard">
-              <span class="eyebrow">Fiche complète du service</span>
-              <h2>${esc(service.name)}</h2>
-              <p>${esc(service.desc)} Bickri Service Agency adapte cette prestation à votre activité, vos objectifs et vos contraintes.</p>
-              <img src="${esc(service.img)}" alt="${esc(service.name)} — Bickri Service Agency" loading="eager" decoding="async">
-            </article>
+            <article class="contentCard"><h2>Ce que vous recevez</h2><p>${esc(d[1] || service.get)}</p></article>
             <div class="serviceCta"><div><strong>Prêt à démarrer ?</strong><span>Expliquez-nous votre projet et nous vous orienterons vers la prochaine étape.</span></div><a class="btn" href="/rendez-vous/">Demander ce service →</a></div>
             <article class="contentCard"><h2>Ce que nous proposons</h2><p>${esc(service.desc)}</p><p>${esc(d[0]||service.what||'Nous adaptons la prestation à votre activité, vos objectifs et votre public afin de construire une solution digitale professionnelle et cohérente.')}</p></article>
             <article class="contentCard"><h2>Pour qui ?</h2><p>${esc(service.who||'Entrepreneurs, entreprises, créateurs, associations et organisations qui souhaitent développer leur activité grâce au numérique.')}</p></article>
@@ -219,7 +215,7 @@
 
   function initBackButton(){
     if(document.getElementById('bickri-back-button'))return;
-    const path=location.pathname.replace(/\\/+$/,'')||'/';
+    const path=location.pathname.replace(/\/+$/,'')||'/';
     if(path==='/'||path==='/index.html')return;
     const btn=document.createElement('button');
     btn.id='bickri-back-button';
