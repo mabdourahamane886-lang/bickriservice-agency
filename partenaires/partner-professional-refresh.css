@@ -445,3 +445,155 @@ body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
   #partnerApplicationForm.partnerFormSimple .partnerExtras .partnerOptionalGrid{padding:14px!important}
   #partnerApplicationForm.partnerFormSimple .partnerExtrasGroup{font-size:13px}
 }
+
+
+/* Partenaires — WhatsApp et navigation mobile, sans modifier la palette de marque. */
+#devenir-partenaire{
+  position:relative;
+  background:#fff!important;
+  border:1px solid #e3e8f0!important;
+  box-shadow:0 15px 38px rgba(8,16,31,.07)!important;
+}
+#devenir-partenaire::before{
+  content:"";
+  position:absolute;
+  top:0;left:28px;right:28px;height:4px;
+  border-radius:0 0 8px 8px;
+  background:linear-gradient(90deg,#0b1d38,#d9a441);
+  pointer-events:none;
+}
+#devenir-partenaire .partnerApplyHead h2{max-width:720px}
+#devenir-partenaire .partnerApplyHead p{max-width:750px!important}
+#devenir-partenaire .partnerApplyHead p strong{color:#0b1d38}
+#partnerApplicationForm .partnerFormSubmit{
+  gap:12px!important;
+  padding-top:5px!important;
+}
+#partnerApplicationForm #partnerSubmitButton{
+  min-height:56px!important;
+  background:linear-gradient(135deg,#f0cf7e,#d9a441)!important;
+  color:#08101f!important;
+  border:1px solid #c59532!important;
+  box-shadow:0 7px 18px rgba(217,164,65,.14);
+  cursor:pointer!important;
+}
+#partnerApplicationForm #partnerSubmitButton:hover{
+  filter:brightness(1.04);
+  box-shadow:0 10px 20px rgba(217,164,65,.22);
+}
+#partnerApplicationForm .partnerWhatsAppHint{
+  margin:0!important;
+  max-width:760px;
+  color:#536177!important;
+  font-size:12px;
+  line-height:1.65;
+}
+#partnerApplicationForm .partnerWhatsAppHelp{
+  margin:0!important;
+  color:#536177!important;
+  font-size:12px;
+  line-height:1.6;
+}
+#partnerApplicationForm .partnerWhatsAppHelp a{
+  color:#173e73!important;
+  font-weight:800;
+  text-decoration:underline;
+  text-decoration-thickness:1px;
+  text-underline-offset:3px;
+}
+#partnerApplicationForm .partnerWhatsAppRetry{
+  display:inline-flex;
+  align-self:flex-start;
+  align-items:center;
+  justify-content:center;
+  min-height:45px;
+  padding:10px 15px;
+  border:1px solid #d4eddd;
+  border-radius:11px;
+  background:#f0faf4;
+  color:#14623a!important;
+  font-size:13px;
+  font-weight:800;
+  text-align:center;
+}
+#partnerApplicationForm #partnerWhatsAppStatus{
+  display:block;
+  width:100%;
+  padding:12px 14px;
+  border:1px solid #c9e7d3;
+  border-radius:11px;
+  background:#f0faf4;
+  color:#165d37!important;
+  font-size:13px;
+  line-height:1.6;
+}
+#partnerWhatsAppLink[hidden],
+#partnerWhatsAppStatus[hidden],
+#partnerApplicationCodePanel[hidden],
+#partnerFormSuccess[hidden],
+#partnerFormError[hidden],
+#partnerStatusResult[hidden]{display:none!important}
+#devenir-partenaire .applicationTracker{
+  margin-top:31px!important;
+}
+#devenir-partenaire .applicationTracker h3{font-size:17px!important}
+#devenir-partenaire #partnerTrackerPanel>summary{
+  cursor:pointer;
+  color:#122744!important;
+  font:800 14px/1.5 Manrope,sans-serif;
+  padding:4px 0;
+}
+#devenir-partenaire #partnerTrackerPanel>summary:focus-visible{
+  outline:3px solid #d9a441!important;
+  outline-offset:4px!important;
+}
+#devenir-partenaire #partnerTrackerPanel[open]>summary{margin-bottom:14px}
+#devenir-partenaire #partnerTrackerPanel>p{margin:0 0 15px!important}
+
+/* Menu : une seule ouverture/fermeture, surface tactile suffisante et focus clavier visible. */
+.header #menu{
+  cursor:pointer!important;
+  touch-action:manipulation;
+}
+.header #menu:focus-visible,
+.header #mobile a:focus-visible{
+  outline:3px solid #d9a441!important;
+  outline-offset:2px!important;
+}
+@media(max-width:850px){
+  .header #menu{
+    display:inline-flex!important;
+    flex:0 0 48px;
+    align-items:center;
+    justify-content:center;
+    width:48px!important;
+    height:48px!important;
+    min-width:48px;
+    border-radius:12px;
+  }
+  .header #mobile:not(.open){display:none!important}
+  .header #mobile.open{
+    display:grid!important;
+    position:relative;
+    z-index:51;
+    grid-template-columns:minmax(0,1fr);
+    gap:0;
+    padding:8px max(18px,calc((100vw - 1160px)/2)) 14px!important;
+    border-top:1px solid #e9edf3;
+    background:#fff!important;
+    box-shadow:0 15px 26px rgba(8,16,31,.09);
+  }
+  .header #mobile a{
+    display:flex;
+    align-items:center;
+    min-height:48px;
+    padding:10px 14px;
+    color:#10213b!important;
+    font-size:14px;
+    font-weight:800;
+  }
+}
+@media(max-width:620px){
+  #devenir-partenaire::before{left:16px;right:16px}
+  #partnerApplicationForm .partnerWhatsAppRetry{align-self:stretch;width:100%}
+}
