@@ -10,7 +10,7 @@ create table if not exists public.agency_client_profiles (
   avatar_path text check (avatar_path is null or (
     char_length(avatar_path) <= 220
     and split_part(avatar_path,'/',1) = user_id::text
-    and avatar_path ~ ('^' || user_id::text || '/avatar-[0-9]{10,15}\\.(jpg|jpeg|png|webp)$')
+    and avatar_path ~ ('^' || user_id::text || '/avatar-[0-9]{10,15}[.](jpg|jpeg|png|webp)$')
   )),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
