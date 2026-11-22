@@ -1,4 +1,5 @@
 import { sendPartnerApplication } from './lib/bickri-mail.js';
+import { handleClientApi } from './lib/agency-client.js';
 const SITE_VERSION = '2.0.0';
 const ASSET_VERSION = '2.0.0';
 const SUPABASE_URL = 'https://okdohokhlkxrmxpevees.supabase.co';
@@ -292,6 +293,10 @@ function fallbackAnswer(message){
 
 export default {async fetch(request,env,ctx){
   const url=new URL(request.url);
+  // API ajoutée sans modification des routes ni fonctions existantes.
+  if (url.pathname.startsWith('/api/client/')) {
+    return handleClientApi(request,env,{allowedOrigin:isAllowedOrigin,requireAuth:partnerAuthUser,db:supabaseRequest,isAdmin:partnerIsAdmin,verifyTurnstile:verifyWorkerTurnstile,json:partnerJson});
+  }
   if (url.pathname.startsWith('/api/partner') && request.headers.get('Origin') && !isAllowedOrigin(request)) {
     return json({error:'Origine non autorisée'},403);
   }
