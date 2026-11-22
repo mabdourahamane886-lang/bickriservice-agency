@@ -1014,9 +1014,10 @@ export default {async fetch(request,env,ctx){
     const referral=(url.searchParams.get('ref')||'').trim().slice(0,100);
     if(referral) profileUrl.searchParams.set('ref',referral);
     // Un visiteur voit la vraie fiche moderne ; les robots reçoivent le HTML Open Graph.
-    if(partnerShareMatch && !isSocialBot){
-      return new Response(null,{status:302,headers:{...SECURITY_HEADERS,Location:profileUrl.href,'Cache-Control':'no-store'}});
-    }
+    // Toujours servir les balises Open Graph sur le lien partagé : certains robots
+    // n'envoient pas de User-Agent reconnaissable et ne suivent pas les 302.
+    // Les navigateurs humains sont redirigés côté client après lecture du HTML.
+
     const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
     const readMeta=(html,kind,name)=>{
       const tags=String(html||'').match(/<meta\b[^>]*>/gi)||[];
@@ -1087,7 +1088,8 @@ export default {async fetch(request,env,ctx){
       '<meta name="twitter:description" content="'+escapeHtml(description)+'"><meta name="twitter:image" content="'+escapeHtml(image)+'">'+
       '<meta name="twitter:image:alt" content="'+escapeHtml('Logo '+(p.name||'Partenaire'))+'">'+
       '</head><body><main><h1>'+escapeHtml(p.name||'Partenaire')+'</h1><p>'+escapeHtml(description)+'</p>'+
-      '<a href="'+escapeHtml(profileUrl.href)+'">Ouvrir le profil de '+escapeHtml(p.name||'ce partenaire')+'</a></main></body></html>';
+      '<a href="'+escapeHtml(profileUrl.href)+'">Ouvrir le profil de '+escapeHtml(p.name||'ce partenaire')+'</a></main>'+
+      (partnerShareMatch?'<script>window.location.replace('+JSON.stringify(profileUrl.href)+')</script>':'')+'</body></html>';
     return new Response(ogHtml,{status:200,headers:previewHeaders});
   }
 
