@@ -730,7 +730,7 @@ body{background:#f5f7fb!important;color:var(--directory-ink)!important}
 </style>
 <link rel="stylesheet" href="/partenaires/partner-premium.css?v=20261023">
 <link rel="stylesheet" href="/partenaires/partner-network-v2.css?v=20261104">
-<link rel="stylesheet" href="/partenaires/partner-professional-refresh.css?v=20261116">
+<link rel="stylesheet" href="/partenaires/partner-professional-refresh.css?v=20261122">
 </head>
 <body>
 <header class="header">
@@ -763,8 +763,9 @@ body{background:#f5f7fb!important;color:var(--directory-ink)!important}
     <select id="partnerCountryFilter" aria-label="Filtrer par pays"><option value="">Tous les pays</option><option value="Niger">Niger</option></select>
     <select id="partnerCategoryFilter" aria-label="Filtrer par domaine"><option value="">Tous les domaines</option></select>
     <select id="partnerBadgeFilter" aria-label="Filtrer par badge"><option value="">Tous les badges</option><option value="green">Vérifié</option><option value="blue">Certifié</option><option value="gold">Premium</option><option value="construction">BTP vérifié</option><option value="unverified">Profil non vérifié</option></select>
+    <select id="partnerSortFilter" aria-label="Trier les partenaires"><option value="name-asc">Nom : A à Z</option><option value="name-desc">Nom : Z à A</option><option value="verified-first">Partenaires vérifiés d’abord</option><option value="premium-first">Partenaires Premium d’abord</option></select>
   </div>
-  <div class="partnerToolsBottom"><span class="partnerResultsCount" id="partnerResultsCount" aria-live="polite">Chargement des partenaires…</span>
+  <div class="partnerToolsBottom"><div class="partnerResultsSummary"><span class="partnerResultsCount" id="partnerResultsCount" aria-live="polite">Chargement des partenaires…</span><button class="partnerResetFilters" id="partnerResetFilters" type="button" disabled>Effacer les filtres</button></div>
     <div class="partnerToolsLinks"><a href="/partenaires/espace/">Espace partenaire</a><a class="secondary" href="#devenir-partenaire">Devenir partenaire</a></div>
   </div>
 </div>
