@@ -730,16 +730,16 @@ body{background:#f5f7fb!important;color:var(--directory-ink)!important}
 </style>
 <link rel="stylesheet" href="/partenaires/partner-premium.css?v=20261023">
 <link rel="stylesheet" href="/partenaires/partner-network-v2.css?v=20261104">
-<link rel="stylesheet" href="/partenaires/partner-professional-refresh.css?v=20261122-simple">
+<link rel="stylesheet" href="/partenaires/partner-professional-refresh.css?v=20261122-whatsapp">
 </head>
 <body>
 <header class="header">
 <div class="wrap nav">
 <a class="brand" href="/" aria-label="Bickri Service Agency"><img src="https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/0f26cf1f-df17-461f-8b2f-463b5d3f9b16.png?v=20261019" alt="Bickri Service Agency"><span><b>BICKRI SERVICE AGENCY</b><small>AGENCE DIGITALE • NIAMEY</small></span></a>
 <nav class="links" aria-label="Navigation principale"><a href="/">Accueil</a><a href="/services/">Services</a><a href="/portfolio/">Projets</a><a href="/partenaires/" aria-current="page">Partenaires</a><a href="/rendez-vous/">Contact</a></nav>
-<button class="menu" id="menu" aria-label="Ouvrir le menu" aria-expanded="false">☰</button>
+<button class="menu" id="menu" type="button" aria-label="Ouvrir le menu" aria-controls="mobile" aria-expanded="false">☰</button>
 </div>
-<div class="mobile" id="mobile"><a href="/">Accueil</a><a href="/services/">Services</a><a href="/portfolio/">Projets</a><a href="/partenaires/">Partenaires</a><a href="/rendez-vous/">Contact</a></div>
+<nav class="mobile" id="mobile" aria-label="Navigation mobile"><a href="/">Accueil</a><a href="/services/">Services</a><a href="/portfolio/">Projets</a><a href="/partenaires/">Partenaires</a><a href="/rendez-vous/">Contact</a><a href="#devenir-partenaire">Devenir partenaire</a></nav>
 </header>
 
 <main>
@@ -821,9 +821,9 @@ body{background:#f5f7fb!important;color:var(--directory-ink)!important}
   <article class="partnerBenefit"><div class="partnerBenefitIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13.5a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.7 1.7"/><path d="M14 10.5a4 4 0 0 0-5.7 0l-3 3A4 4 0 0 0 11 19.2l1.7-1.7"/></svg></div><h3>Recommandations traçables</h3><p>Un lien partenaire personnalisé et des statistiques de visites lorsque votre profil est actif.</p></article>
   <article class="partnerBenefit"><div class="partnerBenefitIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m8 12 2.2 2.2a2 2 0 0 0 2.8 0l4-4"/><path d="m3 8 4-4 4 2 3-1 7 4-3 3"/><path d="m3 8 5 7 2 2a2 2 0 0 0 3-2l-1-1"/><path d="m21 9-4-2"/></svg></div><h3>Collaborations qualifiées</h3><p>Une candidature examinée, un statut clair et un canal pour échanger avec l’équipe Bickri Service Agency.</p></article>
 </div>
-<div class="cta"><div><h2>Rejoindre Bickri Service Agency</h2><p>Présentez votre entreprise en remplissant quelques champs essentiels. Vous pourrez ajouter vos informations facultatives si vous le souhaitez.</p></div><a class="btn btnGold" href="#devenir-partenaire">Faire ma demande →</a></div>
+<div class="cta"><div><h2>Rejoindre Bickri Service Agency</h2><p>Présentez votre entreprise en quelques lignes et transmettez votre demande directement sur WhatsApp à notre équipe.</p></div><a class="btn btnGold" href="#devenir-partenaire">Rejoindre le partenariat →</a></div>
 <div class="partnerApply" id="devenir-partenaire">
-  <div class="partnerApplyHead"><span class="eyebrow">Candidature simplifiée</span><h2>Rejoindre notre réseau de partenaires</h2><p>Votre nom, votre entreprise, votre pays et quelques mots sur votre projet suffisent pour commencer. Un code de dossier vous permettra de suivre la demande.</p><p class="partnerRequiredHint">Les champs marqués d’un <strong>*</strong> sont obligatoires.</p></div>
+  <div class="partnerApplyHead"><span class="eyebrow">Candidature simplifiée</span><h2>Rejoindre notre réseau de partenaires</h2><p>Indiquez vos coordonnées et présentez votre projet. Le bouton ouvrira WhatsApp avec votre message déjà rempli pour notre équipe au <strong>+227 88 37 61 33</strong>.</p><p class="partnerRequiredHint">Les champs marqués d’un <strong>*</strong> sont obligatoires. Vous confirmerez l’envoi dans WhatsApp.</p></div>
   <div id="partnerFormSuccess" class="partnerFormStatus success" role="status" aria-live="polite" hidden>Votre candidature a été enregistrée.</div><div id="partnerApplicationCodePanel" class="partnerApplicationCode" hidden><span>Votre code de dossier :</span><code id="partnerApplicationCode"></code><button id="copyPartnerApplicationCode" type="button">Copier le code</button></div>
   <div id="partnerFormError" class="partnerFormStatus error" role="alert" aria-live="assertive" hidden></div>
   <form id="partnerApplicationForm" class="partnerForm partnerFormSimple">
@@ -856,8 +856,15 @@ body{background:#f5f7fb!important;color:var(--directory-ink)!important}
   </details>
   <div class="partnerField full partnerConsentField"><label style="display:flex;align-items:flex-start;gap:10px;font-weight:700"><input id="partnerProfileConsent" name="publicProfileConsent" type="checkbox" value="yes" required style="width:18px;min-height:18px;flex:0 0 auto;margin-top:3px"><span>J’autorise Bickri Service Agency à publier le nom de mon organisation ainsi que les informations, le logo, la présentation et les liens que je fournis pour son profil public si ma candidature est approuvée. Je comprends que mon message de candidature et mon adresse e-mail ne seront pas publiés. <b>*</b></span></label></div>
   <div class="partnerHoneypot" aria-hidden="true"><label for="partnerCompanyWebsite">Ne pas remplir</label><input id="partnerCompanyWebsite" name="website" type="text" tabindex="-1" autocomplete="off"></div>
-    <input type="hidden" name="referralCode" id="partnerReferralCode" value=""><div class="partnerFormSubmit"><button class="btn btnGold" id="partnerSubmitButton" type="submit">Envoyer ma demande →</button><span id="partnerFormProgress" class="partnerFormStatus" role="status" aria-live="polite"></span></div>
-</form><div class="applicationTracker"><h3>Suivre ma candidature</h3><p>Renseignez le code reçu après l’envoi et l’adresse e-mail utilisée dans le formulaire.</p><form id="partnerStatusForm" class="trackerForm"><input name="code" id="partnerStatusCode" placeholder="Ex. BPA-12AB34CD56" maxlength="14" required aria-label="Code de dossier"><input name="email" type="email" placeholder="Votre adresse e-mail" required aria-label="Adresse e-mail de candidature"><button class="btn btnGold" type="submit">Vérifier le statut</button></form><div id="partnerStatusResult" class="partnerTrackerResult" role="status" aria-live="polite" hidden></div></div>
+    <input type="hidden" name="referralCode" id="partnerReferralCode" value=""><div class="partnerFormSubmit">
+      <button class="btn btnGold" id="partnerSubmitButton" type="submit">Envoyer sur WhatsApp →</button>
+      <p class="partnerWhatsAppHint">Le message s’ouvrira dans WhatsApp. Vérifiez-le puis appuyez sur <strong>Envoyer</strong> pour transmettre votre demande.</p>
+      <p class="partnerWhatsAppHelp">Ou <a id="partnerDirectWhatsApp" href="https://wa.me/22788376133?text=Bonjour%20Bickri%20Service%20Agency%2C%20je%20souhaite%20rejoindre%20votre%20reseau%20de%20partenaires." target="_blank" rel="noopener noreferrer">contactez-nous directement au +227 88 37 61 33</a>.</p>
+      <a id="partnerWhatsAppLink" class="partnerWhatsAppRetry" target="_blank" rel="noopener noreferrer" hidden>Ouvrir mon message WhatsApp ↗</a>
+      <span id="partnerWhatsAppStatus" class="partnerFormStatus" role="status" aria-live="polite" hidden></span>
+      <span id="partnerFormProgress" class="partnerFormStatus" role="status" aria-live="polite"></span>
+    </div>
+</form><div class="applicationTracker"><h3>Suivre une candidature déjà enregistrée</h3><p>Si vous avez reçu un code de dossier lors d’une précédente candidature sur le site, vous pouvez le vérifier ici. Les messages envoyés uniquement sur WhatsApp ne reçoivent pas de code automatique.</p><form id="partnerStatusForm" class="trackerForm"><input name="code" id="partnerStatusCode" placeholder="Ex. BPA-12AB34CD56" maxlength="14" required aria-label="Code de dossier"><input name="email" type="email" placeholder="Votre adresse e-mail" required aria-label="Adresse e-mail de candidature"><button class="btn btnGold" type="submit">Vérifier le statut</button></form><div id="partnerStatusResult" class="partnerTrackerResult" role="status" aria-live="polite" hidden></div></div>
 </div>
 </div>
 </section>
@@ -894,6 +901,8 @@ function copyText(text){
 }
 
 const menu=document.getElementById('menu'),mobile=document.getElementById('mobile');
+// Empêche site-pages.js de relier une deuxième fois le clic du menu mobile.
+if(menu&&mobile) menu.dataset.bound='1';
 menu?.addEventListener('click',e=>{
   e.preventDefault();
   const open=mobile.classList.toggle('open');
@@ -901,33 +910,19 @@ menu?.addEventListener('click',e=>{
   menu.setAttribute('aria-label',open?'Fermer le menu':'Ouvrir le menu');
 });
 mobile?.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{mobile.classList.remove('open');menu?.setAttribute('aria-expanded','false');menu?.setAttribute('aria-label','Ouvrir le menu')}));
+document.addEventListener('keydown',event=>{
+  if(event.key==='Escape'&&mobile?.classList.contains('open')){
+    mobile.classList.remove('open');menu?.setAttribute('aria-expanded','false');menu?.setAttribute('aria-label','Ouvrir le menu');menu?.focus();
+  }
+});
 document.addEventListener('click',e=>{
   if(!mobile?.classList.contains('open')) return;
   if(!mobile.contains(e.target) && !menu.contains(e.target)){mobile.classList.remove('open');menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label','Ouvrir le menu')}
 });
 
 
-const partnerForm=document.getElementById('partnerApplicationForm');
-partnerForm?.addEventListener('submit',async(event)=>{
-  event.preventDefault();
-  const submitButton=document.getElementById('partnerSubmitButton');
-  const progress=document.getElementById('partnerFormProgress');
-  const success=document.getElementById('partnerFormSuccess');
-  const errorBox=document.getElementById('partnerFormError');
-  success.hidden=true; errorBox.hidden=true; progress.textContent='Envoi en cours…';
-  submitButton.disabled=true;
-  const data=Object.fromEntries(new FormData(partnerForm).entries());
-  try{
-    const response=await fetch('/api/partner',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
-    const result=await response.json().catch(()=>({}));
-    if(!response.ok) throw new Error(result.error||'Impossible d’envoyer la candidature pour le moment.');
-    partnerForm.reset(); success.hidden=false; progress.textContent='';
-    success.scrollIntoView({behavior:'smooth',block:'center'});
-  }catch(error){
-    errorBox.textContent=error.message||'Une erreur est survenue. Veuillez réessayer.';
-    errorBox.hidden=false; progress.textContent='';
-  }finally{submitButton.disabled=false;}
-});
+// Le formulaire est maintenant relié à WhatsApp dans partner-directory.js.
+// Aucun deuxième gestionnaire de soumission n'est attaché ici.
 
 const partnerLink=document.getElementById('partnersShareLink'),partnerCopy=document.getElementById('copyPartnersLink');
 partnerCopy?.addEventListener('click',async()=>{
