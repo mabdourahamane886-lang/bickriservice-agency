@@ -72,6 +72,13 @@
   const resetButton = $('partnerResetFilters');
   const count = $('partnerResultsCount');
   const message = $('partnerDirectoryMessage');
+  const retryButton = $('partnerDirectoryRetry');
+  // Éviter un blocage indéfini lorsque le répertoire distant ne répond pas.
+  const fetchWithTimeout = (url, options = {}, timeoutMs = 9000) => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    return fetch(url, {...options, signal: controller.signal}).finally(() => clearTimeout(timer));
+  };
 
   // ISO 3166-1 alpha-2 country/territory codes; flag emojis are rendered as symbols on supported devices.
   const COUNTRY_CODES = ('AD AE AF AG AI AL AM AO AQ AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BV BW BY BZ CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FM FO FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GS GT GU GW GY HK HM HN HR HT HU ID IE IL IM IN IO IQ IR IS IT JE JM JO JP KE KG KH KI KM KN KP KR KW KY KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ NA NC NE NF NG NI NL NO NP NR NU NZ OM PA PE PF PG PH PK PL PM PN PR PS PT PW PY QA RE RO RS RU RW SA SB SC SD SE SG SH SI SJ SK SL SM SN SO SR SS ST SV SX SY SZ TC TD TF TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA UG UM US UY UZ VA VC VE VG VI VN VU WF WS XK YE YT ZA ZM ZW').split(' ');
@@ -220,9 +227,11 @@
   });
 
   async function loadDirectory(){
-    if(!directory)return;
+    if(!directory || retryButton?.disabled) return;
+    if(retryButton){ retryButton.hidden=true; retryButton.disabled=true; }
+    message.textContent='Chargement du répertoire des partenaires…';
     try {
-      const response=await fetch(apiUrl('/api/partners'),{headers:{Accept:'application/json'},cache:'no-store'});
+      const response=await fetchWithTimeout(apiUrl('/api/partners'),{headers:{Accept:'application/json'},cache:'no-store'});
       const data=await response.json().catch(()=>({}));
       if(!response.ok||!Array.isArray(data.partners))throw new Error(data.error||'Répertoire indisponible');
       const saved= data.partners;
@@ -238,7 +247,7 @@
           order:'name.asc',
           limit:'300'
         });
-        const direct=await fetch(SUPABASE_URL+'/rest/v1/agency_partners?'+params.toString(),{
+        const direct=await fetchWithTimeout(SUPABASE_URL+'/rest/v1/agency_partners?'+params.toString(),{
           headers:{apikey:SUPABASE_PUBLIC_KEY,Authorization:'Bearer '+SUPABASE_PUBLIC_KEY,Accept:'application/json'},
           cache:'no-store'
         });
@@ -255,16 +264,19 @@
         message.textContent='Répertoire chargé depuis la base de données.';
       } catch(directError) {
         partners=fallback.slice();
-        message.textContent='Affichage de secours : le répertoire dynamique est momentanément indisponible.';
+        message.textContent='Mode de secours : seuls les profils locaux connus sont affichés. Le répertoire complet est temporairement indisponible.';
+        if(retryButton) retryButton.hidden=false;
       }
     }
     rebuildFilters();render();
     try{
-      const response=await fetch(apiUrl('/api/partners/metrics'),{cache:'no-store'});
+      const response=await fetchWithTimeout(apiUrl('/api/partners/metrics'),{cache:'no-store'},5000);
       const data=await response.json();
       if(response.ok && $('statPartners')) $('statPartners').textContent=String(Math.max(Number(data.partners)||0,partners.length)).padStart(2,'0'); updateStats();
     }catch{}
+    if(retryButton) retryButton.disabled=false;
   }
+  retryButton?.addEventListener('click', loadDirectory);
 
   // Envoi direct sur WhatsApp : n'annonce jamais un enregistrement en base.
   // Le visiteur valide lui-même l'envoi dans WhatsApp, sans clé API ni compte obligatoire.
@@ -329,12 +341,6 @@
       else window.location.assign(url);
     });
   }
-  $('copyPartnerApplicationCode')?.addEventListener('click',async()=>{
-    const code=$('partnerApplicationCode')?.textContent||'';
-    try{await copyText(code);$('copyPartnerApplicationCode').textContent='Copié ✓';}
-    catch{window.prompt('Copiez votre code de dossier :',code);}
-    setTimeout(()=>{if($('copyPartnerApplicationCode'))$('copyPartnerApplicationCode').textContent='Copier le code';},1600);
-  });
   const statusForm=$('partnerStatusForm');
   statusForm?.addEventListener('submit',async event=>{
     event.preventDefault();
