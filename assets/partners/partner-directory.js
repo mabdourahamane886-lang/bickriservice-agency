@@ -287,9 +287,25 @@
       if (tidy(data.category, 100)) messageParts.push('Domaine : ' + tidy(data.category, 100));
       if (tidy(data.partnerType, 40) && data.partnerType !== 'other')
         messageParts.push('Type de partenariat : ' + tidy(data.partnerType, 40));
-      if (tidy(data.websiteUrl, 350)) messageParts.push('Site web : ' + tidy(data.websiteUrl, 350));
+      const supplementaryFields = [
+        ['Site web', 'websiteUrl', 500],
+        ['Facebook', 'socialFacebook', 500],
+        ['YouTube', 'socialYoutube', 500],
+        ['TikTok', 'socialTikTok', 500],
+        ['Instagram', 'socialInstagram', 500],
+        ['LinkedIn', 'socialLinkedIn', 500],
+        ['WhatsApp', 'socialWhatsApp', 500],
+        ['Logo', 'logoUrl', 500],
+        ['Présentation publique', 'publicDescription', 500],
+        ['À propos de l’entreprise', 'publicAbout', 5000],
+        ['Mission', 'publicMission', 1500]
+      ];
+      for (const [label, field, limit] of supplementaryFields) {
+        const value = tidy(data[field], limit);
+        if (value) messageParts.push(label + ' : ' + value);
+      }
       if (ref) messageParts.push('Référence partenaire : ' + tidy(ref, 80));
-      messageParts.push('', 'Présentation de ma demande :', tidy(data.message, 1600));
+      messageParts.push('', 'Présentation de ma demande :', tidy(data.message, 5000));
       const url = 'https://wa.me/22788376133?text=' + encodeURIComponent(messageParts.join('\n'));
 
       const whatsAppLink = $('partnerWhatsAppLink');
