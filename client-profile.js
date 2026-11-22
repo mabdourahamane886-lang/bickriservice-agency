@@ -87,7 +87,9 @@
     $('clientSummaryName').textContent=profile.full_name||'Mon profil';
     $('clientSummaryJob').textContent=profile.professional_title||'Profession à compléter';
     $('clientSummaryCompany').textContent=profile.company_name||'Entreprise à compléter';
+    $('clientAboutCompany').textContent=profile.company_name||'À compléter';
     $('clientSummaryCountry').textContent=profile.country||'Niger';
+    $('clientSummaryLocation').textContent=profile.country||'Niger';
     $('clientSummaryBio').textContent=profile.biography||'Ajoutez une présentation de votre expertise, vos services et votre expérience.';
   }
   function showSummary(note=''){
@@ -123,6 +125,10 @@
     }finally{$('clientProfileCancel').disabled=false;}
   });
   $('clientProfileEdit')?.addEventListener('click',showEditor);
+  $('clientAboutEdit')?.addEventListener('click',()=>{
+    showEditor();
+    $('clientProfileBio').focus();
+  });
 
   function storedFileUrl(path){
     return '/storage/v1/object/authenticated/agency-client-avatars/'+path.split('/').map(encodeURIComponent).join('/');
