@@ -134,3 +134,56 @@ body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
   .pm-card{padding:21px!important;border-radius:16px!important}
   .pm-btn{min-height:47px!important}
 }
+
+
+/* Annuaire 2026 : commandes de recherche accessibles — palette BSA inchangée */
+#partenaires .partnerFilters{
+  display:grid;
+  grid-template-columns:minmax(230px,2fr) repeat(4,minmax(0,1fr));
+  gap:11px;
+  align-items:stretch;
+}
+#partenaires .partnerFilters>input,
+#partenaires .partnerFilters>select{min-width:0;width:100%}
+#partenaires .partnerToolsBottom{align-items:center}
+#partenaires .partnerResultsSummary{display:flex;align-items:center;flex-wrap:wrap;gap:10px 16px;min-width:0}
+#partenaires .partnerResultsCount{font-size:13px!important;font-weight:800;color:var(--bsa-pro-muted)}
+#partenaires .partnerResetFilters{
+  appearance:none;min-height:42px;padding:9px 13px;
+  border:1px solid var(--bsa-pro-line);border-radius:11px;
+  background:#fff;color:var(--bsa-pro-navy);
+  font:800 12px/1.3 'DM Sans',sans-serif;cursor:pointer;
+  transition:border-color .2s ease,box-shadow .2s ease;
+}
+#partenaires .partnerResetFilters:not(:disabled):hover{border-color:var(--bsa-pro-gold);box-shadow:0 4px 12px rgba(10,23,48,.07)}
+#partenaires .partnerResetFilters:disabled{opacity:.48;cursor:default}
+#partenaires .partnerEmpty{
+  grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;min-height:250px;padding:36px 20px;
+  border:1px solid var(--bsa-pro-line);border-radius:19px;background:#fff;text-align:center
+}
+#partenaires .partnerEmpty strong{color:var(--bsa-pro-navy);font-size:20px}
+#partenaires .partnerEmpty span{color:var(--bsa-pro-muted);line-height:1.6}
+#partenaires .partnerEmpty button{
+  min-height:44px;margin-top:7px;padding:10px 17px;border:1px solid var(--bsa-pro-gold);
+  border-radius:11px;background:var(--bsa-pro-gold-soft);color:var(--bsa-pro-navy);
+  font-weight:800;cursor:pointer
+}
+#partenaires .partnerResetFilters:focus-visible,
+#partenaires .partnerEmpty button:focus-visible{
+  outline:3px solid var(--bsa-pro-gold)!important;outline-offset:3px!important
+}
+@media(max-width:980px){
+  #partenaires .partnerFilters{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #partenaires .partnerFilters>input[type="search"]{grid-column:1/-1}
+}
+@media(max-width:620px){
+  #partenaires .partnerFilters{grid-template-columns:minmax(0,1fr)}
+  #partenaires .partnerFilters>input[type="search"]{grid-column:auto}
+  #partenaires .partnerResultsSummary{justify-content:space-between;width:100%}
+  #partenaires .partnerResetFilters{flex:0 0 auto}
+  #partenaires .partnerToolsLinks{width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+  #partenaires .partnerResetFilters{transition:none}
+}
