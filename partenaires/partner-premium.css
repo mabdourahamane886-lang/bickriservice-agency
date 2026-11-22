@@ -130,3 +130,59 @@ header.header,.header{border-bottom-color:var(--bsa-line)!important}
   outline: 3px solid #e4bd5e !important;
   outline-offset: 3px !important;
 }
+
+
+/* Profil historique SAS : finition moderne compatible avec la fiche et ses fonctionnalités. */
+body:has(.profileCard) .hero{
+  background:radial-gradient(ellipse at 88% 16%,rgba(217,164,65,.26),transparent 32%),linear-gradient(122deg,#071326 0%,#123454 62%,#24517c 100%)!important;
+  padding:60px 0 56px!important;
+}
+body:has(.profileCard) .profileCard{
+  display:grid!important;grid-template-columns:230px minmax(0,1fr)!important;align-items:center!important;
+  gap:35px!important;padding:34px!important;border:1px solid rgba(255,255,255,.24)!important;
+  border-radius:25px!important;background:rgba(255,255,255,.075)!important;
+  box-shadow:0 23px 60px rgba(8,18,35,.17)!important;backdrop-filter:blur(8px);
+}
+body:has(.profileCard) .logoWrap{
+  display:grid!important;place-items:center!important;min-height:205px!important;
+  padding:20px!important;border:4px solid #fff!important;border-radius:23px!important;
+  background:#fff!important;box-shadow:0 16px 42px rgba(0,0,0,.18)!important
+}
+body:has(.profileCard) .logoWrap img{height:172px!important;max-width:100%;object-fit:contain!important}
+body:has(.profileCard) .profile h1{font-size:clamp(30px,4vw,50px)!important;line-height:1.12!important}
+body:has(.profileCard) .profile .desc{max-width:680px;line-height:1.8!important;color:#e0e8f4!important}
+body:has(.profileCard) .profileTags{margin:17px 0 19px!important;gap:8px!important}
+body:has(.profileCard) .profileTags span{border-radius:8px!important;padding:7px 12px!important}
+body:has(.profileCard) .actions{gap:10px!important;margin-top:23px!important}
+body:has(.profileCard) .actions .btn{
+  min-height:48px!important;border-radius:12px!important;font-weight:850!important;
+  padding:10px 16px!important;transition:transform .18s ease!important
+}
+body:has(.profileCard) .actions .btn:hover{transform:translateY(-2px)}
+body:has(.profileCard) .main{padding:36px 0 75px!important;background:#f4f7fb!important}
+body:has(.profileCard) .contentGrid{gap:20px!important;align-items:start!important}
+body:has(.profileCard) .main .panel{
+  padding:clamp(22px,3vw,31px)!important;border:1px solid #e0e7f0!important;
+  border-radius:20px!important;background:#fff!important;
+  box-shadow:0 12px 34px rgba(11,30,55,.06)!important
+}
+body:has(.profileCard) .main .panel h2{color:#122d4f!important;font-size:clamp(20px,2.2vw,24px)!important}
+body:has(.profileCard) .main .panel p{color:#52647c!important;line-height:1.85!important}
+body:has(.profileCard) .main .detail{padding:13px 0!important}
+body:has(.profileCard) .main .value{color:#1b385d!important}
+body:has(.profileCard) .actionsPanel .btn{border-radius:12px!important;min-height:47px!important}
+@media(max-width:760px){
+  body:has(.profileCard) .hero{padding:32px 0 36px!important}
+  body:has(.profileCard) .profileCard{
+    grid-template-columns:minmax(0,1fr)!important;gap:20px!important;
+    padding:20px!important;border-radius:21px!important
+  }
+  body:has(.profileCard) .logoWrap{min-height:140px!important;width:145px!important;padding:12px!important}
+  body:has(.profileCard) .logoWrap img{height:115px!important}
+  body:has(.profileCard) .profile h1{font-size:clamp(27px,8vw,38px)!important}
+  body:has(.profileCard) .main{padding:23px 0 52px!important}
+  body:has(.profileCard) .contentGrid{grid-template-columns:minmax(0,1fr)!important;gap:14px!important}
+  body:has(.profileCard) .main .panel{padding:20px!important;border-radius:17px!important}
+  body:has(.profileCard) .actions .btn{flex:1 1 100%!important;width:100%!important}
+}
+@media(prefers-reduced-motion:reduce){body:has(.profileCard) .actions .btn{transition:none!important}}

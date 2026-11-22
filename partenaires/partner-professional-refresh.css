@@ -619,3 +619,223 @@ html,body{ -webkit-tap-highlight-color:transparent; }
 /* Le contact est assuré par le bouton WhatsApp ; numéro non visible. */
 #devenir-partenaire .partnerWhatsAppHelp,
 #devenir-partenaire .partnerWhatsAppHint{display:none!important}
+
+
+/* PARTNER NETWORK V3 — cartes modernes et lisibles, sans modifier les données ou badges. */
+#partenaires .partnerGrid{gap:22px!important}
+#partenaires .partnerGrid>.partner.partnerCardV3{
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  min-height:460px!important;padding:0!important;text-align:left!important;
+  background:#fff!important;border:1px solid #e1e7ef!important;border-radius:24px!important;
+  overflow:hidden!important;isolation:isolate!important;
+  box-shadow:0 12px 38px rgba(10,23,48,.075)!important;
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease!important
+}
+#partenaires .partnerGrid>.partner.partnerCardV3:before,
+#partenaires .partnerGrid>.partner.partnerCardV3:after{content:none!important;display:none!important}
+#partenaires .partnerGrid>.partner.partnerCardV3:hover{transform:translateY(-5px)!important;border-color:#d6b671!important;box-shadow:0 22px 54px rgba(10,23,48,.13)!important}
+#partenaires .partnerCardV3 .partnerCardHero{
+  height:120px;flex:0 0 120px;display:flex;justify-content:space-between;align-items:flex-start;
+  position:relative;overflow:hidden;padding:20px 22px;
+  background:radial-gradient(circle at 92% 15%,rgba(240,207,126,.3),transparent 38%),linear-gradient(125deg,#081429,#17375f 70%,#245183);
+  border-bottom:3px solid #d9a441
+}
+#partenaires .partnerCardV3 .partnerCardHero:before{
+  content:"";position:absolute;width:250px;height:250px;border:1px solid rgba(255,255,255,.1);
+  border-radius:50%;top:-155px;right:-30px
+}
+#partenaires .partnerCardV3 .partnerCardHeroLabel{
+  position:relative;z-index:1;color:#e1e8f5;font-size:10px;font-weight:850;letter-spacing:.13em;line-height:1.6
+}
+#partenaires .partnerCardV3 .partnerCardHeroMark{
+  position:relative;z-index:1;display:grid;place-items:center;flex:0 0 34px;
+  width:34px;height:34px;border:1px solid rgba(240,207,126,.45);border-radius:10px;
+  color:#f0cf7e;font:900 20px Manrope,sans-serif
+}
+#partenaires .partnerCardV3 .partnerCardBody{display:flex;flex:1 1 auto;flex-direction:column;min-width:0;padding:0 24px 6px}
+#partenaires .partnerCardV3 .partnerCardLogoLink{
+  position:relative;z-index:1;display:grid;place-items:center;align-self:flex-start;
+  width:104px;height:104px;margin:-48px 0 18px;
+  border:4px solid #fff;border-radius:22px;background:#fff;
+  box-shadow:0 10px 26px rgba(10,23,48,.19);transition:transform .2s ease
+}
+#partenaires .partnerCardV3 .partnerCardLogoLink:hover{transform:translateY(-2px)}
+#partenaires .partnerGrid>.partner.partnerCardV3 .partnerLogo{
+  display:block!important;position:static!important;width:100%!important;height:100%!important;
+  max-height:none!important;max-width:none!important;min-height:0!important;flex:none!important;
+  margin:0!important;padding:12px!important;box-sizing:border-box!important;
+  background:#fff!important;border:0!important;border-radius:18px!important;box-shadow:none!important;
+  object-fit:contain!important
+}
+#partenaires .partnerGrid>.partner.partnerCardV3 h2{
+  display:flex!important;align-items:center!important;justify-content:flex-start!important;
+  flex-wrap:wrap!important;gap:7px!important;max-width:100%;
+  margin:0 0 10px!important;text-align:left!important;
+  color:#122744!important;font:850 clamp(20px,2vw,24px)/1.25 Manrope,sans-serif!important;
+  letter-spacing:-.035em!important;overflow-wrap:anywhere!important
+}
+#partenaires .partnerCardV3 .partnerCardNameLink{color:inherit;text-decoration:none}
+#partenaires .partnerCardV3 .partnerCardNameLink:hover{color:#986e21;text-decoration:underline;text-underline-offset:3px}
+#partenaires .partnerGrid>.partner.partnerCardV3 .verifiedBadge{
+  position:static!important;display:inline-block!important;width:23px!important;height:23px!important;
+  flex:0 0 23px!important;margin:0!important;object-fit:contain!important
+}
+#partenaires .partnerGrid>.partner.partnerCardV3 .partnerLiveBadge{
+  display:inline-flex!important;align-items:center!important;align-self:flex-start!important;
+  width:auto!important;max-width:100%!important;margin:0 0 16px!important;
+  padding:7px 11px!important;border-radius:999px!important;font-size:11px!important;font-weight:850!important
+}
+#partenaires .partnerCardV3 .partnerLiveBadge[data-unverified="true"]{
+  background:#f5f7fa!important;color:#59677d!important;border-color:#dce3ec!important
+}
+#partenaires .partnerCardV3 .partnerCardDescription{
+  display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:3;
+  overflow:hidden;min-height:62px;margin:0 0 16px!important;
+  color:#5d6b80!important;font-size:13px!important;line-height:1.65!important;
+  text-align:left!important;overflow-wrap:anywhere
+}
+#partenaires .partnerGrid>.partner.partnerCardV3 .partnerFounder{
+  margin:0 0 5px!important;padding:0!important;border:0!important;
+  font-size:12px!important;color:#68758a!important;text-align:left!important
+}
+#partenaires .partnerGrid>.partner.partnerCardV3 .partnerMeta{
+  display:flex!important;justify-content:flex-start!important;flex-wrap:wrap!important;gap:7px!important;margin:12px 0 0!important
+}
+#partenaires .partnerGrid>.partner.partnerCardV3 .chip{
+  padding:7px 10px!important;max-width:100%!important;background:#f5f7fa!important;
+  color:#43536c!important;border:1px solid #e1e8f1!important;border-radius:9px!important;
+  font-size:11px!important;line-height:1.4!important
+}
+#partenaires .partnerGrid>.partner.partnerCardV3 .partnerPublicId{
+  margin:12px 0 0!important;color:#8893a4!important;font-size:10px!important
+}
+#partenaires .partnerGrid>.partner.partnerCardV3 .partnerCardActions{
+  display:grid!important;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,.85fr)!important;
+  gap:8px!important;margin:auto 24px 0!important;padding:24px 0 22px!important
+}
+#partenaires .partnerGrid>.partner.partnerCardV3 .partnerCardActions a,
+#partenaires .partnerGrid>.partner.partnerCardV3 .partnerCardActions button{
+  display:flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;
+  min-width:0!important;min-height:46px!important;padding:10px 9px!important;
+  border-radius:11px!important;font-size:11px!important;line-height:1.35!important;
+  font-weight:850!important;text-decoration:none!important;white-space:normal!important;cursor:pointer!important
+}
+#partenaires .partnerGrid>.partner.partnerCardV3 .partnerCardActions .primary{
+  background:linear-gradient(120deg,#102a4b,#1a487b)!important;color:#fff!important;
+  border:1px solid #173b70!important
+}
+#partenaires .partnerGrid>.partner.partnerCardV3 .partnerCardActions .share{
+  background:#edf8f1!important;color:#216544!important;border:1px solid #cae6d4!important
+}
+#partenaires .partnerGrid>.partner.partnerCardV3 .partnerCardActions .qr{
+  background:#fff8ea!important;color:#735518!important;border:1px solid #ecdbb7!important
+}
+#partenaires .partnerCardV3 .partnerCardActions a:hover,
+#partenaires .partnerCardV3 .partnerCardActions button:hover{filter:brightness(.97)}
+#partenaires .partnerCardV3 a:focus-visible,
+#partenaires .partnerCardV3 button:focus-visible{outline:3px solid #d9a441!important;outline-offset:3px!important}
+@media(max-width:1050px){
+  #partenaires .partnerGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:680px){
+  #partenaires .partnerGrid{grid-template-columns:minmax(0,1fr)!important;gap:16px!important}
+  #partenaires .partnerGrid>.partner.partnerCardV3{min-height:0!important;border-radius:20px!important}
+  #partenaires .partnerCardV3 .partnerCardHero{height:108px;flex-basis:108px;padding:17px 18px}
+  #partenaires .partnerCardV3 .partnerCardBody{padding:0 20px 3px!important}
+  #partenaires .partnerCardV3 .partnerCardLogoLink{width:96px;height:96px;margin-top:-42px}
+  #partenaires .partnerGrid>.partner.partnerCardV3 .partnerCardActions{
+    grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr)!important;
+    gap:7px!important;margin-inline:20px!important;padding:22px 0 20px!important
+  }
+  #partenaires .partnerGrid>.partner.partnerCardV3 .partnerCardActions a,
+  #partenaires .partnerGrid>.partner.partnerCardV3 .partnerCardActions button{font-size:10px!important;padding:9px 6px!important}
+}
+@media(max-width:355px){
+  #partenaires .partnerGrid>.partner.partnerCardV3 .partnerCardActions{grid-template-columns:1fr 1fr!important}
+  #partenaires .partnerGrid>.partner.partnerCardV3 .partnerCardActions .primary{grid-column:1/-1!important}
+}
+@media(prefers-reduced-motion:reduce){
+  #partenaires .partnerGrid>.partner.partnerCardV3,
+  #partenaires .partnerCardV3 .partnerCardLogoLink{transition:none!important}
+}
+
+
+/* Profil partenaire V3 — identité professionnelle claire, mobile et accessible. */
+body:has(.pm-hero) .pm-cover{
+  min-height:520px!important;
+  background:radial-gradient(ellipse at 87% 4%,rgba(217,164,65,.27),transparent 33%),
+             radial-gradient(ellipse at 3% 95%,rgba(39,94,157,.32),transparent 40%),
+             linear-gradient(120deg,#071325 0%,#102b4c 57%,#214c79 100%)!important;
+}
+body:has(.pm-hero) .pm-cover:after{
+  content:"";position:absolute;right:-100px;top:-220px;width:520px;height:520px;
+  border:1px solid rgba(246,216,153,.14);border-radius:50%;pointer-events:none
+}
+body:has(.pm-hero) .pm-cover-inner{padding:145px 0 66px!important}
+body:has(.pm-hero) .pm-hero{
+  display:grid!important;grid-template-columns:176px minmax(0,1fr)!important;
+  gap:32px!important;align-items:center!important;
+}
+body:has(.pm-hero) .pm-logo{
+  width:176px!important;height:176px!important;padding:18px!important;border-radius:26px!important;
+  background:#fff!important;border:5px solid rgba(255,255,255,.94)!important;
+  box-shadow:0 20px 54px rgba(0,0,0,.27)!important;
+}
+body:has(.pm-hero) .pm-logo img{width:100%;height:100%;object-fit:contain}
+body:has(.pm-hero) .pm-hero h1{
+  max-width:800px;line-height:1.1!important;margin:12px 0 13px!important;
+  font-size:clamp(31px,5vw,54px)!important;letter-spacing:-.05em!important
+}
+body:has(.pm-hero) .pm-lead{max-width:710px;font-size:16px!important;line-height:1.75!important}
+body:has(.pm-hero) .pm-facts{
+  display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 22px;
+}
+body:has(.pm-hero) .pm-facts>div{
+  display:flex;flex-direction:column;gap:3px;min-width:135px;max-width:100%;
+  padding:11px 15px;border:1px solid rgba(255,255,255,.19);
+  border-radius:13px;background:rgba(255,255,255,.065);
+}
+body:has(.pm-hero) .pm-facts span{
+  color:#bbccdd;font-size:10px;font-weight:750;letter-spacing:.07em;text-transform:uppercase
+}
+body:has(.pm-hero) .pm-facts strong{
+  color:#fff;font-size:13px;line-height:1.45;font-weight:850;overflow-wrap:anywhere
+}
+body:has(.pm-hero) .pm-actions{gap:10px;margin-top:12px}
+body:has(.pm-hero) .pm-actions .pm-btn{
+  min-height:48px!important;padding:10px 16px!important;border-radius:12px!important;
+  font-size:13px!important;font-weight:850!important;line-height:1.4!important
+}
+body:has(.pm-hero) .pm-main{
+  padding:36px 0 78px!important;
+  background:linear-gradient(180deg,#f4f7fb 0%,#edf2f8 100%)!important
+}
+body:has(.pm-hero) .pm-grid{gap:19px!important;align-items:stretch}
+body:has(.pm-hero) .pm-grid>.pm-card{
+  border:1px solid #e0e7ef!important;border-radius:20px!important;
+  padding:clamp(22px,2.6vw,32px)!important;background:#fff!important;
+  box-shadow:0 12px 32px rgba(11,30,54,.055)!important
+}
+body:has(.pm-hero) .pm-grid>.pm-card h2{
+  margin-bottom:14px!important;color:#112b4b!important;font-size:clamp(19px,2vw,23px)!important;
+}
+body:has(.pm-hero) .pm-grid>.pm-card p{line-height:1.85!important;color:#52647b!important}
+body:has(.pm-hero) .pm-info-list dd{color:#1a3658!important}
+body:has(.pm-hero) .pm-links a{
+  gap:12px;background:#f7f9fc!important;color:#153d68!important;
+  border:1px solid #e1e8f1!important;border-radius:12px!important
+}
+body:has(.pm-hero) .pm-links a:hover{background:#fff8ea!important;border-color:#d9bb78!important}
+@media(max-width:760px){
+  body:has(.pm-hero) .pm-cover{min-height:0!important}
+  body:has(.pm-hero) .pm-cover-inner{padding:112px 0 36px!important}
+  body:has(.pm-hero) .pm-hero{grid-template-columns:minmax(0,1fr)!important;gap:20px!important}
+  body:has(.pm-hero) .pm-logo{width:118px!important;height:118px!important;border-radius:21px!important;padding:13px!important}
+  body:has(.pm-hero) .pm-hero h1{font-size:clamp(28px,8vw,39px)!important}
+  body:has(.pm-hero) .pm-lead{font-size:14px!important}
+  body:has(.pm-hero) .pm-facts{gap:9px}
+  body:has(.pm-hero) .pm-facts>div{flex:1 1 140px;min-width:0}
+  body:has(.pm-hero) .pm-actions .pm-btn{width:100%!important;flex:1 1 100%}
+  body:has(.pm-hero) .pm-main{padding:26px 0 52px!important}
+  body:has(.pm-hero) .pm-grid>.pm-card{border-radius:17px!important;padding:21px!important}
+}

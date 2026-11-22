@@ -194,7 +194,7 @@ body{background:#f4f7fb;color:var(--profile-ink);overflow-wrap:anywhere}
 
 </style>
 <link rel="stylesheet" href="/assets/partners/profile-magazine.css">
-<link rel="stylesheet" href="/partenaires/partner-professional-refresh.css?v=20261116">
+<link rel="stylesheet" href="/partenaires/partner-professional-refresh.css?v=20261122-profile-v3">
 </head>
 <body data-cover="">
 <header class="pm-top"><div class="pm-wrap">
@@ -206,10 +206,10 @@ body{background:#f4f7fb;color:var(--profile-ink);overflow-wrap:anywhere}
 <section class="pm-cover"><img id="profileCover" class="pm-cover-img" alt="" hidden><div class="pm-cover-shade"></div>
 <div class="pm-cover-inner pm-wrap"><div id="profileLoading" class="pm-loading">Chargement du profil partenaire…</div>
 <div id="profileCard" class="pm-hero" hidden><div class="pm-logo"><img id="profileLogo" src="/assets/bickri-b-logo.svg" alt="Logo du partenaire"></div><div>
-<span class="pm-kicker">Profil partenaire</span><h1 id="profileName">Partenaire</h1>
+<span class="pm-kicker">Réseau professionnel Bickri</span><h1 id="profileName">Partenaire</h1>
 <p id="profileDescription" class="pm-lead"></p>
 <div class="pm-badge"><img id="profileBadgeIcon" src="/assets/partners/badge-verified-green.svg" alt=""><span id="profileBadgeLabel">Partenaire vérifié</span></div>
-<div id="profileTags" class="pm-tags"></div>
+<div id="profileTags" class="pm-tags"></div><div class="pm-facts" aria-label="Informations essentielles"><div><span>Domaine d’activité</span><strong id="profileFactDomain">—</strong></div><div><span>Localisation</span><strong id="profileFactLocation">—</strong></div></div>
 <div class="pm-actions"><a id="profileWebsite" class="pm-btn pm-btn-primary" href="#" target="_blank" rel="noopener" hidden>Visiter le site ↗</a>
 <button id="profileShare" class="pm-btn pm-btn-ghost" type="button">Partager le profil</button>
 <button id="profileCopy" class="pm-btn pm-btn-ghost" type="button">Copier le lien</button></div>
@@ -236,7 +236,7 @@ const params=new URLSearchParams(location.search),slug=(params.get('slug')||'').
 const badges={green:'badge-verified-green.svg',blue:'badge-verified-blue.svg',gold:'badge-verified-gold.svg',construction:'badge-construction.svg'};
 const escUrl=value=>{try{const u=new URL(value);return ['https:','http:'].includes(u.protocol)&&!u.username&&!u.password?u.href:''}catch{return ''}};
 const record=(type,medium='profile')=>fetch(apiUrl('/api/partner/click'),{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,body:JSON.stringify({slug,referralCode:ref,eventType:type,source:'partner-profile',medium,campaign:'partner-network',landingPath:location.pathname})}).catch(()=>{});
-const publicUrl=()=>{const origin=location.hostname.endsWith('.vercel.app')?'https://bickriservice-agency.org':location.origin;const url=new URL(location.pathname+location.search,origin);for(const key of [...url.searchParams.keys()])if(key.toLowerCase().startsWith('utm_')||['gclid','fbclid'].includes(key.toLowerCase()))url.searchParams.delete(key);url.searchParams.delete('ref');if(ref)url.searchParams.set('ref',ref);return url.href;};
+const publicUrl=()=>{const origin=location.hostname.endsWith('.vercel.app')?'https://bickriservice-agency.org':location.origin;const url=new URL('/partenaires/partage/'+encodeURIComponent(slug)+'/',origin);if(ref)url.searchParams.set('ref',ref);return url.href;};
 async function copy(text){if(navigator.clipboard&&isSecureContext)return navigator.clipboard.writeText(text);const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();if(!ok)throw new Error('copy failed');}
 function setMeta(name,content,property=false){const selector=(property?'meta[property="':'meta[name="')+name+'"]';let el=document.querySelector(selector);if(!el){el=document.createElement('meta');if(property)el.setAttribute('property',name);else el.setAttribute('name',name);document.head.appendChild(el);}el.setAttribute('content',content);}
 function addSocial(label,url){const href=escUrl(url);if(!href)return;const a=document.createElement('a');a.href=href;a.target='_blank';a.rel='noopener noreferrer';a.className='btn ghost';a.textContent=label+' ↗';$('profileSocials').appendChild(a);}
@@ -317,10 +317,12 @@ async function init(){
   $('profileBadgeIcon').src='/assets/partners/'+(badges[badge]||badges.green);
   $('profileBadgeIcon').hidden=!p.badgeVerified;
   $('profileBadgeLabel').textContent=p.badgeVerified?(p.badgeLabel||'Partenaire vérifié'):'Profil actif — non vérifié';
-  if(p.hideBadge){const badgeEl=document.querySelector('.profileBadge');if(badgeEl)badgeEl.hidden=true;}
+  const badgeEl=document.querySelector('.pm-badge');if(badgeEl)badgeEl.hidden=Boolean(p.hideBadge);
   $('profileTags').replaceChildren();
   [p.category||p.partnerType,p.city,p.country].filter(Boolean).forEach(value=>{const tag=document.createElement('span');tag.textContent=value;$('profileTags').appendChild(tag);});
   $('profileLocation').textContent=[p.city,p.country].filter(Boolean).join(', ')||'Non renseigné';
+  $('profileFactDomain').textContent=p.category||p.partnerType||'Collaboration';
+  $('profileFactLocation').textContent=[p.city,p.country||'Niger'].filter(Boolean).join(' · ');
   $('profileFounder').textContent=p.founder||'';$('profileFounderRow').hidden=!p.founder;
   $('profileType').textContent=p.category||p.partnerType||'Partenariat';
   $('profileId').textContent=p.publicId||'Non renseigné';

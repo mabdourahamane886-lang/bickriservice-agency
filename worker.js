@@ -998,44 +998,97 @@ export default {async fetch(request,env,ctx){
     }
   }
 
-  // Social preview for dynamic partner profiles: bots receive server-rendered Open Graph metadata.
-  if (request.method === 'GET' && url.pathname === '/partenaires/profil/' &&
-      /(WhatsApp|facebookexternalhit|Facebot|Twitterbot|LinkedInBot|TelegramBot|Slackbot|Discordbot|SkypeUriPreview)/i.test(request.headers.get('User-Agent') || '')) {
-    const slug=(url.searchParams.get('slug')||'').trim().slice(0,90);
-    // Public profile reads are also allowed with the publishable key under Supabase RLS.
-    const key=env.SUPABASE_SERVICE_ROLE_KEY || SUPABASE_PUBLIC_KEY;
-    const escapeHtml=(value)=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-    if(!slug||!key) return new Response('Profil partenaire introuvable',{status:404,headers:{...SECURITY_HEADERS,'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'}});
-    try {
-      const params=new URLSearchParams({slug:`eq.${slug}`,active:'eq.true',select:'name,slug,description,mission,logo_url,country,city,partner_type,category,badge_label,public_id',limit:'1'});
-      const profileResponse=await supabaseRequest(`agency_partners?${params.toString()}`,key,{method:'GET'});
-      const profileRows=await profileResponse.json().catch(()=>[]);
-      let p=Array.isArray(profileRows)?profileRows[0]:null;
-      // Curated public profile fallback: this partner has a published static profile/logo in the repository.
-      if(!p && slug==='tourisme-au-niger') p={name:'Tourisme au Niger',slug:'tourisme-au-niger',description:'Collectif dédié à la promotion du tourisme, de la culture et des merveilles du Niger.',logo_url:new URL('/assets/partners/tourisme-au-niger.jpg',url.origin).href,category:'Tourisme & influence'};
-      if(!p) return new Response('Profil partenaire introuvable',{status:404,headers:{...SECURITY_HEADERS,'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'}});
-      const basePath='/partenaires/profil/?slug='+encodeURIComponent(p.slug);
-      const canonical=new URL(basePath,url.origin).href;
-      const link=new URL(basePath,url.origin);
-      const referral=(url.searchParams.get('ref')||'').trim();
-      if(referral) link.searchParams.set('ref',referral);
-      const sharedUrl=link.href;
-      const slugLogos={'impact-afriq':'/assets/partners/impact-afriq.svg','egan-btp':'/assets/partners/egan-btp.svg'};
-      const image=safePartnerUrl(p.logo_url)||new URL(slugLogos[p.slug]||'/assets/bickri-b-logo.svg',url.origin).href;
-      const title=(p.name||'Partenaire')+' — Partenaire Bickri Service Agency';
-      const description=String(p.description||p.mission||'Découvrez ce partenaire du réseau Bickri Service Agency.').slice(0,300);
-      const html='<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
-        '<title>'+escapeHtml(title)+'</title><meta name="description" content="'+escapeHtml(description)+'"><link rel="canonical" href="'+escapeHtml(canonical)+'">'+
-        '<meta property="og:type" content="profile"><meta property="og:site_name" content="Bickri Service Agency"><meta property="og:locale" content="fr_FR">'+
-        '<meta property="og:url" content="'+escapeHtml(canonical)+'"><meta property="og:title" content="'+escapeHtml(title)+'"><meta property="og:description" content="'+escapeHtml(description)+'">'+
-        '<meta property="og:image" content="'+escapeHtml(image)+'"><meta property="og:image:secure_url" content="'+escapeHtml(image)+'"><meta property="og:image:alt" content="'+escapeHtml(p.name||'Partenaire')+'">'+
-        '<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="'+escapeHtml(title)+'"><meta name="twitter:description" content="'+escapeHtml(description)+'"><meta name="twitter:image" content="'+escapeHtml(image)+'">'+
-        '</head><body><main><h1>'+escapeHtml(p.name||'Partenaire')+'</h1><p>'+escapeHtml(description)+'</p><a href="'+escapeHtml(sharedUrl)+'">Voir le profil partenaire</a></main></body></html>';
-      return new Response(html,{status:200,headers:{...SECURITY_HEADERS,'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store, no-cache, must-revalidate, max-age=0','Vary':'User-Agent'}});
-    } catch(error) {
-      console.error('Partner Open Graph rendering failed:',error?.message||'unknown error');
-      return new Response('Profil partenaire indisponible',{status:503,headers:{...SECURITY_HEADERS,'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'}});
+  // Open Graph par partenaire : liens de partage stables et prévisualisations côté serveur.
+  // Wrangler exécute le Worker en priorité sur /partenaires/partage/*.
+  const publicPartnerOrigin='https://bickriservice-agency.org';
+  const partnerShareMatch=url.pathname.match(/^\/partenaires\/partage\/([a-z0-9][a-z0-9-]{0,89})\/?$/);
+  const isPartnerProfile=url.pathname==='/partenaires/profil/';
+  const isSocialBot=/(WhatsApp|facebookexternalhit|Facebot|Twitterbot|LinkedInBot|TelegramBot|Slackbot|Discordbot|SkypeUriPreview|Pinterestbot|Snapchat|TikTok|redditbot|Mastodon|Embedly|Iframely)/i.test(request.headers.get('User-Agent')||'');
+  if(request.method==='GET' && (partnerShareMatch || (isPartnerProfile && isSocialBot))){
+    const slug=partnerShareMatch?.[1]||(url.searchParams.get('slug')||'').trim();
+    const previewHeaders={...SECURITY_HEADERS,'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Vary':'User-Agent'};
+    if(!/^[a-z0-9][a-z0-9-]{0,89}$/.test(slug)){
+      return new Response('Profil partenaire introuvable',{status:404,headers:previewHeaders});
     }
+    const profileUrl=new URL('/partenaires/profil/?slug='+encodeURIComponent(slug),publicPartnerOrigin);
+    const referral=(url.searchParams.get('ref')||'').trim().slice(0,100);
+    if(referral) profileUrl.searchParams.set('ref',referral);
+    // Un visiteur voit la vraie fiche moderne ; les robots reçoivent le HTML Open Graph.
+    if(partnerShareMatch && !isSocialBot){
+      return new Response(null,{status:302,headers:{...SECURITY_HEADERS,Location:profileUrl.href,'Cache-Control':'no-store'}});
+    }
+    const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const readMeta=(html,kind,name)=>{
+      const tags=String(html||'').match(/<meta\b[^>]*>/gi)||[];
+      const tag=tags.find(t=>new RegExp('\\b'+kind+'\\s*=\\s*"'+name+'"','i').test(t));
+      const value=tag?.match(/\bcontent\s*=\s*["']([^"']*)["']/i)?.[1]||'';
+      // Décoder les entités reconnues en une seule passe (pas de double déséchappement). 
+      const entities={'&amp;':'&','&quot;':'"','&#39;':"'",'&apos;':"'",'&lt;':'<','&gt;':'>'};
+      return value.replace(/&(?:amp|quot|#39|apos|lt|gt);/g,entity=>entities[entity]||entity);
+    };
+    let p=null;
+    try {
+      const key=env.SUPABASE_SERVICE_ROLE_KEY||SUPABASE_PUBLIC_KEY;
+      const params=new URLSearchParams({slug:'eq.'+slug,active:'eq.true',select:'name,slug,description,mission,logo_url,country,city,partner_type,category,badge_label,public_id',limit:'1'});
+      const db=await supabaseRequest('agency_partners?'+params.toString(),key,{method:'GET'});
+      if(db.ok){
+        const rows=await db.json().catch(()=>[]);
+        p=Array.isArray(rows)?rows[0]||null:null;
+      }
+    }catch(error){console.error('Partner Open Graph database lookup failed:',error?.message||'unknown error')}
+    // Les profils publiés statiquement restent partageables même si la base est momentanément indisponible.
+    if(!p){
+      const staticPaths=['/partenaires/partage/'+slug+'/','/partenaires/'+slug+'/'];
+      for(const assetPath of staticPaths){
+        try{
+          const asset=await env.ASSETS.fetch(new Request(new URL(assetPath,publicPartnerOrigin)));
+          if(!asset.ok||!(asset.headers.get('Content-Type')||'').includes('text/html'))continue;
+          const html=await asset.text();
+          const originalTitle=readMeta(html,'property','og:title');
+          const originalImage=readMeta(html,'property','og:image');
+          const originalUrl=readMeta(html,'property','og:url');
+          // Ne jamais utiliser l'index générique renvoyé par le fallback SPA comme profil partenaire.
+          if(!originalTitle||!originalImage||!originalUrl||!originalUrl.includes('/'+slug+'/'))continue;
+          p={name:originalTitle.replace(/\s+[—–-]\s+Partenaire.*$/i,''),slug,
+            description:readMeta(html,'property','og:description')||readMeta(html,'name','description'),
+            logo_url:originalImage};
+          break;
+        }catch(error){console.error('Partner static Open Graph fallback failed:',error?.message||'unknown error')}
+      }
+    }
+    if(!p){
+      return new Response('Profil partenaire introuvable',{status:404,headers:previewHeaders});
+    }
+    const canonical=partnerShareMatch?new URL('/partenaires/partage/'+encodeURIComponent(slug)+'/',publicPartnerOrigin).href:
+      new URL('/partenaires/profil/?slug='+encodeURIComponent(slug),publicPartnerOrigin).href;
+    const title=String(p.name||'Partenaire').trim().slice(0,160)+' — Bickri Service Agency';
+    const description=String(p.description||p.mission||'Découvrez ce partenaire du réseau Bickri Service Agency.')
+      .replace(/\s+/g,' ').trim().slice(0,270);
+    const fallbackLogo=new URL('/assets/bickri-logo-final.jpg',publicPartnerOrigin).href;
+    let image=fallbackLogo;
+    try{
+      const raw=String(p.logo_url||'').trim();
+      const candidate=raw?new URL(raw,publicPartnerOrigin):null;
+      if(candidate&&candidate.protocol==='https:'&&!candidate.username&&!candidate.password) image=candidate.href;
+    }catch{}
+    // Les aperçus sociaux ne prennent pas tous en charge SVG ou WebP.
+    const svgOrWebp=/\.(svg|webp)(?:[?#]|$)/i.test(image);
+    if(svgOrWebp) image='https://images.weserv.nl/?url='+encodeURIComponent(image)+'&w=1200&h=630&fit=contain&output=jpg&bg=ffffff';
+    const imageType=svgOrWebp||/\.jpe?g(?:[?#]|$)/i.test(image)?'image/jpeg':/\.png(?:[?#]|$)/i.test(image)?'image/png':'';
+    const ogHtml='<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
+      '<title>'+escapeHtml(title)+'</title><meta name="description" content="'+escapeHtml(description)+'"><link rel="canonical" href="'+escapeHtml(canonical)+'">'+
+      '<meta property="og:type" content="profile"><meta property="og:site_name" content="Bickri Service Agency"><meta property="og:locale" content="fr_FR">'+
+      '<meta property="og:url" content="'+escapeHtml(canonical)+'"><meta property="og:title" content="'+escapeHtml(title)+'"><meta property="og:description" content="'+escapeHtml(description)+'">'+
+      '<meta property="og:image" content="'+escapeHtml(image)+'"><meta property="og:image:secure_url" content="'+escapeHtml(image)+'">'+
+      (imageType?'<meta property="og:image:type" content="'+imageType+'">':'')+
+      (svgOrWebp?'<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">':'')+
+      '<meta property="og:image:alt" content="'+escapeHtml('Logo '+(p.name||'Partenaire'))+'">'+
+      '<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="'+escapeHtml(title)+'">'+
+      '<meta name="twitter:description" content="'+escapeHtml(description)+'"><meta name="twitter:image" content="'+escapeHtml(image)+'">'+
+      '<meta name="twitter:image:alt" content="'+escapeHtml('Logo '+(p.name||'Partenaire'))+'">'+
+      '</head><body><main><h1>'+escapeHtml(p.name||'Partenaire')+'</h1><p>'+escapeHtml(description)+'</p>'+
+      '<a href="'+escapeHtml(profileUrl.href)+'">Ouvrir le profil de '+escapeHtml(p.name||'ce partenaire')+'</a></main></body></html>';
+    return new Response(ogHtml,{status:200,headers:previewHeaders});
   }
 
   const response=await env.ASSETS.fetch(request);

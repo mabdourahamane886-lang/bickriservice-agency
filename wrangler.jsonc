@@ -18,7 +18,8 @@
     "run_worker_first": [
       "/api/*",
       "/s/*",
-      "/partenaires/profil/"
+      "/partenaires/profil/",
+      "/partenaires/partage/*"
     ]
   },
   "vars": {
