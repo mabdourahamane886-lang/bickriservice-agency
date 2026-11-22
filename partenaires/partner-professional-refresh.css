@@ -537,6 +537,19 @@ body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
   margin-top:31px!important;
 }
 #devenir-partenaire .applicationTracker h3{font-size:17px!important}
+#devenir-partenaire #partnerTrackerPanel>summary{
+  cursor:pointer;
+  color:#122744!important;
+  font:800 14px/1.5 Manrope,sans-serif;
+  padding:4px 0;
+}
+#devenir-partenaire #partnerTrackerPanel>summary:focus-visible{
+  outline:3px solid #d9a441!important;
+  outline-offset:4px!important;
+}
+#devenir-partenaire #partnerTrackerPanel[open]>summary{margin-bottom:14px}
+#devenir-partenaire #partnerTrackerPanel>p{margin:0 0 15px!important}
+
 /* Menu : une seule ouverture/fermeture, surface tactile suffisante et focus clavier visible. */
 .header #menu{
   cursor:pointer!important;
