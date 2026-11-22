@@ -1000,6 +1000,7 @@ export default {async fetch(request,env,ctx){
 
   // Open Graph par partenaire : liens de partage stables et prévisualisations côté serveur.
   // Wrangler exécute le Worker en priorité sur /partenaires/partage/*.
+  const publicPartnerOrigin='https://bickriservice-agency.org';
   const partnerShareMatch=url.pathname.match(/^\/partenaires\/partage\/([a-z0-9][a-z0-9-]{0,89})\/?$/);
   const isPartnerProfile=url.pathname==='/partenaires/profil/';
   const isSocialBot=/(WhatsApp|facebookexternalhit|Facebot|Twitterbot|LinkedInBot|TelegramBot|Slackbot|Discordbot|SkypeUriPreview|Pinterestbot|Snapchat|TikTok|redditbot|Mastodon|Embedly|Iframely)/i.test(request.headers.get('User-Agent')||'');
@@ -1009,7 +1010,7 @@ export default {async fetch(request,env,ctx){
     if(!/^[a-z0-9][a-z0-9-]{0,89}$/.test(slug)){
       return new Response('Profil partenaire introuvable',{status:404,headers:previewHeaders});
     }
-    const profileUrl=new URL('/partenaires/profil/?slug='+encodeURIComponent(slug),url.origin);
+    const profileUrl=new URL('/partenaires/profil/?slug='+encodeURIComponent(slug),publicPartnerOrigin);
     const referral=(url.searchParams.get('ref')||'').trim().slice(0,100);
     if(referral) profileUrl.searchParams.set('ref',referral);
     // Un visiteur voit la vraie fiche moderne ; les robots reçoivent le HTML Open Graph.
@@ -1038,7 +1039,7 @@ export default {async fetch(request,env,ctx){
       const staticPaths=['/partenaires/partage/'+slug+'/','/partenaires/'+slug+'/'];
       for(const assetPath of staticPaths){
         try{
-          const asset=await env.ASSETS.fetch(new Request(new URL(assetPath,url.origin)));
+          const asset=await env.ASSETS.fetch(new Request(new URL(assetPath,publicPartnerOrigin)));
           if(!asset.ok||!(asset.headers.get('Content-Type')||'').includes('text/html'))continue;
           const html=await asset.text();
           const originalTitle=readMeta(html,'property','og:title');
@@ -1056,16 +1057,16 @@ export default {async fetch(request,env,ctx){
     if(!p){
       return new Response('Profil partenaire introuvable',{status:404,headers:previewHeaders});
     }
-    const canonical=partnerShareMatch?new URL('/partenaires/partage/'+encodeURIComponent(slug)+'/',url.origin).href:
-      new URL('/partenaires/profil/?slug='+encodeURIComponent(slug),url.origin).href;
+    const canonical=partnerShareMatch?new URL('/partenaires/partage/'+encodeURIComponent(slug)+'/',publicPartnerOrigin).href:
+      new URL('/partenaires/profil/?slug='+encodeURIComponent(slug),publicPartnerOrigin).href;
     const title=String(p.name||'Partenaire').trim().slice(0,160)+' — Bickri Service Agency';
     const description=String(p.description||p.mission||'Découvrez ce partenaire du réseau Bickri Service Agency.')
       .replace(/\s+/g,' ').trim().slice(0,270);
-    const fallbackLogo=new URL('/assets/bickri-logo-final.jpg',url.origin).href;
+    const fallbackLogo=new URL('/assets/bickri-logo-final.jpg',publicPartnerOrigin).href;
     let image=fallbackLogo;
     try{
       const raw=String(p.logo_url||'').trim();
-      const candidate=raw?new URL(raw,url.origin):null;
+      const candidate=raw?new URL(raw,publicPartnerOrigin):null;
       if(candidate&&candidate.protocol==='https:'&&!candidate.username&&!candidate.password) image=candidate.href;
     }catch{}
     // Les aperçus sociaux ne prennent pas tous en charge SVG ou WebP.
