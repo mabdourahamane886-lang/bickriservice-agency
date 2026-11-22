@@ -92,6 +92,7 @@
   }
   function showSummary(note=''){
     renderSummary();
+    $('clientProfileCancel').hidden=true;
     $('clientProfileSummary').hidden=false;
     $('clientProfileEditor').hidden=true;
     const messageEl=$('clientSummaryStatus');
@@ -101,8 +102,26 @@
   function showEditor(){
     $('clientProfileSummary').hidden=true;
     $('clientProfileEditor').hidden=false;
+    $('clientProfileCancel').hidden=!(profile && (profile.full_name||profile.avatar_path));
     $('clientProfileSave').focus();
   }
+  async function restoreSavedProfile(){
+    if(!profile)return;
+    pendingPhoto=null;
+    $('clientAvatarFile').value='';
+    fill(profile);
+    $('clientAvatarSelection').textContent=profile.avatar_path?'Photo enregistrée':'Aucune photo enregistrée';
+    try{await displayAvatar(profile.avatar_path);}
+    catch(error){setImage(null);status('Impossible de réafficher la photo : '+message(error),true);}
+  }
+  $('clientProfileCancel')?.addEventListener('click',async()=>{
+    if(!profile)return;
+    $('clientProfileCancel').disabled=true;
+    try{
+      await restoreSavedProfile();
+      showSummary('Modifications annulées : votre profil enregistré a été conservé.');
+    }finally{$('clientProfileCancel').disabled=false;}
+  });
   $('clientProfileEdit')?.addEventListener('click',showEditor);
 
   function storedFileUrl(path){
@@ -188,6 +207,9 @@
     };
     if(!updated.full_name)return status('Veuillez saisir votre nom.',true);
     button.disabled=true;
+    button.setAttribute('aria-busy','true');
+    $('clientProfileSaveLabel').textContent='Enregistrement en cours…';
+    $('clientProfileCancel').disabled=true;
     $('clientAvatarFile').disabled=true;
     status(pendingPhoto?'Enregistrement du profil et de la photo…':'Enregistrement de votre profil…');
     try{
@@ -218,17 +240,21 @@
       pendingPhoto=null;
       $('clientAvatarFile').value='';
       $('clientAvatarSelection').textContent=profile.avatar_path?'Photo enregistrée':'Aucune photo enregistrée';
-      // The selected image is already displayed as a local preview; it becomes saved only here.
-      if(profile.avatar_path&&!photoObjectUrl){
-        await displayAvatar(profile.avatar_path).catch(()=>{});
+      let avatarVisible=true;
+      if(profile.avatar_path){
+        try{await displayAvatar(profile.avatar_path);}
+        catch(error){avatarVisible=false;setImage(null);}
       }
-      status('Profil enregistré avec succès.');
-      showSummary('Vos informations'+(profile.avatar_path?' et votre photo':'')+' ont été enregistrées dans votre espace privé.');
+      status(avatarVisible?'Profil enregistré avec succès.':'Profil enregistré, mais la photo ne peut pas encore être affichée.',!avatarVisible);
+      showSummary(avatarVisible?'Vos informations'+(profile.avatar_path?' et votre photo':'')+' ont été enregistrées dans votre espace privé.':'Profil enregistré. La photo n’a pas pu être rechargée ; utilisez Modifier mon profil pour la remplacer.');
     }catch(error){
       status(message(error),true);
       // Keep the selected file and its preview so the visitor can correct and retry.
     }finally{
       button.disabled=false;
+      button.removeAttribute('aria-busy');
+      $('clientProfileSaveLabel').textContent='Enregistrer et afficher mon profil';
+      $('clientProfileCancel').disabled=false;
       $('clientAvatarFile').disabled=false;
     }
   });
@@ -251,7 +277,7 @@
     pendingPhoto=file;
     setImage(file);
     $('clientAvatarSelection').textContent='Aperçu : '+file.name+' — photo non encore enregistrée';
-    status('Aperçu prêt. Appuyez sur « Enregistrer et voir mon profil » pour sauvegarder la photo.');
+    status('Aperçu prêt. Appuyez sur « Enregistrer et afficher mon profil » pour sauvegarder la photo.');
   });
   window.addEventListener('bsa:client-authenticated',()=>{load();});
   window.addEventListener('bsa:client-logout',logoutProfile);
