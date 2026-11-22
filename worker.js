@@ -291,11 +291,68 @@ function fallbackAnswer(message){
   return 'Je suis Bickri IA, l’assistant de Bickri Service Agency. Je peux vous aider à choisir un service, préparer une demande de devis ou vous expliquer nos solutions. Quel est votre projet ?';
 }
 
+// Proxy strictement limité aux routes client : aucune clé serveur ne quitte Vercel.
+const CLIENT_API_VERCEL_ORIGIN = 'https://bickriservice-agency-bickri-service-agency.vercel.app';
+async function proxyClientApiToVercel(request) {
+  if (!isAllowedOrigin(request)) {
+    return partnerJson(request,{error:'Origine non autorisée.'},403);
+  }
+  const method=request.method.toUpperCase();
+  if (!['GET','POST','PATCH','OPTIONS'].includes(method)) {
+    return partnerJson(request,{error:'Méthode non autorisée.'},405,{'Allow':'GET, POST, PATCH, OPTIONS'});
+  }
+  if (method==='OPTIONS') {
+    return partnerJson(request,{},204,{'Allow':'GET, POST, PATCH, OPTIONS'});
+  }
+  const incoming=new URL(request.url);
+  const allowedPaths=new Set([
+    '/api/client/me',
+    '/api/client/requests',
+    '/api/client/notifications',
+    '/api/client/admin/requests',
+    '/api/client/turnstile'
+  ]);
+  if (!allowedPaths.has(incoming.pathname)) {
+    return partnerJson(request,{error:'Route client inconnue.'},404);
+  }
+  const upstreamUrl=new URL(incoming.pathname+incoming.search,CLIENT_API_VERCEL_ORIGIN);
+  const headers=new Headers({'Accept':'application/json'});
+  const bearer=request.headers.get('Authorization');
+  if (bearer) headers.set('Authorization',bearer);
+  const contentType=request.headers.get('Content-Type');
+  if (contentType) headers.set('Content-Type',contentType);
+  // L'origine est celle du service Vercel pour sa validation interne ;
+  // l'origine du navigateur a déjà été vérifiée ci-dessus.
+  headers.set('Origin',CLIENT_API_VERCEL_ORIGIN);
+  try {
+    const response=await fetch(upstreamUrl.toString(),{
+      method,
+      headers,
+      body:method==='GET'?undefined:request.body,
+      redirect:'manual'
+    });
+    // Ne jamais relayer de cookies Vercel ou de redirections d'authentification externes.
+    const forwardedHeaders=new Headers({
+      'Content-Type':response.headers.get('Content-Type')||'application/json; charset=utf-8',
+      'Cache-Control':'no-store',
+      'X-Content-Type-Options':'nosniff'
+    });
+    if (response.status>=300&&response.status<400) {
+      return partnerJson(request,{error:'Service Vercel indisponible ou protégé.'},503);
+    }
+    return new Response(response.body,{status:response.status,headers:forwardedHeaders});
+  } catch (error) {
+    console.error('Vercel API client proxy unreachable:',error?.message||'network error');
+    return partnerJson(request,{error:'Connexion à l’espace client momentanément indisponible.'},503);
+  }
+}
+
 export default {async fetch(request,env,ctx){
   const url=new URL(request.url);
-  // API ajoutée sans modification des routes ni fonctions existantes.
+  // Les API privées client s'exécutent sur Vercel, où les secrets Supabase sont configurés.
+  // Le proxy conserve le domaine public Cloudflare sans divulguer aucun secret au navigateur.
   if (url.pathname.startsWith('/api/client/')) {
-    return handleClientApi(request,env,{allowedOrigin:isAllowedOrigin,requireAuth:partnerAuthUser,db:supabaseRequest,isAdmin:partnerIsAdmin,verifyTurnstile:verifyWorkerTurnstile,json:partnerJson});
+    return proxyClientApiToVercel(request);
   }
   if (url.pathname.startsWith('/api/partner') && request.headers.get('Origin') && !isAllowedOrigin(request)) {
     return json({error:'Origine non autorisée'},403);
