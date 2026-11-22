@@ -115,6 +115,7 @@
     $('dateField').hidden=!appointment;$('preferredAt').required=appointment;
   });
   async function setupCaptcha(){
+    if(captchaId!==null)return;
     const msg=$('captchaMessage');if(!msg)return;
     try{
       const response=await fetch(API_BASE+'/api/turnstile-sitekey',{cache:'no-store'});
@@ -176,11 +177,11 @@
       if(adminMode&&!me.isAdmin)throw Error('Ce compte ne dispose pas des droits administrateur.');
       $('authCard').hidden=true;
       if(adminMode){$('adminDashboard').hidden=false;await loadAdmin();}
-      else{$('portalDashboard').hidden=false;await loadClient();}
+      else{$('portalDashboard').hidden=false;await loadClient();await setupCaptcha();}
       notice('');
     }catch(err){showAuth(err.message);}
   }
   loadServices();
-  if(!adminMode)setupCaptcha();
+  // Turnstile se charge uniquement lorsque le formulaire devient visible.
   if(token())openDashboard().catch(()=>showAuth('Reconnectez-vous.'));
 })();
