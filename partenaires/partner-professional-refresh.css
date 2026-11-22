@@ -187,3 +187,214 @@ body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 @media(prefers-reduced-motion:reduce){
   #partenaires .partnerResetFilters{transition:none}
 }
+
+
+/* Formulaire Partenaires : alignement et lisibilité des champs — palette BSA conservée */
+#devenir-partenaire{
+  scroll-margin-top:100px;
+  max-width:1120px;
+  margin:34px auto 0!important;
+  padding:clamp(22px,4vw,46px)!important;
+}
+#devenir-partenaire .partnerApplyHead{
+  max-width:760px;
+  margin:0 0 30px!important;
+  text-align:left!important;
+}
+#devenir-partenaire .partnerApplyHead h2{
+  margin:13px 0 12px!important;
+  line-height:1.18!important;
+}
+#devenir-partenaire .partnerApplyHead p{
+  max-width:690px;
+  margin:0!important;
+  font-size:14px;
+  line-height:1.75;
+}
+#devenir-partenaire .partnerApplyHead .partnerRequiredHint{
+  margin-top:12px!important;
+  color:var(--bsa-pro-muted)!important;
+  font-size:12px;
+}
+#devenir-partenaire .partnerRequiredHint strong{color:var(--bsa-pro-gold)}
+#partnerApplicationForm{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  column-gap:24px!important;
+  row-gap:20px!important;
+  align-items:start;
+}
+#partnerApplicationForm>.partnerField,
+#partnerApplicationForm>.partnerOptionalDetails{
+  min-width:0!important;
+}
+#partnerApplicationForm .partnerField{
+  gap:7px!important;
+}
+#partnerApplicationForm .partnerField>label{
+  display:block!important;
+  margin:0 0 3px!important;
+  color:#34445b!important;
+  font-size:13px!important;
+  font-weight:800!important;
+  line-height:1.45!important;
+}
+#partnerApplicationForm .partnerField input:not([type=checkbox]),
+#partnerApplicationForm .partnerField select,
+#partnerApplicationForm .partnerField textarea{
+  display:block;
+  min-width:0;
+  width:100%!important;
+  min-height:54px!important;
+  margin:0!important;
+  padding:13px 15px!important;
+  border:1px solid #dce3ec!important;
+  border-radius:12px!important;
+  background:#fff!important;
+  color:var(--bsa-pro-ink)!important;
+  font-family:'DM Sans',sans-serif!important;
+  font-size:15px!important;
+  line-height:1.5!important;
+}
+#partnerApplicationForm .partnerField input::placeholder,
+#partnerApplicationForm .partnerField textarea::placeholder{color:#8792a2!important;opacity:1}
+#partnerApplicationForm .partnerField textarea{
+  min-height:140px!important;
+  resize:vertical;
+}
+#partnerApplicationForm #partnerPublicAbout{min-height:180px!important}
+#partnerApplicationForm .partnerField input:not([type=checkbox]):focus,
+#partnerApplicationForm .partnerField select:focus,
+#partnerApplicationForm .partnerField textarea:focus{
+  outline:none!important;
+  border-color:var(--bsa-pro-gold)!important;
+  box-shadow:0 0 0 3px rgba(215,168,71,.16)!important;
+}
+#partnerApplicationForm .partnerField.full,
+#partnerApplicationForm>.partnerOptionalDetails,
+#partnerApplicationForm>.partnerFormSubmit{grid-column:1/-1!important}
+#partnerApplicationForm>.partnerOptionalDetails{
+  width:100%!important;
+  padding:0!important;
+  overflow:hidden!important;
+  border:1px solid var(--bsa-pro-line)!important;
+  border-radius:14px!important;
+  background:#f8fafc!important;
+}
+#partnerApplicationForm>.partnerOptionalDetails>summary{
+  display:list-item;
+  min-height:52px;
+  padding:15px 18px!important;
+  line-height:1.5!important;
+  color:var(--bsa-pro-navy)!important;
+}
+#partnerApplicationForm>.partnerOptionalDetails[open]>summary{
+  border-bottom:1px solid var(--bsa-pro-line);
+}
+#partnerApplicationForm .partnerOptionalGrid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:18px!important;
+  padding:20px!important;
+}
+#partnerApplicationForm .partnerOptionalGrid>.partnerField.full{grid-column:1/-1!important}
+#partnerApplicationForm .partnerConsentField{
+  padding:18px 19px!important;
+  border:1px solid var(--bsa-pro-line)!important;
+  border-radius:14px!important;
+  background:#f8fafc!important;
+}
+#partnerApplicationForm .partnerConsentField>label{
+  display:flex!important;
+  align-items:flex-start!important;
+  gap:12px!important;
+  margin:0!important;
+  font-size:13px!important;
+  font-weight:500!important;
+  line-height:1.7!important;
+  cursor:pointer;
+}
+#partnerApplicationForm .partnerConsentField input[type=checkbox]{
+  flex:0 0 19px!important;
+  width:19px!important;
+  height:19px!important;
+  min-height:19px!important;
+  margin:2px 0 0!important;
+  accent-color:var(--bsa-pro-gold);
+}
+#partnerApplicationForm .partnerConsentField>label>span{
+  display:block!important;
+  min-width:0;
+  color:#34445b!important;
+  font-weight:500!important;
+  line-height:1.75!important;
+}
+#partnerApplicationForm .partnerConsentField>label>span>b{color:var(--bsa-pro-gold)}
+#partnerApplicationForm .partnerFormSubmit{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  gap:10px!important;
+  padding-top:4px;
+}
+#partnerApplicationForm #partnerSubmitButton{
+  width:100%!important;
+  min-height:55px!important;
+  border-radius:12px!important;
+  font-size:14px!important;
+  font-weight:900!important;
+}
+#devenir-partenaire .applicationTracker{
+  margin-top:34px!important;
+  padding:26px!important;
+  border:1px solid var(--bsa-pro-line)!important;
+  border-radius:17px!important;
+  background:#f8fafc!important;
+}
+#devenir-partenaire .applicationTracker h3{margin:0 0 8px!important}
+#devenir-partenaire .applicationTracker p{line-height:1.65}
+#devenir-partenaire .trackerForm{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) minmax(160px,auto)!important;
+  gap:11px!important;
+  align-items:stretch;
+}
+#devenir-partenaire .trackerForm input{
+  min-width:0!important;
+  min-height:52px!important;
+  border-radius:12px!important;
+  background:#fff!important;
+  font-size:14px!important;
+}
+#devenir-partenaire .trackerForm button{
+  min-height:52px!important;
+  padding:10px 17px!important;
+  white-space:normal;
+}
+@media(max-width:900px){
+  #devenir-partenaire .trackerForm{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  #devenir-partenaire .trackerForm button{grid-column:1/-1!important}
+}
+@media(max-width:680px){
+  #devenir-partenaire{
+    margin-top:25px!important;
+    padding:24px 16px!important;
+    border-radius:18px!important;
+  }
+  #devenir-partenaire .partnerApplyHead{margin-bottom:24px!important}
+  #partnerApplicationForm{grid-template-columns:minmax(0,1fr)!important;row-gap:16px!important}
+  #partnerApplicationForm>.partnerField,
+  #partnerApplicationForm>.partnerOptionalDetails,
+  #partnerApplicationForm>.partnerFormSubmit{grid-column:1/-1!important}
+  #partnerApplicationForm .partnerOptionalGrid{
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:16px!important;
+    padding:16px!important;
+  }
+  #partnerApplicationForm .partnerConsentField{padding:15px!important}
+  #devenir-partenaire .applicationTracker{padding:19px 15px!important}
+  #devenir-partenaire .trackerForm{grid-template-columns:minmax(0,1fr)!important}
+  #devenir-partenaire .trackerForm button{grid-column:1/-1!important;width:100%!important}
+}
+@media(prefers-reduced-motion:reduce){
+  #devenir-partenaire{scroll-behavior:auto}
+}
