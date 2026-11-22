@@ -175,7 +175,7 @@
       document.body.innerHTML=`
         <header class="siteHeader">
           <div class="siteWrap">
-            <a class="siteBrand" href="/" aria-label="Bickri Service Agency"><img src="https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/a3312bdd-3b2a-412e-b0b3-61f10d3a1cf0.png?v=20261019" alt="Logo officiel Bickri Service Agency" width="58" height="58" decoding="async"><span>BICKRI SERVICE AGENCY</span></a>
+            <a class="siteBrand" href="/" aria-label="Bickri Service Agency"><img src="https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/0f26cf1f-df17-461f-8b2f-463b5d3f9b16.png?v=20261019" alt="Logo officiel Bickri Service Agency" width="58" height="58" decoding="async"><span>BICKRI SERVICE AGENCY</span></a>
             <nav><a href="/#service-${encodeURIComponent(slug)}">Retour aux services</a><a href="/portfolio/">Projets</a><a href="/rendez-vous/">Contact</a></nav>
           </div>
         </header>
