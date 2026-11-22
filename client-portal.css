@@ -275,3 +275,198 @@
   .clientProfilePrimary,.clientProfileCancel,.clientProfileLogout{transition:none!important}
   .clientProfilePrimary[aria-busy=true] .clientSaveIcon{animation:none!important}
 }
+
+/* Profil professionnel de type réseau business : sobre, mobile, privé par défaut. */
+body.client-profile-active .hero,
+body.client-profile-active #portalMessage,
+body.client-profile-active .clientProfileTop{display:none!important}
+body.client-profile-active #clientProfileSection{padding-top:22px!important}
+body.client-profile-active #clientProfileSection>.wrap{max-width:1120px!important}
+body.client-profile-active .clientProfileCard{
+  padding:0!important;
+  overflow:visible!important;
+  max-width:1060px;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important
+}
+body.client-profile-active #clientProfileSection .clientProfileSummary{
+  display:block;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important
+}
+body.client-profile-active #clientProfileSummary[hidden],
+body.client-profile-active #clientProfileEditor[hidden]{display:none!important}
+.clientProfileCover{
+  position:relative;
+  height:clamp(165px,22vw,238px);
+  overflow:hidden;
+  border-radius:20px 20px 0 0;
+  background:
+    radial-gradient(circle at 85% 15%,rgba(246,204,111,.35),transparent 30%),
+    linear-gradient(123deg,#0a1d3a 5%,#183c68 52%,#174876 100%);
+}
+.clientProfileCover::before,.clientProfileCover::after{
+  content:"";
+  position:absolute;
+  width:360px;height:360px;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:50%;transform:rotate(-15deg);
+  right:-60px;top:-195px
+}
+.clientProfileCover::after{width:280px;height:280px;right:38%;top:90px;border-color:rgba(234,193,103,.2)}
+.clientCoverAccent{
+  position:absolute;left:0;right:0;bottom:0;height:5px;
+  background:linear-gradient(90deg,#c29030,#f4db99,#c29030)
+}
+.clientCoverSymbol{
+  position:absolute;right:8%;top:17%;
+  color:rgba(255,255,255,.075);
+  font:900 clamp(100px,17vw,195px)/1 Manrope,sans-serif;
+  pointer-events:none
+}
+.clientProfileSummaryBody{
+  position:relative;
+  padding:0 clamp(20px,4vw,44px) 27px;
+  border:1px solid #e1e6ee;
+  border-top:0;
+  border-radius:0 0 20px 20px;
+  background:#fff;
+  box-shadow:0 10px 30px rgba(10,32,62,.045)
+}
+.clientProfileSummaryHeader{
+  display:block!important;
+  padding:0!important;
+  border:0!important
+}
+.clientProfileSummaryHeader .clientSummaryAvatar{
+  position:relative;z-index:2;
+  margin:-62px 0 12px!important;
+  flex:0 0 auto!important;
+  width:132px!important;height:132px!important;
+  border:5px solid #fff!important;
+  box-shadow:0 4px 16px rgba(6,24,45,.2)!important
+}
+.clientProfileIdentity{min-width:0}
+.clientSummaryIdentityTop{
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:8px;margin-bottom:7px
+}
+.clientSummaryLabel{
+  margin:0!important;
+  color:#b08837!important;
+  font-size:11px!important;
+  letter-spacing:.075em!important
+}
+.clientPrivatePill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 10px;
+  border-radius:99px;
+  color:#53677f;
+  background:#f1f4f8;
+  font-size:11px;font-weight:750
+}
+.clientPrivatePill span{color:#319568;font-size:11px}
+.clientProfileSummaryHeader h3{
+  margin:0 0 7px!important;
+  color:#0d213d!important;
+  font-size:clamp(26px,3vw,35px)!important;
+  letter-spacing:-.035em;
+  line-height:1.22!important;
+}
+.clientProfileSummaryHeader p{margin:4px 0!important}
+#clientSummaryJob{font-size:17px!important;color:#102f56!important;font-weight:800!important}
+#clientSummaryCompany{font-size:14px!important;color:#576983!important}
+.clientSummaryPlace{font-size:13px!important;color:#64778c!important;margin-top:9px!important}
+.clientSummaryPlace span:first-child{font-size:19px;color:#b38a37}
+.clientProfileSummary .clientSummaryActions{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  flex-direction:row!important;
+  gap:12px!important;
+  margin:23px 0 0!important
+}
+.clientProfileSummary .clientSummaryActions .cta{
+  width:auto!important;
+  min-height:45px!important;
+  border-radius:28px!important;
+  padding:10px 20px!important;
+  background:#b88934!important;
+  color:#0b1c34!important;
+  font-size:13px;
+  box-shadow:none!important
+}
+.clientProfileSummary .clientSummaryActions .clientProfileLogout{
+  width:auto!important;
+  min-height:45px;
+  border-radius:28px!important;
+  padding:10px 19px!important;
+  font-size:13px;
+}
+.clientProfileSummaryStatus{margin:10px 0 0!important;color:#23664b}
+.clientProfileSummaryStatus:empty{display:none}
+.clientAboutCard{
+  margin:18px 0 0;
+  padding:clamp(20px,3.4vw,32px);
+  border:1px solid #e1e6ed;
+  border-radius:18px;
+  background:#fff;
+  box-shadow:0 8px 24px rgba(10,32,62,.035)
+}
+.clientAboutHeading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px}
+.clientAboutHeading h4{margin:0;font-size:20px;line-height:1.3;color:#122846;font-weight:900}
+.clientAboutEdit{
+  display:inline-flex;align-items:center;gap:8px;
+  min-height:38px;padding:7px 12px;
+  border:1px solid #dfe5ed;border-radius:10px;background:#fff;
+  color:#284c76;font-size:12px;font-weight:800;cursor:pointer
+}
+.clientAboutCard>p{
+  margin:0 0 21px!important;
+  white-space:pre-line;
+  color:#334962!important;
+  font-size:14px!important;
+  line-height:1.78!important;
+  overflow-wrap:anywhere
+}
+.clientAboutMeta{
+  display:grid;grid-template-columns:minmax(95px,130px) minmax(0,1fr);
+  gap:12px 18px;padding-top:16px;
+  border-top:1px solid #edf0f4
+}
+.clientAboutMeta>span{color:#78879a;font-size:12px;font-weight:700}
+.clientAboutMeta>strong{font-size:13px;color:#203650;overflow-wrap:anywhere}
+.clientServiceState{
+  margin:16px 0 0;padding:16px 19px;
+  border:1px solid #e5eaf0;border-radius:14px;background:#fff;
+  color:#50637c;font-size:12px
+}
+.clientServiceState[hidden]{display:none!important}
+.clientServiceState>summary{font-weight:800;cursor:pointer;color:#375273;min-height:27px}
+.clientServiceState>p{line-height:1.65;margin:10px 0 0}
+body.client-profile-active #clientProfileEditor:not([hidden]){
+  padding:clamp(19px,3vw,35px)!important;
+  border:1px solid #e3e8ee;border-radius:20px;
+  background:#fff;
+}
+body.client-profile-active #clientProfileEditor:not([hidden])::before{
+  content:"Modifier mon profil professionnel";
+  display:block;margin-bottom:25px;
+  color:#152a49;font-size:clamp(20px,3vw,27px);font-weight:900
+}
+@media(max-width:700px){
+  body.client-profile-active #clientProfileSection{padding-top:12px!important}
+  body.client-profile-active #clientProfileSection>.wrap{padding-left:12px!important;padding-right:12px!important}
+  .clientProfileCover{height:164px;border-radius:16px 16px 0 0}
+  .clientProfileSummaryBody{padding:0 19px 23px!important;border-radius:0 0 16px 16px}
+  .clientProfileSummaryHeader .clientSummaryAvatar{width:112px!important;height:112px!important;margin-top:-54px!important}
+  .clientProfileSummary .clientSummaryActions{flex-direction:column!important;align-items:stretch!important}
+  .clientProfileSummary .clientSummaryActions .cta,.clientProfileSummary .clientSummaryActions .clientProfileLogout{width:100%!important}
+  .clientAboutCard{margin-top:14px;padding:20px 18px;border-radius:16px}
+  .clientAboutMeta{grid-template-columns:90px minmax(0,1fr)}
+}
+@media(prefers-reduced-motion:reduce){.clientProfileCover *{animation:none!important}}
