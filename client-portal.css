@@ -31,3 +31,18 @@
   #authCard .clientActions .cta,
   #authCard .clientActions .clientTextButton{min-height:48px}
 }
+
+/* Turnstile : widget à pleine largeur disponible et possibilité de relancer sur mobile. */
+#clientTurnstile{min-height:68px;max-width:100%;overflow:visible}
+#captchaMessage{margin:8px 0;line-height:1.55}
+#captchaRetry.clientCaptchaRetry{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:44px;padding:9px 14px;
+  margin:6px 0 0;border:1px solid #d9a441;
+  border-radius:10px;background:#fff8e9;color:#14253c;
+  font:800 13px/1.5 "DM Sans",sans-serif;
+  cursor:pointer;-webkit-tap-highlight-color:transparent
+}
+#captchaRetry[hidden]{display:none!important}
+#captchaRetry:focus-visible{outline:3px solid #d9a441;outline-offset:3px}
+@media(max-width:420px){#clientTurnstile{width:100%}#captchaRetry{width:100%}}
