@@ -194,7 +194,7 @@ body{background:#f4f7fb;color:var(--profile-ink);overflow-wrap:anywhere}
 
 </style>
 <link rel="stylesheet" href="/assets/partners/profile-magazine.css">
-<link rel="stylesheet" href="/partenaires/partner-professional-refresh.css?v=20261122-profile-v3">
+<link rel="stylesheet" href="/partenaires/partner-professional-refresh.css?v=20261122-logos">
 </head>
 <body data-cover="">
 <header class="pm-top"><div class="pm-wrap">
@@ -230,11 +230,39 @@ body{background:#f4f7fb;color:var(--profile-ink);overflow-wrap:anywhere}
 'use strict';
 const $=id=>document.getElementById(id);
 $('profileRetry')?.addEventListener('click',()=>location.reload());
-$('profileLogo')?.addEventListener('error',event=>{
- const img=event.currentTarget;
- if(img.dataset.fallbackUsed==='1')return;
- img.dataset.fallbackUsed='1';img.src='/assets/bickri-b-logo.svg';img.alt='Logo du partenaire indisponible';
+const authenticLogos=Object.freeze({
+ 'impact-afriq':'https://cdn.smoothbundle.com/abdourahamane-mohamed/impact-afriq-logo/impact-afriq-logo-transparent.png',
+ 'ayish-prestige':'https://cdn.smoothbundle.com/abdourahamane-mohamed/ayish-prestige-logo/logos/ayish-prestige-original.png',
+ 'chadi-store':'https://cdn.smoothbundle.com/abdourahamane-mohamed/bickri-service-agency-images/partners/chadi-store-original.png',
+ 'sayra-collection':'https://cdn.smoothbundle.com/abdourahamane-mohamed/bickri-service-agency-images/partners/sayra-collection-white-background.png',
+ 'pure-elite':'https://cdn.smoothbundle.com/abdourahamane-mohamed/bickri-service-agency-images/partners/pure-elite-logo.png',
+ 'douceur-delice':'https://cdn.smoothbundle.com/abdourahamane-mohamed/bickri-service-agency-images/partners/douceur-delice-logo.png',
+ 'sahel-bien-etre':'https://cdn.smoothbundle.com/abdourahamane-mohamed/bickri-service-agency-images/partners/sahel-bien-etre-logo-original.png',
+ 'mila-store':'https://cdn.smoothbundle.com/abdourahamane-mohamed/bickri-service-agency-images/partners/mila-store-logo-original.jpg'
 });
+const initials=name=>String(name||'').trim().split(/\s+/).filter(Boolean).slice(0,2).map(part=>part[0].toLocaleUpperCase('fr')).join('')||'—';
+const validLogo=value=>{
+ const raw=String(value||'').trim();
+ return /^https:\/\/[^\s<>"']+$/i.test(raw)||/^\/(?!\/)[\w./-]+$/.test(raw)?raw:'';
+};
+function resolvePartnerLogo(p){
+ const current=validLogo(p.logoUrl||p.logo_url);
+ if(p.slug==='impact-afriq'&&(!current||current.endsWith('/assets/partners/impact-afriq.svg')))return authenticLogos[p.slug];
+ return current||authenticLogos[p.slug]||({'egan-btp':'/assets/partners/egan-btp.svg','tourisme-au-niger':'/assets/partners/tourisme-au-niger.jpg'}[p.slug]||'');
+}
+function profileLogoError(){
+ const img=$('profileLogo');if(!img||img.dataset.logoFailed==='1')return;
+ img.dataset.logoFailed='1';img.hidden=true;
+ const container=img.parentElement;
+ if(container&&!container.querySelector('.partnerLogoInitials')){
+  const display=document.createElement('span');
+  display.className='partnerLogoInitials';
+  display.textContent=initials($('profileName')?.textContent);
+  display.setAttribute('aria-label','Logo non disponible');
+  container.appendChild(display);
+ }
+}
+$('profileLogo')?.addEventListener('error',profileLogoError);
 const API_BASE=location.hostname.endsWith('.vercel.app')?'https://bickriservice-agency.org':'';const apiUrl=path=>API_BASE+path;
 const SUPABASE_URL='https://okdohokhlkxrmxpevees.supabase.co';
 const SUPABASE_PUBLIC_KEY='sb_publishable_EiTruyR5fwwHpS_PzO5_iA_d1i4iMCP';
@@ -250,7 +278,7 @@ async function init(){
  if(!slug){$('profileLoading').hidden=true;$('profileNotFound').style.display='block';return;}
  try{
   const fallbackPartners=[
-   {id:'cc59c44e-45ae-40e8-8588-8653efb4958c',name:'Impact Afriq',slug:'impact-afriq',description:'Innovating · Inspiring · Transforming Africa',founder:'Abdoul Kader Abdourahamane',mission:'Innovation, inspiration et transformation de l’Afrique par les idées, les talents, la technologie et les collaborations.',country:'Niger',partnerType:'Collaboration',category:'Collaboration',badgeLevel:'green',badgeLabel:'Partenaire vérifié',badgeVerified:true,verifiedAt:'2026-10-08T08:41:16.376Z',publicId:'BSP-CC59C44E',referralCode:'BSA-CC59C44E',logoUrl:'/assets/partners/impact-afriq.svg'},
+   {id:'cc59c44e-45ae-40e8-8588-8653efb4958c',name:'Impact Afriq',slug:'impact-afriq',description:'Innovating · Inspiring · Transforming Africa',founder:'Abdoul Kader Abdourahamane',mission:'Innovation, inspiration et transformation de l’Afrique par les idées, les talents, la technologie et les collaborations.',country:'Niger',partnerType:'Collaboration',category:'Collaboration',badgeLevel:'green',badgeLabel:'Partenaire vérifié',badgeVerified:true,verifiedAt:'2026-10-08T08:41:16.376Z',publicId:'BSP-CC59C44E',referralCode:'BSA-CC59C44E',logoUrl:'https://cdn.smoothbundle.com/abdourahamane-mohamed/impact-afriq-logo/impact-afriq-logo-transparent.png'},
    {id:'75ee8919-db0d-4c4a-a874-9c2e370be42f',name:'EGAN BTP',slug:'egan-btp',description:'Construction · Rénovation · Plans · Hydraulique · Eau & assainissement',founder:'Garba Abdoul Nasser',mission:'Construction, fourniture de plans, rénovation, hydraulique de l’eau et assainissement.',country:'Niger',partnerType:'BTP & Construction',category:'BTP & Construction',badgeLevel:'green',badgeLabel:'Partenaire vérifié',badgeVerified:true,verifiedAt:'2026-10-08T08:41:16.376Z',publicId:'BSP-75EE8919',referralCode:'BSA-75EE8919',logoUrl:'/assets/partners/egan-btp.svg'},   {id:'tourisme-au-niger',name:'Tourisme au Niger',slug:'tourisme-au-niger',description:'Collectif d’influenceurs engagé dans la promotion du tourisme, de la culture, du patrimoine et des merveilles du Niger.',about:'Tourisme au Niger est un collectif d’influenceurs qui met en lumière la richesse et la diversité du Niger. À travers ses contenus et ses actions de communication, le collectif invite le public à découvrir les paysages du pays, ses sites naturels et historiques, ses traditions, son artisanat, sa gastronomie et le savoir-faire de ses communautés.\n\nSon objectif est de valoriser le patrimoine nigérien, de faire connaître les destinations et les expériences locales, et de transmettre une image authentique et accueillante du Niger auprès des habitants, de la diaspora et des visiteurs. En s’appuyant sur les réseaux sociaux et la création de contenus numériques, Tourisme au Niger contribue à donner davantage de visibilité aux acteurs locaux, aux initiatives culturelles et aux opportunités touristiques.\n\nDirigé par Ismaghila ADOUM Silimane, le collectif défend une approche qui associe découverte, culture et influence numérique afin de rapprocher le public des merveilles du Niger et d’encourager la préservation et la transmission de son patrimoine.',founder:'Ismaghila ADOUM Silimane',mission:'Promouvoir les destinations touristiques, les paysages, l’histoire, les traditions, la culture et le patrimoine du Niger grâce à la création de contenus et à l’influence numérique.',country:'Niger',partnerType:'Tourisme & influence',category:'Tourisme & culture',socialLinks:{tiktok:'https://www.tiktok.com/@tourisme.niger?_r=1&_t=ZN-9AaOadnX9Fe',facebook:'https://www.facebook.com/profile.php?id=61590907346888',youtube:'https://youtube.com/@tourisme-au-niger?si=Td5vyovIdDlWR9P3'},badgeLevel:'green',badgeLabel:'Partenaire vérifié',badgeVerified:true,logoUrl:'/assets/partners/tourisme-au-niger.jpg'},
 
    {id:'ayish-prestige',name:'Ayish Prestige',slug:'ayish-prestige',description:'Vêtements féminins · Hijabs · Parfums',founder:'Moustapha Goni Aïchatou',mission:'Ayish Prestige met à l’honneur la mode féminine, les hijabs et les parfums dans un univers raffiné, pensé pour accompagner les femmes au quotidien et lors de leurs occasions spéciales. Contactez directement la marque pour connaître les articles disponibles, les prix et les modalités de commande.',country:'Niger',partnerType:'Mode féminine & beauté',category:'Vêtements · Hijabs · Parfums',badgeLevel:'gold',badgeLabel:'Partenaire officiel',badgeVerified:false,hideBadge:true,logoUrl:'https://cdn.smoothbundle.com/abdourahamane-mohamed/ayish-prestige-logo/logos/ayish-prestige-original.png'},
@@ -318,7 +346,8 @@ async function init(){
   $('profileDescription').textContent=p.description||p.mission||'Partenaire de Bickri Service Agency';
   $('profileAbout').textContent=p.about||p.description||'Présentation détaillée non renseignée.';
   $('profileMission').textContent=p.mission||p.description||'Mission non renseignée.';
-  $('profileLogo').src=p.logoUrl||('/assets/partners/'+(slug==='impact-afriq'?'impact-afriq.svg':slug==='egan-btp'?'egan-btp.svg':'badge-verified-green.svg'));
+  const realPartnerLogo=resolvePartnerLogo(p);
+  if(realPartnerLogo){$('profileLogo').src=realPartnerLogo;}else{profileLogoError();}
   $('profileLogo').alt='Logo '+(p.name||'partenaire');
   $('profileBadgeIcon').src='/assets/partners/'+(badges[badge]||badges.green);
   $('profileBadgeIcon').hidden=!p.badgeVerified;
@@ -344,10 +373,11 @@ async function init(){
   $('profileCopy').addEventListener('click',async()=>{try{await copy(shareUrl);$('profileCopy').textContent='Lien copié ✓';record('share_click','copy');}catch{window.prompt('Copiez ce lien :',shareUrl);}setTimeout(()=>$('profileCopy').textContent='Copier le lien',1600);});
   setMeta('og:title',p.name+' — Partenaire Bickri Service Agency',true);
   setMeta('og:description',p.description||p.mission||'Profil partenaire vérifié de Bickri Service Agency.',true);
-  setMeta('og:url',canonicalUrl,true);setMeta('og:image',new URL(p.logoUrl||'https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/0f26cf1f-df17-461f-8b2f-463b5d3f9b16.png?v=20261019',publicOrigin).href,true);
+  setMeta('og:url',canonicalUrl,true);
+  if(realPartnerLogo)setMeta('og:image',new URL(realPartnerLogo,publicOrigin).href,true);
   setMeta('twitter:title',p.name+' — Partenaire Bickri Service Agency');
   setMeta('twitter:description',p.description||p.mission||'Profil partenaire de Bickri Service Agency.');
-  setMeta('twitter:image',new URL(p.logoUrl||'https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/0f26cf1f-df17-461f-8b2f-463b5d3f9b16.png?v=20261019',publicOrigin).href);
+  if(realPartnerLogo)setMeta('twitter:image',new URL(realPartnerLogo,publicOrigin).href);
   document.title=p.name+' — Partenaire Bickri Service Agency';
   $('profileLoading').hidden=true;$('profileCard').hidden=false;$('profileDetails').hidden=false;
   record('profile_view','view');

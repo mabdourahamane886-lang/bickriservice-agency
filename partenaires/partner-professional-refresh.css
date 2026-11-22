@@ -839,3 +839,45 @@ body:has(.pm-hero) .pm-links a:hover{background:#fff8ea!important;border-color:#
   body:has(.pm-hero) .pm-main{padding:26px 0 52px!important}
   body:has(.pm-hero) .pm-grid>.pm-card{border-radius:17px!important;padding:21px!important}
 }
+
+/* Logos authentiques partenaires : lisibilité sans substitution du logo Bickri. */
+#partenaires .partnerCardV3 .partnerCardLogoLink{
+  position:relative;
+  display:grid!important;
+  place-items:center;
+  overflow:hidden;
+  background:#fff!important;
+}
+#partenaires .partnerGrid>.partner.partnerCardV3 .partnerLogo{
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  padding:9px!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  object-fit:contain!important;
+}
+#partenaires .partnerGrid>.partner.partnerCardV3 img.partnerLogo[hidden],
+body:has(.pm-hero) .pm-logo img[hidden]{display:none!important}
+#partenaires .partnerLogoInitials,
+body:has(.pm-hero) .pm-logo .partnerLogoInitials{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;height:100%;
+  padding:10px;
+  color:#1b3d66;
+  background:#edf3fa;
+  font:900 clamp(25px,3vw,38px)/1.1 Manrope,sans-serif;
+  letter-spacing:.04em;
+  text-align:center;
+}
+body:has(.pm-hero) .pm-logo .partnerLogoInitials{
+  color:#e5bd68;
+  background:#142e50;
+  border-radius:14px;
+}
