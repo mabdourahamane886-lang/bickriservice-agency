@@ -916,9 +916,10 @@ export default {async fetch(request,env,ctx){
         '<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="' + esc(title) + '">' +
         '<meta name="twitter:description" content="' + esc(description) + '"><meta name="twitter:image" content="' + esc(image) + '"><meta name="twitter:image:alt" content="' + esc(service.name || 'Service Bickri Service Agency') + '">' +
         '</head><body style="margin:0;background:#08101f;color:#fff;font-family:Arial,sans-serif"><main style="max-width:900px;margin:auto;padding:24px">' +
-        '<img src="' + esc(image) + '" alt="' + esc(service.name || '') + '" style="width:100%;max-height:520px;object-fit:cover;border-radius:20px">' +
         '<p style="color:#d9a441;font-weight:700;letter-spacing:.08em">BICKRI SERVICE AGENCY · NIAMEY · NIGER</p>' +
         '<h1>' + esc(service.name || 'Service') + '</h1><p style="font-size:18px;line-height:1.6">' + esc(description) + '</p>' +
+        '<a href="https://wa.me/22788376133?text=' + encodeURIComponent('Bonjour Bickri Service Agency, je souhaite un devis pour la prestation « ' + service.name + ' ».') + '" style="display:inline-block;padding:14px 20px;border-radius:10px;background:#f1c76a;color:#101827;font-weight:800;text-decoration:none">Demander un devis sur WhatsApp ↗</a>' +
+        '<img src="' + esc(image) + '" alt="' + esc(service.name || '') + '" style="display:block;margin-top:24px;width:100%;max-height:380px;object-fit:cover;border-radius:20px">' +
         '<div style="margin:24px 0;padding:18px;border:1px solid #2b3850;border-radius:18px;background:#0d1729;text-align:center">' +
         '<div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#d9a441;margin-bottom:10px">Lien du service</div>' +
         '<div style="display:flex;flex-direction:column;gap:10px;align-items:stretch">' +

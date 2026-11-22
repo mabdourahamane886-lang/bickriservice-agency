@@ -87,9 +87,10 @@ module.exports = async function (req, res) {
     '<meta name="twitter:description" content="' + escapeHtml(description) + '"><meta name="twitter:image" content="' + escapeHtml(image) + '"><meta name="twitter:image:alt" content="' + escapeHtml(service.name) + '">' +
     '</head><body style="margin:0;background:#08101f;color:#fff;font-family:Arial,sans-serif">' +
     '<main style="max-width:900px;margin:auto;padding:24px">' +
-    '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(service.name) + '" style="width:100%;max-height:520px;object-fit:cover;border-radius:20px">' +
     '<p style="color:#d9a441;font-weight:700;letter-spacing:.08em">BICKRI SERVICE AGENCY · NIAMEY · NIGER</p>' +
     '<h1>' + escapeHtml(service.name) + '</h1><p style="font-size:18px;line-height:1.6">' + escapeHtml(description) + '</p>' +
+        '<a href="https://wa.me/22788376133?text=' + encodeURIComponent('Bonjour Bickri Service Agency, je souhaite un devis pour la prestation « ' + service.name + ' ».') + '" style="display:inline-block;padding:14px 20px;border-radius:10px;background:#f1c76a;color:#101827;font-weight:800;text-decoration:none">Demander un devis sur WhatsApp ↗</a>' +
+    '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(service.name) + '" style="display:block;margin-top:24px;width:100%;max-height:380px;object-fit:cover;border-radius:20px">' +
     
     '<div style="margin:18px 0;padding:18px;border:1px solid #263248;border-radius:18px;background:#0d1729;text-align:center">' +
     '<div style="font-size:12px;color:#d9a441;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:9px">Référence et lien du service</div>' +
