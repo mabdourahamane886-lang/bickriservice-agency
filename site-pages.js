@@ -110,8 +110,10 @@
       .service-reference-mode a{text-decoration:none;color:inherit}
       .service-reference-mode .siteHeader{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-bottom:1px solid #e3e8f0}
       .service-reference-mode .siteWrap{width:min(1160px,calc(100% - 32px));margin:0 auto}
-      .service-reference-mode .siteHeader .siteWrap{min-height:74px;display:flex;align-items:center;justify-content:space-between;gap:22px}
-      .service-reference-mode .siteBrand{font-weight:900;letter-spacing:.02em;color:#08101f}
+      .service-reference-mode .siteHeader .siteWrap{min-height:74px;display:flex;align-items:center;justify-content:space-between;gap:22px;min-width:0}
+      .service-reference-mode .siteBrand{display:inline-flex;align-items:center;gap:12px;min-width:0;font-weight:900;letter-spacing:.015em;color:#08101f}
+      .service-reference-mode .siteBrand img{display:block;flex:0 0 58px;width:58px!important;height:58px!important;object-fit:contain;background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;mix-blend-mode:multiply}
+      .service-reference-mode .siteBrand span{font-size:clamp(13px,1.45vw,19px);line-height:1.3;overflow-wrap:anywhere}
       .service-reference-mode .siteHeader nav{display:flex;gap:22px;font-size:14px;font-weight:800;color:#536077}
       .service-reference-mode .siteHeader nav a:hover{color:#9b701e}
       .service-reference-mode .pageHero{padding:72px 0 56px;background:linear-gradient(#fff,#f6f8fb)}
@@ -152,7 +154,9 @@
       }
       @media(max-width:480px){
         .service-reference-mode .siteHeader nav{display:none}
-        .service-reference-mode .siteBrand{font-size:15px}
+        .service-reference-mode .siteBrand{font-size:15px;gap:9px;max-width:100%}
+        .service-reference-mode .siteBrand img{width:52px!important;height:52px!important;flex-basis:52px}
+        .service-reference-mode .siteBrand span{font-size:clamp(12px,3.2vw,16px);letter-spacing:0}
         .service-reference-mode .serviceHeroImage{height:auto}
         .service-reference-mode .serviceFullCard img{height:auto}
       }
@@ -171,7 +175,7 @@
       document.body.innerHTML=`
         <header class="siteHeader">
           <div class="siteWrap">
-            <a class="siteBrand" href="/" aria-label="Bickri Service Agency"><img src="https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/a3312bdd-3b2a-412e-b0b3-61f10d3a1cf0.png?v=20261019" alt="Logo officiel Bickri Service Agency" style="width:68px;height:60px;object-fit:contain;background:transparent" decoding="async"><span>BICKRI SERVICE AGENCY</span></a>
+            <a class="siteBrand" href="/" aria-label="Bickri Service Agency"><img src="https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/a3312bdd-3b2a-412e-b0b3-61f10d3a1cf0.png?v=20261019" alt="Logo officiel Bickri Service Agency" width="58" height="58" decoding="async"><span>BICKRI SERVICE AGENCY</span></a>
             <nav><a href="/#service-${encodeURIComponent(slug)}">Retour aux services</a><a href="/portfolio/">Projets</a><a href="/rendez-vous/">Contact</a></nav>
           </div>
         </header>
@@ -219,6 +223,9 @@
 
   function initBackButton(){
     if(document.getElementById('bickri-back-button'))return;
+    // Les fiches de services possèdent déjà un bouton de retour dans la page.
+    // Ne pas afficher un second retour flottant qui masque le contenu mobile.
+    if(location.pathname.startsWith('/services/')||location.pathname.startsWith('/partenaires/'))return;
     const path=location.pathname.replace(/\/+$/,'')||'/';
     if(path==='/'||path==='/index.html')return;
     const btn=document.createElement('button');
@@ -249,7 +256,7 @@
   function applyOfficialBrand(){
     const logo="https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/0f26cf1f-df17-461f-8b2f-463b5d3f9b16.png?v=20261019";
     document.querySelectorAll('.brand img, .brandMark img, .siteBrand img').forEach(img=>{img.src=logo;img.alt='Logo officiel Bickri Service Agency';img.decoding='async';img.loading='eager';});
-    if(!document.getElementById('bickri-global-brand-style')){const style=document.createElement('style');style.id='bickri-global-brand-style';style.textContent='.header,.bsa-head-nav{background:#fff!important;color:#101827!important;border-bottom:1px solid #e3e8f0!important;backdrop-filter:blur(18px)}.brand img{width:76px!important;height:68px!important;max-width:76px;object-fit:contain!important;background:transparent!important}.brand b{color:#101827!important}.brand small{color:#667289!important}.links a{color:#536077}.links a:hover{color:#966a1e}@media(max-width:600px){.brand img{width:62px!important;height:58px!important;max-width:62px}.brand b{font-size:15px!important}.brand small{font-size:7px!important;letter-spacing:.12em!important}}';document.head.appendChild(style)}
+    if(!document.getElementById('bickri-global-brand-style')){const style=document.createElement('style');style.id='bickri-global-brand-style';style.textContent='.header,.bsa-head-nav{background:#fff!important;color:#101827!important;border-bottom:1px solid #e3e8f0!important;backdrop-filter:blur(18px)}.brand img{width:62px!important;height:62px!important;max-width:62px;object-fit:contain!important;background:transparent!important;border:0!important;box-shadow:none!important;mix-blend-mode:multiply}.brand b{color:#101827!important}.brand small{color:#667289!important}.links a{color:#536077}.links a:hover{color:#966a1e}@media(max-width:600px){.brand img{width:52px!important;height:52px!important;max-width:52px}.brand b{font-size:15px!important}.brand small{font-size:7px!important;letter-spacing:.12em!important}}';document.head.appendChild(style)}
   }
   function boot(){applyOfficialBrand();addScript('/service-experience.js','bickri-service-experience');addScript('/_vercel/insights/script.js','bickri-vercel-analytics');addScript('/_vercel/speed-insights/script.js','bickri-vercel-speed');enhanceSEO();addArabicLink();if(initServiceReferenceLayout())return;initUI();initBackButton()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
