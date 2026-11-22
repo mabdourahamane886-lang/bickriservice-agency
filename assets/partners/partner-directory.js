@@ -68,6 +68,8 @@
   const categoryFilter = $('partnerCategoryFilter');
   const badgeFilter = $('partnerBadgeFilter');
   const search = $('partnerSearch');
+  const sortFilter = $('partnerSortFilter');
+  const resetButton = $('partnerResetFilters');
   const count = $('partnerResultsCount');
   const message = $('partnerDirectoryMessage');
 
@@ -87,24 +89,40 @@
     if(values.includes(current)) select.value=current;
   }
   function rebuildFilters() {
-    fillFilter(countryFilter,ALL_COUNTRIES.map(c=>c.name),'🌍 Tous les pays',true);
-    fillFilter(categoryFilter,[...new Set(partners.map(p=>p.category || p.partnerType).filter(Boolean))].sort(),'Tous les domaines');
-    // Keep legacy database country names selectable where browser locale data differs.
-    for(const p of partners){if(p.country&&! [...countryFilter.options].some(o=>o.value===p.country)){const opt=document.createElement('option');opt.value=p.country;opt.textContent=(p.country==='Niger'?'🇳🇪 ':'🌐 ')+p.country;countryFilter.appendChild(opt);}}
+    // Afficher uniquement les pays réellement présents dans le répertoire.
+    const countries = [...new Set(partners.map(p => p.country).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'fr'));
+    fillFilter(countryFilter, countries, '🌍 Tous les pays', true);
+    fillFilter(categoryFilter, [...new Set(partners.map(p => p.category || p.partnerType).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'fr')), 'Tous les domaines');
   }
+
+  function normalizeSearch(value) {
+    return String(value ?? '').trim().toLocaleLowerCase('fr').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+
   function filteredPartners() {
-    const q=(search?.value||'').trim().toLocaleLowerCase('fr');
-    return partners.filter(p=>{
-      const hay=[p.name,p.description,p.about,p.founder,p.mission,p.country,p.city,p.partnerType,p.category].join(' ').toLocaleLowerCase('fr');
-      return (!q||hay.includes(q)) && (!countryFilter?.value||p.country===countryFilter.value)
-        && (!categoryFilter?.value||(p.category||p.partnerType)===categoryFilter.value)
-        && (!badgeFilter?.value||(badgeFilter.value==='unverified'?!p.badgeVerified:(p.badgeVerified&&(p.badgeLevel||'green')===badgeFilter.value)));
+    const q = normalizeSearch(search?.value);
+    const rows = partners.filter(p => {
+      const hay = normalizeSearch([p.name,p.description,p.about,p.founder,p.mission,p.country,p.city,p.partnerType,p.category].join(' '));
+      return (!q || hay.includes(q))
+        && (!countryFilter?.value || p.country === countryFilter.value)
+        && (!categoryFilter?.value || (p.category || p.partnerType) === categoryFilter.value)
+        && (!badgeFilter?.value || (badgeFilter.value === 'unverified' ? !p.badgeVerified : (p.badgeVerified && (p.badgeLevel || 'green') === badgeFilter.value)));
     });
+    const compareName = (a,b) => (a.name || '').localeCompare(b.name || '', 'fr', {sensitivity:'base'});
+    const mode = sortFilter?.value || 'name-asc';
+    rows.sort((a,b) => {
+      if(mode === 'name-desc') return -compareName(a,b);
+      if(mode === 'verified-first') return Number(Boolean(b.badgeVerified)) - Number(Boolean(a.badgeVerified)) || compareName(a,b);
+      if(mode === 'premium-first') return Number(Boolean(b.badgeVerified && b.badgeLevel === 'gold')) - Number(Boolean(a.badgeVerified && a.badgeLevel === 'gold')) || compareName(a,b);
+      return compareName(a,b);
+    });
+    return rows;
   }
+
   function updateStats() {
     const total = partners.length;
     const verified = partners.filter(p => p.badgeVerified === true).length;
-    const activeLevels = partners.filter(p => p.badgeVerified === true).length;
+    const activeLevels = new Set(partners.filter(p => p.badgeVerified === true).map(p => p.badgeLevel || 'green')).size;
     const profilesWithStatus = partners.filter(p => typeof p.badgeVerified === 'boolean').length;
     const statusPercent = total ? Math.round((profilesWithStatus / total) * 100) : 0;
     if ($('statPartners')) $('statPartners').textContent = String(total).padStart(2, '0');
@@ -113,14 +131,26 @@
     if ($('statStatus')) $('statStatus').textContent = statusPercent + '%';
   }
 
+  function resetFilters() {
+    if(search) search.value = '';
+    if(countryFilter) countryFilter.value = '';
+    if(categoryFilter) categoryFilter.value = '';
+    if(badgeFilter) badgeFilter.value = '';
+    if(sortFilter) sortFilter.value = 'name-asc';
+    render();
+    search?.focus();
+  }
+
   function render() {
     if(!directory) return;
-    const rows=filteredPartners();
-    if(count) count.textContent=rows.length+' partenaire(s) affiché(s) sur '+partners.length;
+    const rows = filteredPartners();
+    if(count) count.textContent = rows.length + (rows.length === 1 ? ' partenaire affiché sur ' : ' partenaires affichés sur ') + partners.length;
+    const hasFilters = Boolean(search?.value.trim() || countryFilter?.value || categoryFilter?.value || badgeFilter?.value || (sortFilter?.value && sortFilter.value !== 'name-asc'));
+    if(resetButton) resetButton.disabled = !hasFilters;
     updateStats();
 
     if(!rows.length) {
-      directory.innerHTML='<div class="empty"><strong>Aucun partenaire trouvé</strong><span>Modifiez vos critères ou effacez la recherche.</span></div>';
+      directory.innerHTML = '<div class="empty partnerEmpty" role="status"><strong>Aucun partenaire trouvé</strong><span>Essayez une recherche plus courte ou réinitialisez les filtres.</span><button type="button" data-reset-partners>Voir tous les partenaires</button></div>';
       return;
     }
     directory.innerHTML=rows.map(p=>{
@@ -150,6 +180,7 @@
     else window.prompt('Copiez le lien du partenaire :',link);
   }
   directory?.addEventListener('click',async event=>{
+    if(event.target.closest('[data-reset-partners]')) { resetFilters(); return; }
     const share=event.target.closest('[data-share-partner]');
     const qr=event.target.closest('[data-qr-partner]');
     const open=event.target.closest('[data-open-partner]');
@@ -159,8 +190,9 @@
     if(qr){recordClick(p,'share_click','qr');openShare(p);}
     if(open) recordClick(p,'profile_view','profile-link');
   });
-  search?.addEventListener('input',render);
-  [countryFilter,categoryFilter,badgeFilter].forEach(el=>el?.addEventListener('change',render));
+  search?.addEventListener('input', render);
+  [countryFilter,categoryFilter,badgeFilter,sortFilter].forEach(el=>el?.addEventListener('change', render));
+  resetButton?.addEventListener('click', resetFilters);
   $('partnerDialogClose')?.addEventListener('click',()=>dialog?.close());
   $('partnerDialogCopy')?.addEventListener('click',async()=>{
     const text=$('partnerDialogUrl')?.textContent||'';
