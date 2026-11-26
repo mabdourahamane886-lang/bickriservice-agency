@@ -1094,13 +1094,9 @@ export default {async fetch(request,env,ctx){
     // Les aperçus sociaux ne prennent pas tous en charge SVG ou WebP.
     const svgOrWebp=/\.(svg|webp)(?:[?#]|$)/i.test(image);
     if(svgOrWebp) image='https://images.weserv.nl/?url='+encodeURIComponent(image)+'&w=1200&h=630&fit=contain&output=jpg&bg=ffffff';
-    const certified=slug==='sahelia-fresh'||p.badge_verified===true||/premium|verified|certifi/i.test(String(p.badge_level||''));
-    if(certified){
-      const badgeUrl=new URL('/api/partner-og-card',publicPartnerOrigin);
-      badgeUrl.searchParams.set('slug',slug);
-      image='https://images.weserv.nl/?url='+encodeURIComponent(badgeUrl.href)+'&w=1200&h=630&output=jpg';
-    }
-    const imageType=certified||svgOrWebp||/\\.jpe?g(?:[?#]|$)/i.test(image)?'image/jpeg':/\\.png(?:[?#]|$)/i.test(image)?'image/png':'';
+    // L'aperçu social utilise uniquement le logo officiel du partenaire.
+    // Pas de carte générée, de badge ni de surimpression.
+    const imageType=/\.jpe?g(?:[?#]|$)/i.test(image)?'image/jpeg':/\.png(?:[?#]|$)/i.test(image)?'image/png':'';
     const ogHtml='<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
       '<title>'+escapeHtml(title)+'</title><meta name="description" content="'+escapeHtml(description)+'"><link rel="canonical" href="'+escapeHtml(canonical)+'">'+
       '<meta property="og:type" content="profile"><meta property="og:site_name" content="Bickri Service Agency"><meta property="og:locale" content="fr_FR">'+
