@@ -998,6 +998,23 @@ export default {async fetch(request,env,ctx){
     }
   }
 
+  // Carte Open Graph dynamique, avec logo original et badge jaune doré.
+  if(request.method==='GET' && url.pathname==='/api/partner-og-card'){
+    const slug=(url.searchParams.get('slug')||'').trim().toLowerCase();
+    if(!/^[a-z0-9-]{1,90}$/.test(slug)) return new Response('Invalid slug',{status:400});
+    let partner=slug==='sahelia-fresh'?{name:'Sahelia Fresh',logo_url:'https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/053dc7b0-1a6c-4685-84a3-08595451a656.png',badge_level:'premium'}:null;
+    try{const key=env.SUPABASE_SERVICE_ROLE_KEY||SUPABASE_PUBLIC_KEY;const params=new URLSearchParams({slug:'eq.'+slug,active:'eq.true',select:'name,logo_url,badge_level,badge_verified',limit:'1'});const db=await supabaseRequest('agency_partners?'+params,key,{method:'GET'});if(db.ok){const rows=await db.json();if(rows[0])partner={...partner,...rows[0]};}}catch{}
+    if(!partner)return new Response('Partner not found',{status:404});
+    if(slug==='sahelia-fresh')partner.logo_url='https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/053dc7b0-1a6c-4685-84a3-08595451a656.png';
+    const safe=s=>String(s||'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\\'':'&#39;'}[ch]));
+    let logo='';
+    try{const u=new URL(partner.logo_url);if(u.protocol==='https:'){const response=await fetch(u,{signal:AbortSignal.timeout(5000)});const mime=(response.headers.get('content-type')||'').split(';')[0];if(response.ok&&/^image\\/(png|jpeg|webp)$/.test(mime)){const bytes=new Uint8Array(await response.arrayBuffer());if(bytes.length<1500000){let binary='';for(const b of bytes)binary+=String.fromCharCode(b);logo='data:'+mime+';base64,'+btoa(binary);}}}}catch{}
+    const name=String(partner.name||'Partenaire').slice(0,55);
+    const badge=slug==='sahelia-fresh'||partner.badge_verified===true||/premium|verified|certifi/i.test(String(partner.badge_level||''));
+    const svg='<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"><rect width="1200" height="630" fill="#102844"/><rect x="55" y="55" width="1090" height="520" rx="32" fill="#173755"/><rect x="95" y="165" width="395" height="320" rx="24" fill="white"/>'+(logo?'<image href="'+logo+'" x="110" y="178" width="365" height="294" preserveAspectRatio="xMidYMid meet"/>':'')+'<text x="550" y="200" fill="#e7b93b" font-family="Arial" font-size="25">BICKRI SERVICE AGENCY</text><text x="550" y="306" fill="white" font-family="Arial" font-weight="bold" font-size="'+(name.length>22?44:60)+'">'+safe(name)+'</text>'+(badge?'<rect x="550" y="345" width="480" height="76" rx="38" fill="#f3d46b"/><circle cx="590" cy="383" r="23" fill="#bd8c14"/><path d="M577 383l9 9 17-19" fill="none" stroke="white" stroke-width="5"/><text x="625" y="396" font-family="Arial" font-size="29" font-weight="bold" fill="#59400a">Partenaire Premium</text>':'')+'<text x="550" y="490" font-family="Arial" font-size="23" fill="#e6ecf3">Réseau de partenaires certifiés</text></svg>';
+    return new Response(svg,{headers:{'Content-Type':'image/svg+xml; charset=utf-8','Cache-Control':'public, max-age=300'}});
+  }
+
   // Open Graph par partenaire : liens de partage stables et prévisualisations côté serveur.
   // Wrangler exécute le Worker en priorité sur /partenaires/partage/*.
   const publicPartnerOrigin='https://bickriservice-agency.org';
@@ -1030,7 +1047,7 @@ export default {async fetch(request,env,ctx){
     let p=null;
     try {
       const key=env.SUPABASE_SERVICE_ROLE_KEY||SUPABASE_PUBLIC_KEY;
-      const params=new URLSearchParams({slug:'eq.'+slug,active:'eq.true',select:'name,slug,description,mission,logo_url,country,city,partner_type,category,badge_label,public_id',limit:'1'});
+      const params=new URLSearchParams({slug:'eq.'+slug,active:'eq.true',select:'name,slug,description,mission,logo_url,country,city,partner_type,category,badge_level,badge_label,badge_verified,public_id',limit:'1'});
       const db=await supabaseRequest('agency_partners?'+params.toString(),key,{method:'GET'});
       if(db.ok){
         const rows=await db.json().catch(()=>[]);
@@ -1065,7 +1082,9 @@ export default {async fetch(request,env,ctx){
     const title=String(p.name||'Partenaire').trim().slice(0,160)+' — Bickri Service Agency';
     const description=String(p.description||p.mission||'Découvrez ce partenaire du réseau Bickri Service Agency.')
       .replace(/\s+/g,' ').trim().slice(0,270);
-    // Sahelia Fresh : image authentique de référence pour les partages sociaux.\n    if(slug==='sahelia-fresh') p.logo_url='https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/053dc7b0-1a6c-4685-84a3-08595451a656.png';\n    const fallbackLogo=new URL('/assets/bickri-logo-final.jpg',publicPartnerOrigin).href;
+    // Sahelia Fresh : conserver son logo officiel pour les partages sociaux.
+    if(slug==='sahelia-fresh') p.logo_url='https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/053dc7b0-1a6c-4685-84a3-08595451a656.png';
+    const fallbackLogo=new URL('/assets/bickri-logo-final.jpg',publicPartnerOrigin).href;
     let image=fallbackLogo;
     try{
       const raw=String(p.logo_url||'').trim();
@@ -1075,7 +1094,13 @@ export default {async fetch(request,env,ctx){
     // Les aperçus sociaux ne prennent pas tous en charge SVG ou WebP.
     const svgOrWebp=/\.(svg|webp)(?:[?#]|$)/i.test(image);
     if(svgOrWebp) image='https://images.weserv.nl/?url='+encodeURIComponent(image)+'&w=1200&h=630&fit=contain&output=jpg&bg=ffffff';
-    const imageType=svgOrWebp||/\.jpe?g(?:[?#]|$)/i.test(image)?'image/jpeg':/\.png(?:[?#]|$)/i.test(image)?'image/png':'';
+    const certified=slug==='sahelia-fresh'||p.badge_verified===true||/premium|verified|certifi/i.test(String(p.badge_level||''));
+    if(certified){
+      const badgeUrl=new URL('/api/partner-og-card',publicPartnerOrigin);
+      badgeUrl.searchParams.set('slug',slug);
+      image='https://images.weserv.nl/?url='+encodeURIComponent(badgeUrl.href)+'&w=1200&h=630&output=jpg';
+    }
+    const imageType=certified||svgOrWebp||/\\.jpe?g(?:[?#]|$)/i.test(image)?'image/jpeg':/\\.png(?:[?#]|$)/i.test(image)?'image/png':'';
     const ogHtml='<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
       '<title>'+escapeHtml(title)+'</title><meta name="description" content="'+escapeHtml(description)+'"><link rel="canonical" href="'+escapeHtml(canonical)+'">'+
       '<meta property="og:type" content="profile"><meta property="og:site_name" content="Bickri Service Agency"><meta property="og:locale" content="fr_FR">'+
