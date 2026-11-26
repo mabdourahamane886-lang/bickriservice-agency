@@ -23,7 +23,11 @@ module.exports=async function(req,res){
  let partner=curated[slug]||null;
  try{const endpoint=SUPABASE_URL+'/rest/v1/agency_partners?slug=eq.'+encodeURIComponent(slug)+'&select=name,slug,description,company_about,logo_url,founder,mission,country,city,partner_type,category,website_url,badge_level&limit=1';const response=await fetch(endpoint,{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,Accept:'application/json'}});if(response.ok){const rows=await response.json();if(Array.isArray(rows)&&rows[0])partner=Object.assign({},partner||{},rows[0]);}}catch(_){}
  if(!partner){res.statusCode=404;return res.end(html('Profil partenaire — Bickri Service Agency','Découvrez les partenaires de Bickri Service Agency.',DEFAULT_IMAGE,SITE+'/partenaires/','website'));}
- // Sahelia Fresh : conserver le logo authentique connu pour les aperçus sociaux, même si la base contient une ancienne URL.\n if(slug==='sahelia-fresh')partner.logo_url=curated['sahelia-fresh'].logo_url;\n const title=String(partner.name||'Partenaire').trim();
+ // Conserver le logo officiel Sahelia Fresh même si la base contient une ancienne URL.
+ if(slug==='sahelia-fresh')partner.logo_url=curated['sahelia-fresh'].logo_url;
+ const title=String(partner.name||'Partenaire').trim();
  const description=String(partner.company_about||partner.description||partner.mission||partner.category||'Découvrez ce partenaire de Bickri Service Agency.').replace(/\s+/g,' ').slice(0,260);
- return res.end(html(title,description,partner.logo_url||partner.logoUrl,SITE+'/partenaires/profil/?slug='+encodeURIComponent(slug),'profile'));
+ const badge=slug==='sahelia-fresh'||/premium|verified|certifi/i.test(String(partner.badge_level||''));
+ const image=badge ? 'https://images.weserv.nl/?url='+encodeURIComponent(SITE+'/api/partner-og-image?slug='+encodeURIComponent(slug))+'&output=jpg&w=1200&h=630' : (partner.logo_url||partner.logoUrl);
+ return res.end(html(title,description,image,SITE+'/partenaires/partage/'+encodeURIComponent(slug)+'/','profile'));
 };
