@@ -1006,7 +1006,7 @@ export default {async fetch(request,env,ctx){
     try{const key=env.SUPABASE_SERVICE_ROLE_KEY||SUPABASE_PUBLIC_KEY;const params=new URLSearchParams({slug:'eq.'+slug,active:'eq.true',select:'name,logo_url,badge_level,badge_verified',limit:'1'});const db=await supabaseRequest('agency_partners?'+params,key,{method:'GET'});if(db.ok){const rows=await db.json();if(rows[0])partner={...partner,...rows[0]};}}catch{}
     if(!partner)return new Response('Partner not found',{status:404});
     if(slug==='sahelia-fresh')partner.logo_url='https://d2ol7oe51mr4n9.cloudfront.net/user_3Bt4xGygQGBZTOweEVrhbZ4s65k/053dc7b0-1a6c-4685-84a3-08595451a656.png';
-    const safe=s=>String(s||'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\\'':'&#39;'}[ch]));
+    const safe=s=>String(s||'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' ,"'":'&#39;'}[ch]));
     let logo='';
     try{const u=new URL(partner.logo_url);if(u.protocol==='https:'){const response=await fetch(u,{signal:AbortSignal.timeout(5000)});const mime=(response.headers.get('content-type')||'').split(';')[0];if(response.ok&&/^image\\/(png|jpeg|webp)$/.test(mime)){const bytes=new Uint8Array(await response.arrayBuffer());if(bytes.length<1500000){let binary='';for(const b of bytes)binary+=String.fromCharCode(b);logo='data:'+mime+';base64,'+btoa(binary);}}}}catch{}
     const name=String(partner.name||'Partenaire').slice(0,55);
