@@ -44,8 +44,16 @@
     const headers={'Accept':'application/json',...(options.headers||{})};
     if(token())headers.Authorization='Bearer '+token();
     if(options.body&&!headers['Content-Type'])headers['Content-Type']='application/json';
-    const response=await fetch(apiUrl(path),{...options,headers,cache:options.cache||'no-store'});
-    const data=await response.json().catch(()=>({}));
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),15000);
+    let response,data;
+    try {
+      response=await fetch(apiUrl(path),{...options,headers,cache:options.cache||'no-store',signal:controller.signal});
+      data=await response.json().catch(()=>null);
+    } catch(error) {
+      throw new Error(error.name==='AbortError'?'Le serveur met trop de temps à répondre. Réessayez.':'Connexion au serveur impossible. Réessayez.');
+    } finally {clearTimeout(timeout);}
+    if(!data || typeof data!=='object')throw new Error('Réponse API invalide (HTTP '+response.status+').');
     if(!response.ok){
       if(response.status===401){clearSession();showAuth('Votre session est terminée. Reconnectez-vous.');}
       throw new Error(data.error||data.message||('Erreur HTTP '+response.status));
@@ -192,7 +200,13 @@
     try{
       if(mode==='admin'){await loadAdmin();return;}
       const data=await api('/api/partner/me');currentData=data;renderMember(data);showDashboard();
-    }catch(error){showAuth(error.message||messages.server);}
+    }catch(error){
+      showAuth(error.message||messages.server);
+      if(mode==='admin' && token()){
+        const box=$('portalMessage');
+        if(box){const retry=document.createElement('button');retry.type='button';retry.className='btn btnLight';retry.style.marginLeft='12px';retry.textContent='Réessayer le chargement';retry.addEventListener('click',()=>loadDashboard());box.appendChild(retry);}
+      }
+    }
   }
 
   function renderMember(data){
@@ -260,6 +274,7 @@
 
   async function loadAdmin(){
     const data=await api('/api/partner/admin');
+    if(!Array.isArray(data.applications)||!Array.isArray(data.partners)||!Array.isArray(data.events))throw new Error('Le serveur n’a pas retourné les données administrateur attendues.');
     adminApplications=Array.isArray(data.applications)?data.applications:[];
     adminPartners=Array.isArray(data.partners)?data.partners:[];
     adminEvents=Array.isArray(data.events)?data.events:[];
