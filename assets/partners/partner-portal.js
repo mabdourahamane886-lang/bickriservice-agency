@@ -398,7 +398,39 @@
     setAuthMode('login');
     if($('authEmail')&&!$('authEmail').value)$('authEmail').value=ADMIN_EMAIL;
   }
-  const recoveryHandled=initializePasswordRecovery();
+  // Google OAuth, restricted by the existing server-side administrator check.
+  function initializeGoogleLogin(){
+    if(mode!=='admin')return false;
+    const card=$('authCard');
+    if(card){
+      const button=document.createElement('button');
+      button.type='button';button.className='btn btnDark';button.id='googleAdminLogin';
+      button.textContent='Continuer avec Google';button.style.cssText='width:100%;margin:12px 0';
+      card.insertBefore(button,$('loginForm'));
+      button.addEventListener('click',()=>{
+        clearSession();sessionStorage.removeItem('bsa_partner_email');
+        const url=new URL(SUPABASE_URL+'/auth/v1/authorize');
+        url.searchParams.set('provider','google');
+        url.searchParams.set('redirect_to',location.origin+'/partenaires/admin/');
+        location.assign(url.toString());
+      });
+    }
+    const hash=new URLSearchParams(location.hash.slice(1));
+    if(hash.get('type')==='recovery')return false;
+    if(hash.get('error')||hash.get('error_description')){
+      history.replaceState(null,document.title,location.pathname+location.search);
+      clearSession();showAuth(hash.get('error_description')||'Connexion Google impossible.');return true;
+    }
+    if(!hash.get('access_token'))return false;
+    history.replaceState(null,document.title,location.pathname+location.search);
+    clearSession();
+    saveSession({access_token:hash.get('access_token'),refresh_token:hash.get('refresh_token'),expires_in:Number(hash.get('expires_in')||3600)});
+    sessionStorage.removeItem('bsa_partner_email');
+    loadDashboard().catch(error=>showAuth(error.message||messages.server));
+    return true;
+  }
+  const googleHandled=initializeGoogleLogin();
+  const recoveryHandled=googleHandled||initializePasswordRecovery();
   // Détecte une session déjà ouverte uniquement dans cet onglet.
   if(!recoveryHandled){
     if(token())loadDashboard().catch(error=>showAuth(error.message||messages.server));
