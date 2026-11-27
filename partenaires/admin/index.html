@@ -41,7 +41,7 @@ body{background:#f7f9fc}.hero{background:#fff;color:#14294b;padding:28px 0;borde
 </section>
 <section id="adminDashboard" hidden>
 <div class="portalRow"><div><h2 style="font:800 24px Manrope;margin:0">Vue d’ensemble</h2><p id="adminSignedIn" class="muted">Administration connectée</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btnGold" href="/partenaires/admin/analytics.html">📊 Statistiques IA</a><button class="btn btnLight" id="adminRefresh" type="button">Actualiser</button></div></div>
-<nav class="portalNav" aria-label="Navigation administration"><a href="#addPartner">Ajouter un partenaire</a><a href="#existingPartners">Partenaires</a><a href="#applications">Candidatures</a><a href="#audit">Historique</a></nav><div id="adminStats" class="portalStats"></div>
+<nav class="portalNav" aria-label="Navigation administration"><a href="/partenaires/admin/publications.html">Gérer les publications</a><a href="#addPartner">Ajouter un partenaire</a><a href="#existingPartners">Partenaires</a><a href="#applications">Candidatures</a><a href="#audit">Historique</a></nav><div id="adminStats" class="portalStats"></div>
 <section id="applications" class="panel"><div class="portalRow"><div><h2>Gestion des candidatures</h2><p class="muted">Vérifiez les informations avant toute approbation. Les profils approuvés deviennent publiquement visibles.</p></div><span id="adminApplicationCount" class="statusPill">0 dossier</span></div>
 <div class="adminTools"><input id="adminSearch" type="search" placeholder="Rechercher un nom, une entreprise, un code…"><select id="adminStatusFilter"><option value="">Tous les statuts</option><option value="pending">En attente</option><option value="under_review">En examen</option><option value="approved">Approuvées</option><option value="rejected">Refusées</option></select><a class="btn btnDark" href="/partenaires/">Ouvrir l’annuaire</a></div>
 <div id="adminApplications"></div></section>
@@ -76,5 +76,5 @@ body{background:#f7f9fc}.hero{background:#fff;color:#14294b;padding:28px 0;borde
 <section id="audit" class="panel" style="margin-top:18px"><h2>Historique d’administration</h2><p class="muted">Les dernières approbations, refus, ajouts, suspensions et modifications de badges.</p><div id="adminHistory" class="adminAuditList"></div></section>
 </section></div></main>
 <footer class="footer"><div class="wrap">Bickri Service Agency — administration sécurisée · <a href="/partenaires/">Retour à l’annuaire</a></div></footer>
-<script src="/assets/partners/partner-portal.js?v=admin-v2" defer></script>
+<script src="/assets/partners/partner-portal.js?v=admin-v3" defer></script>
 </body></html>
