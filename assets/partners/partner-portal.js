@@ -190,8 +190,21 @@
     showMessage('Réinitialisation annulée.','info');
   });
   $('logoutButton')?.addEventListener('click',async()=>{
-    try{if(token())await fetch(SUPABASE_URL+'/auth/v1/logout',{method:'POST',headers:{apikey:SUPABASE_PUBLIC_KEY,Authorization:'Bearer '+token()}});}catch{}
-    clearSession();sessionStorage.removeItem('bsa_partner_email');showAuth('Vous êtes déconnecté.');
+    const previousToken=token();
+    clearSession();sessionStorage.removeItem('bsa_partner_email');
+    adminApplications=[];adminPartners=[];adminEvents=[];currentData=null;
+    for(const id of ['adminApplications','adminPartners','adminEvents','adminHistory','adminStats']){if($(id))$(id).replaceChildren();}
+    if($('authPassword'))$('authPassword').value='';
+    showAuth();showMessage('Session locale fermée.','success');
+    if(!previousToken)return;
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),6000);
+    try{
+      const response=await fetch(SUPABASE_URL+'/auth/v1/logout?scope=local',{method:'POST',headers:{apikey:SUPABASE_PUBLIC_KEY,Authorization:'Bearer '+previousToken},signal:controller.signal});
+      if(!response.ok)throw new Error('Logout HTTP '+response.status);
+      if(!token())showMessage('Vous êtes déconnecté.','success');
+    }catch{if(!token())showMessage('Session locale fermée. La révocation distante n’a pas pu être confirmée.','info');}
+    finally{clearTimeout(timer);}
   });
 
   async function loadDashboard(){
@@ -199,7 +212,7 @@
     showMessage('Chargement de votre espace…','info');
     try{
       if(mode==='admin'){await loadAdmin();return;}
-      const data=await api('/api/partner/me');currentData=data;renderMember(data);showDashboard();
+      const initialToken=token();const data=await api('/api/partner/me');if(!initialToken||token()!==initialToken)return;currentData=data;renderMember(data);showDashboard();
     }catch(error){
       showAuth(error.message||messages.server);
       if(mode==='admin' && token()){
@@ -273,7 +286,9 @@
   });
 
   async function loadAdmin(){
+    const initialToken=token();
     const data=await api('/api/partner/admin');
+    if(!initialToken || token()!==initialToken)return;
     if(!Array.isArray(data.applications)||!Array.isArray(data.partners)||!Array.isArray(data.events))throw new Error('Le serveur n’a pas retourné les données administrateur attendues.');
     adminApplications=Array.isArray(data.applications)?data.applications:[];
     adminPartners=Array.isArray(data.partners)?data.partners:[];
