@@ -7,6 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
 <title>Administration partenaires — Bickri Service Agency</title>
 <style>
+[hidden]{display:none!important}
+
 :root{--navy:#08101f;--gold:#d9a441;--bg:#f6f8fb;--text:#101827;--muted:#667289;--line:#e3e8f0;--soft:#fff4d9}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:"DM Sans",sans-serif;line-height:1.6}a{color:inherit;text-decoration:none}.wrap{width:min(100% - 30px,1160px);margin:auto}
 .header{background:rgba(255,255,255,.96);border-bottom:1px solid var(--line)}.nav{min-height:74px;display:flex;align-items:center;justify-content:space-between;gap:14px}.brand{display:flex;align-items:center;gap:10px;font:800 14px Manrope}.brand img{width:48px;height:48px;object-fit:contain}.brand small{display:block;color:var(--muted);font:800 8px "DM Sans";letter-spacing:.16em}.navLinks{display:flex;gap:12px;align-items:center;font-size:12px;font-weight:900}.navLinks a{color:#775b1f}
@@ -16,11 +18,13 @@
 .adminPartnerControls{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:13px;padding:13px;border:1px solid var(--line);border-radius:12px;background:#f8fafc}.adminPartnerControls label{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:900}.adminPartnerControls select{min-height:36px;border:1px solid #d7deea;border-radius:9px;padding:6px;background:#fff}.inlineCheck input{width:16px;height:16px;accent-color:#16a34a}.adminCreateGrid{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:18px}.adminConsentBox{display:grid;gap:12px;background:#f8fafc;border:1px solid var(--line);border-radius:13px;padding:14px}.adminConsentBox label{display:flex;align-items:flex-start;gap:9px;font-size:12px;font-weight:700}.adminConsentBox input{width:17px;height:17px;flex:0 0 auto;accent-color:#16a34a;margin-top:2px}.adminCreateSubmit{grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap;align-items:center}.adminCreateSubmit button{min-width:200px}.adminAuditList{display:grid;gap:8px}.adminAuditList .portalApplication p{overflow-wrap:anywhere}
 @media(max-width:1000px){.portalStats{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:700px){.portalStats{grid-template-columns:repeat(2,1fr)}.adminTools{grid-template-columns:1fr}.adminReviewControls{grid-template-columns:1fr}.adminActions{display:grid;grid-template-columns:1fr}.adminApplicationTop{flex-direction:column}.nav{align-items:flex-start;padding:10px 0}.brand{font-size:11px}.brand img{width:40px;height:40px}.navLinks{align-items:flex-end;flex-direction:column}}
+
+body{background:#f7f9fc}.hero{background:#fff;color:#14294b;padding:28px 0;border-bottom:1px solid #e3e8f0}.hero p{color:#52617a}.hero .eyebrow{color:#2455a6}.hero h1{font-size:clamp(1.7rem,4vw,2.5rem)}.panel{border-radius:14px;box-shadow:none}.btnGold{background:#194b9b;color:white}.btnDark{background:#17345e}.btn{min-height:44px;font-size:13px}.portalNav{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 24px}.portalNav a{border:1px solid #d7deea;padding:10px 14px;border-radius:8px;background:white;font-weight:700;color:#17345e}.portalNav a:focus-visible,.btn:focus-visible{outline:3px solid #4382e5;outline-offset:3px}.adminCreateGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.adminApplication{border-radius:12px}.emptyState{padding:20px;color:#52617a}.portalApplication{padding:12px;border:1px solid #e3e8f0;border-radius:8px}.adminCompanyEdit{margin:16px 0}.adminCompanyEdit summary{cursor:pointer;font-weight:700;color:#194b9b}section[id]{scroll-margin-top:18px}@media(max-width:700px){.adminCreateGrid,.portalForm{grid-template-columns:1fr}.portalRow{flex-wrap:wrap}.portalNav a{flex:1 1 42%;text-align:center}.adminCreateSubmit button{width:100%;min-width:0}.navLinks{flex-direction:row;flex-wrap:wrap}.portalStat{padding:10px}}
 </style>
 </head>
 <body data-portal-mode="admin">
 <header class="header"><div class="wrap nav"><a class="brand" href="/"><img src="/assets/bickri-b-logo.svg" alt=""><span>BICKRI SERVICE AGENCY<small>ADMINISTRATION PARTENAIRES</small></span></a><nav class="navLinks"><a href="/partenaires/">Annuaire public</a><button class="btn btnLight" id="logoutButton" type="button">Déconnexion</button></nav></div></header>
-<section class="hero"><div class="wrap"><span class="eyebrow">Accès réservé</span><h1>Administration des partenaires</h1><p>Examinez les candidatures, vérifiez les informations, attribuez les badges et publiez les profils approuvés. Chaque action de publication doit être prise par un administrateur autorisé.</p></div></section>
+<section class="hero"><div class="wrap"><span class="eyebrow">Console privée</span><h1>Gestion des partenaires</h1><p>Publiez et gérez les profils Bickri depuis un espace unique.</p></div></section>
 <main class="main"><div class="wrap">
 <div id="portalMessage" class="portalMessage" role="status" aria-live="polite" hidden></div>
 <section id="authCard" class="panel authWrap"><h2>Connexion administrateur</h2><p class="muted">Connectez-vous avec votre compte administrateur Bickri. L’adresse <strong>mabdourahamane886@gmail.com</strong> est préremplie. Pour la première connexion ou en cas d’oubli, recevez un lien sécurisé afin de définir votre mot de passe. Les comptes partenaires ordinaires restent exclus de cette interface.</p>
@@ -37,12 +41,12 @@
 </section>
 <section id="adminDashboard" hidden>
 <div class="portalRow"><div><h2 style="font:800 24px Manrope;margin:0">Vue d’ensemble</h2><p id="adminSignedIn" class="muted">Administration connectée</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btnGold" href="/partenaires/admin/analytics.html">📊 Statistiques IA</a><button class="btn btnLight" id="adminRefresh" type="button">Actualiser</button></div></div>
-<div id="adminStats" class="portalStats"></div>
-<section class="panel"><div class="portalRow"><div><h2>Gestion des candidatures</h2><p class="muted">Vérifiez les informations avant toute approbation. Les profils approuvés deviennent publiquement visibles.</p></div><span id="adminApplicationCount" class="statusPill">0 dossier</span></div>
+<nav class="portalNav" aria-label="Navigation administration"><a href="#addPartner">Ajouter un partenaire</a><a href="#existingPartners">Partenaires</a><a href="#applications">Candidatures</a><a href="#audit">Historique</a></nav><div id="adminStats" class="portalStats"></div>
+<section id="applications" class="panel"><div class="portalRow"><div><h2>Gestion des candidatures</h2><p class="muted">Vérifiez les informations avant toute approbation. Les profils approuvés deviennent publiquement visibles.</p></div><span id="adminApplicationCount" class="statusPill">0 dossier</span></div>
 <div class="adminTools"><input id="adminSearch" type="search" placeholder="Rechercher un nom, une entreprise, un code…"><select id="adminStatusFilter"><option value="">Tous les statuts</option><option value="pending">En attente</option><option value="under_review">En examen</option><option value="approved">Approuvées</option><option value="rejected">Refusées</option></select><a class="btn btnDark" href="/partenaires/">Ouvrir l’annuaire</a></div>
 <div id="adminApplications"></div></section>
 
-<section class="panel" style="margin-top:18px">
+<section id="addPartner" class="panel" style="margin-top:18px">
   <h2>Ajouter un partenaire</h2>
   <p class="muted">Publiez manuellement une organisation uniquement lorsque l’autorisation de publication et les vérifications ont été confirmées.</p>
   <form id="adminPartnerCreateForm" class="adminCreateGrid">
@@ -68,9 +72,9 @@
   </form>
 </section>
 
-<section class="panel" style="margin-top:18px"><div class="portalRow"><div><h2>Partenaires existants</h2><p class="muted">Modifiez les badges ou suspendez/réactivez les profils sans supprimer leur historique.</p></div><span class="statusPill">Gestion</span></div><div id="adminPartners"></div></section>
-<section class="panel" style="margin-top:18px"><h2>Historique d’administration</h2><p class="muted">Les dernières approbations, refus, ajouts, suspensions et modifications de badges.</p><div id="adminHistory" class="adminAuditList"></div></section>
+<section id="existingPartners" class="panel" style="margin-top:18px"><div class="portalRow"><div><h2>Partenaires existants</h2><p class="muted">Modifiez les badges ou suspendez/réactivez les profils sans supprimer leur historique.</p></div><span class="statusPill">Gestion</span></div><div id="adminPartners"></div></section>
+<section id="audit" class="panel" style="margin-top:18px"><h2>Historique d’administration</h2><p class="muted">Les dernières approbations, refus, ajouts, suspensions et modifications de badges.</p><div id="adminHistory" class="adminAuditList"></div></section>
 </section></div></main>
 <footer class="footer"><div class="wrap">Bickri Service Agency — administration sécurisée · <a href="/partenaires/">Retour à l’annuaire</a></div></footer>
-<script src="/assets/partners/partner-portal.js" defer></script>
+<script src="/assets/partners/partner-portal.js?v=admin-v2" defer></script>
 </body></html>
